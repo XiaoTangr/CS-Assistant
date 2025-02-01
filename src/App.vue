@@ -1,16 +1,13 @@
 <template>
   <div class="App-Container">
-    <WindowTitle />
-    <div class="Main">
-      <div class="Menu">
-        <MainMenu>
-          <div class="Content">
-            <router-view />
-          </div>
-        </MainMenu>
-      </div>
 
-    </div>
+    <WindowTitle />
+    <MainMenu />
+    <RouterView />
+
+    <router-view name="content">
+      <RouterView />
+    </router-view>
   </div>
 </template>
 <script setup lang="ts">
