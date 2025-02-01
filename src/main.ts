@@ -5,11 +5,12 @@ import 'element-plus/dist/index.css'
 import "./css/globe.css"
 
 import { getCurrentWindow } from '@tauri-apps/api/window';
-
+import { MainRouter } from "./router/Router";
 
 
 createApp(App)
     .use(ElementPlus)
+    .use(MainRouter)
     .mount("#app");
 
 // when using `"withGlobalTauri": true`, you may use

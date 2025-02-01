@@ -1,7 +1,6 @@
 <template>
-    <div class="MainBar">
-        失败的Man
-
+    <div>
+        keyBindSettings
     </div>
 </template>
 
@@ -9,4 +8,6 @@
 
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

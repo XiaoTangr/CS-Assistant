@@ -12,9 +12,9 @@
 </template>
 
 <script setup lang="ts">
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import { Window } from '@tauri-apps/api/window';
 
-const appWindow = getCurrentWindow();
+const appWindow = new Window('main');
 
 const CloseWindow = () => appWindow.close();
 const toggleMaximizeWindow = () => appWindow.toggleMaximize()
