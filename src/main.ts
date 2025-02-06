@@ -2,28 +2,17 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
-import "./css/globe.css"
+import "@/css/import.scss"
 
-import { getCurrentWindow } from '@tauri-apps/api/window';
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { MainRouter } from "./router/Router";
 
+const app = createApp(App)
 
-createApp(App)
-    .use(ElementPlus)
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+}
+
+app.use(ElementPlus)
     .use(MainRouter)
     .mount("#app");
-
-// when using `"withGlobalTauri": true`, you may use
-// const { getCurrentWindow } = window.__TAURI__.window;
-
-const appWindow = getCurrentWindow();
-
-document
-    .getElementById('titlebar-minimize')
-    ?.addEventListener('click', () => appWindow.minimize());
-document
-    .getElementById('titlebar-maximize')
-    ?.addEventListener('click', () => appWindow.toggleMaximize());
-document
-    .getElementById('titlebar-close')
-    ?.addEventListener('click', () => appWindow.close());

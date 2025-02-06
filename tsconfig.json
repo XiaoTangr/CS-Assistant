@@ -1,5 +1,12 @@
 {
   "compilerOptions": {
+    //配置 @
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "src/*"
+      ]
+    },
     "types": [
       "@tauri-apps/api"
     ],
@@ -30,8 +37,9 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
-, "src/forms/appSettings/CommSettingsvue"  ],
+    "src/**/*.vue",
+    "src/forms/appSettings/CommSettingsvue"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

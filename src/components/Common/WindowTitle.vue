@@ -1,7 +1,12 @@
 <template>
-    <div data-tauri-drag-region class="TitleBar-Container">
+    <div data-tauri-drag-region  class="TitleBar-Container">
         <div data-tauri-drag-region class="titlebar ControlButBar">
-            <a class="light red " id="titlebar-close" @click="CloseWindow" />
+            <el-popconfirm icon-color="#fd6458" :icon="WarningFilled" width="16em" confirm-button-text="确定"
+                cancel-button-text="取消" title="未保存的内容将会丢失!" @confirm="CloseWindow">
+                <template #reference>
+                    <a class="light red " id="titlebar-close" />
+                </template>
+            </el-popconfirm>
             <a class="light yellow" id="titlebar-toggleMaximize" @click="toggleMaximizeWindow" />
             <a class="light green " id="titlebar-minimize" @click="MinimizeWindow" />
         </div>
@@ -13,17 +18,21 @@
 
 <script setup lang="ts">
 import { Window } from '@tauri-apps/api/window';
-
+import { WarningFilled } from '@element-plus/icons-vue';
 const appWindow = new Window('main');
 
-const CloseWindow = () => appWindow.close();
+const CloseWindow = () => {
+    appWindow.close()
+};
 const toggleMaximizeWindow = () => appWindow.toggleMaximize()
 const MinimizeWindow = () => appWindow.minimize()
+
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .TitleBar-Container {
-
+    backdrop-filter: blur($windouwTitle-Blur);
+    border: $simple-border;
     display: flex;
     width: 100%;
     height: 32px;
@@ -39,7 +48,6 @@ const MinimizeWindow = () => appWindow.minimize()
     .ControlButBar {
         position: absolute;
         left: 5px;
-        /* top:8px; */
 
         .light {
             display: flex;
@@ -58,15 +66,15 @@ const MinimizeWindow = () => appWindow.minimize()
         }
 
         .yellow {
-            background-color: #ffbf2b;
+            background-color: $traffic-light-yellow;
         }
 
         .red {
-            background-color: #fd6458;
+            background-color: $traffic-light-red;
         }
 
         .green {
-            background-color: #24cc3d;
+            background-color: $traffic-light-green;
         }
     }
 

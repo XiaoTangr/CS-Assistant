@@ -1,0 +1,37 @@
+@use "sass:color";
+
+$traffic-light-red: #fd6458;
+$traffic-light-yellow: #ffbf2b;
+$traffic-light-green: #24cc3d;
+
+
+$font-color: #000;
+
+$font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+
+$font-weight-regular: normal;
+$font-weight-bold: bold;
+$font-size: 14px;
+
+$windouwTitle-Blur: 10em;
+
+
+$MenuContainer-Blur: 1em;
+$menu-box-shadow: rgba(152, 152, 152, 0.616) .25em .25em 2em 2px;
+$menu-item-active-background: rgba($traffic-light-yellow, 0.1);
+$menu-item-hover-background: rgba($traffic-light-yellow, 50%);
+$menu-item-active-border-color: $traffic-light-yellow;
+
+
+
+
+$simple-border: silver solid 1px;
+
+
+
+
+
+$scrollbar-baseColor: rgba(255, 255, 255);
+$scrollbar-track-background: #101F1C;
+$scrollbar-thumb-background: rgba(144, 147, 153, .5);
+$scrollbar-thumb-hover-background: rgba(144, 147, 153, .3);
