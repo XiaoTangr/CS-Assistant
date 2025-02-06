@@ -31,11 +31,13 @@ const MinimizeWindow = () => appWindow.minimize()
 
 <style scoped lang="scss">
 .TitleBar-Container {
+    position: fixed;
+    z-index: 999;
     backdrop-filter: blur($windouwTitle-Blur);
     border: $simple-border;
     display: flex;
     width: 100%;
-    height: 32px;
+    height: 32px !important;
     justify-content: center;
     align-items: center;
 
@@ -62,7 +64,7 @@ const MinimizeWindow = () => appWindow.minimize()
         }
 
         .light:hover {
-            opacity: 0.8;
+            opacity: 0.75;
         }
 
         .yellow {

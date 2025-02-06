@@ -14,11 +14,13 @@
     </div>
   </div>
   <BackGround />
+  <ViewCheck />
 </template>
 <script setup lang="ts">
 import WindowTitle from './components/Common/WindowTitle.vue';
 import MainMenu from './components/MainMenu.vue';
 import BackGround from './components/Common/BackGround.vue';
+import ViewCheck from './components/Common/ViewCheck.vue';
 const openMenu = () => {
   console.warn('contextmenu')
 }
@@ -35,8 +37,10 @@ const openMenu = () => {
 
   .Main-Container {
     display: flex;
+
     height: calc(100% - 32px - 2em);
     margin: 1em;
+    margin-top: calc(1em + 32px);
 
     .Menu-Container {
       border-radius: 4px;

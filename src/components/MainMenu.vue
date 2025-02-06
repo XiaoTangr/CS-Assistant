@@ -32,6 +32,7 @@ watchEffect(() => {
     width: 6em;
     overflow-y: auto;
 
+
     .MainMenu-Item {
         display: flex;
         justify-content: center;
