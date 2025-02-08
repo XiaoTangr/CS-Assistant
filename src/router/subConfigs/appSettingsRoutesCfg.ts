@@ -7,7 +7,7 @@ export const appSettingsRoutesCfg =
         text: "设置"
     },
     components: {
-        default: () => import('../../components/SubMenu.vue'),
+        default: () => import('@/components/Menu/SubMenu.vue'),
         content: () => import('../../forms/appSettings/CommSettings.vue')
     },
     children: [

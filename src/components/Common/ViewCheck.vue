@@ -12,7 +12,7 @@
                 <template #actions="{ confirm }">
                     <div class="btn-container">
                         <el-checkbox v-model="ignoreOption" size="small">不再提示</el-checkbox>
-                        <el-button plain type="warning" size="small"  @click="confirm">继续使用</el-button>
+                        <el-button plain type="warning" size="small" @click="confirm">继续使用</el-button>
                     </div>
                 </template>
             </el-popconfirm>
@@ -41,17 +41,18 @@ const closeMask = () => {
 }
 
 .Meida-masker {
-    z-index: 9 !important;
-    backdrop-filter: blur(calc($windouwTitle-Blur / 10));
+    z-index: 10 !important;
+    backdrop-filter: blur(calc($header-bar-Blur * 2));
     position: absolute;
-    top: 32px;
-    width: 100%;
-    height: calc(100% - 32px);
+    top: $header-bar-height;
+    left: 0;
+    right: 0;
+    bottom: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-size: 24px;
+    font-size: $font-size;
     color: $font-color;
     text-align: center;
     justify-content: space-around;

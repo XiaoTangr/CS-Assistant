@@ -1,26 +1,27 @@
 <template>
   <div class="App-Container" @contextmenu.prevent="openMenu()">
-    <WindowTitle />
-    <div class="Main-Container">
-      <div class="Menu-Container">
-        <MainMenu />
-        <RouterView />
+    <div class="funcs">
+      <BackGround />
+    </div>
+    <div class="layouts">
+      <div class="header">
+        <HeaderBar />
       </div>
-      <div class="Content-Container">
-        <router-view name="content">
-          <RouterView />
-        </router-view>
+      <div class="content">
+        <ContentBar />
+      </div>
+      <div class="status">
+        <StatusBar />
       </div>
     </div>
   </div>
-  <BackGround />
-  <ViewCheck />
 </template>
 <script setup lang="ts">
-import WindowTitle from './components/Common/WindowTitle.vue';
-import MainMenu from './components/MainMenu.vue';
+import HeaderBar from './components/Layout/HeaderBar.vue';
+import ContentBar from './components/Layout/ContentBar.vue';
+import StatusBar from './components/Layout/StatusBar.vue';
 import BackGround from './components/Common/BackGround.vue';
-import ViewCheck from './components/Common/ViewCheck.vue';
+
 const openMenu = () => {
   console.warn('contextmenu')
 }
@@ -28,38 +29,44 @@ const openMenu = () => {
 
 <style lang="scss">
 .App-Container {
-  z-index: 1;
-  background: rgba(255, 255, 255, 0.85);
   height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
 
-  .Main-Container {
+  .layouts {
+    z-index: 1;
+    height: 100%;
+    width: 100%;
+    background: $globe-layout-color;
     display: flex;
+    flex-direction: column;
 
-    height: calc(100% - 32px - 2em);
-    margin: 1em;
-    margin-top: calc(1em + 32px);
-
-    .Menu-Container {
-      border-radius: 4px;
-      display: flex;
-      width: 15em;
-      backdrop-filter: blur($MenuContainer-Blur);
-      border: $simple-border;
-      box-shadow: $menu-box-shadow;
+    .header {
+      z-index: 999;
+      height: $header-bar-height;
     }
 
-    .Content-Container {
-      margin-left: 1em;
-      padding: .5em;
+    .content {
+      z-index: 2;
+      // overflow: hidden;
       flex: 1;
-      height: 100%;
-      overflow: auto;
-      border: $simple-border;
-      border-radius: 4px;
+      padding: $globe-padding;
+      display: block;
+      height: calc(100% - $header-bar-height - $status-bar-height);
     }
+
+    .status {
+      z-index: 1;
+      height: $status-bar-height;
+    }
+  }
+
+  .funcs {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
   }
 }
 </style>

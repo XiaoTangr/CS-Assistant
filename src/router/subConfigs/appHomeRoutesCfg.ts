@@ -8,7 +8,7 @@ export const appHomeRoutesCfg =
         text: "主页"
     },
     components: {
-        default: () => import('../../components/SubMenu.vue'),
+        default: () => import('@/components/Menu/SubMenu.vue'),
         // content: () => import('../../forms/appHome/MainForm.vue')
     },
     children: [

@@ -9,7 +9,7 @@ export const gameSettingsRoutesCfg =
         text: "游戏"
     },
     components: {
-        default: () => import('../../components/SubMenu.vue'),
+        default: () => import('@/components/Menu/SubMenu.vue'),
         content: () => import('../../forms/gameSettings/audioSettings.vue')
     },
     children: [

@@ -7,7 +7,7 @@ export const specialFuncsRoutesCfg =
         text: "功能"
     },
     components: {
-        default: () => import('../../components/SubMenu.vue'),
+        default: () => import('@/components/Menu/SubMenu.vue'),
         // content: () => import('../forms/specialFuncs/keyBindSettings.vue')
     },
     children: [

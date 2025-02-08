@@ -1,33 +1,50 @@
 @use "sass:color";
 
-$traffic-light-red: #fd6458;
-$traffic-light-yellow: #ffbf2b;
-$traffic-light-green: #24cc3d;
+// Base colors
+$traffic-light-red: rgb(253, 100, 88);
+$traffic-light-yellow: rgb(255, 191, 43);
+$traffic-light-green: rgb(36, 204, 61);
 
-$simple-border: silver solid 1px;
 
-$font-color: #000;
 
+// base font
+$font-color: rgb(0, 0, 0);
 $font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-
 $font-weight-regular: normal;
 $font-weight-bold: bold;
 $font-size: 14px;
 
-$windouwTitle-Blur: 10em;
+// border
+$simple-border: rgba(128, 128, 128, 0.6) solid 1px;
+
+$globe-layout-color: rgba(255, 255, 255, 0.75);
+$globe-padding: 1em;
+$globe-border-radius: 4px;
+$globe-margin: 1em;
+$globe-backdrop-filter: blur(1em);
 
 
+// window title bar
+$header-bar-Blur: 10em;
+$header-bar-height-windowsStyle: 32px;
+$header-bar-height-macosStyle: 24px;
+
+$header-bar-height: $header-bar-height-windowsStyle;
+
+$status-bar-height: 24px;
+
+
+
+// menu
 $MenuContainer-Blur: 1em;
-$menu-box-shadow: rgba(152, 152, 152, 0.616) .25em .25em 2em 2px;
+$menu-box-shadow: rgba(152, 152, 152, 0.6) .25em .25em 2em 2px;
 $menu-item-active-background: rgba($traffic-light-yellow, 0.1);
 $menu-item-hover-background: rgba($traffic-light-yellow, 50%);
 $menu-item-active-border-color: $traffic-light-yellow;
 
-
-
-
-
-$scrollbar-baseColor: rgba(255, 255, 255);
-$scrollbar-track-background: #101F1C;
-$scrollbar-thumb-background: rgba(144, 147, 153, .5);
-$scrollbar-thumb-hover-background: rgba(144, 147, 153, .3);
+$content-background-color: rgba(255, 255, 255, 0.8);
+// scrollbar
+$scrollbar-baseColor: rgb(100, 100, 100, 0.7);
+$scrollbar-track-background: color.adjust($scrollbar-baseColor, $lightness: -80%, $space: hsl);
+$scrollbar-thumb-background: color.adjust($scrollbar-baseColor, $lightness: 10%, $space: hsl);
+$scrollbar-thumb-hover-background: color.adjust($scrollbar-baseColor, $lightness: -10%, $space: hsl);

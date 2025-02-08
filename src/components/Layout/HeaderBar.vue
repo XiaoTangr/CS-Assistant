@@ -1,16 +1,16 @@
 <template>
-    <div data-tauri-drag-region  class="TitleBar-Container">
-        <div data-tauri-drag-region class="titlebar ControlButBar">
+    <div data-tauri-drag-region class="header-bar">
+        <div data-tauri-drag-region class="header-bar-traficLights">
             <el-popconfirm icon-color="#fd6458" :icon="WarningFilled" width="16em" confirm-button-text="确定"
                 cancel-button-text="取消" title="未保存的内容将会丢失!" @confirm="CloseWindow">
                 <template #reference>
-                    <a class="light red " id="titlebar-close" />
+                    <a class="light red " id="header-bar-close" />
                 </template>
             </el-popconfirm>
-            <a class="light yellow" id="titlebar-toggleMaximize" @click="toggleMaximizeWindow" />
-            <a class="light green " id="titlebar-minimize" @click="MinimizeWindow" />
+            <a class="light yellow" id="header-bar-toggleMaximize" @click="toggleMaximizeWindow" />
+            <a class="light green " id="header-bar-minimize" @click="MinimizeWindow" />
         </div>
-        <div data-tauri-drag-region class="WindowInfoBar">
+        <div data-tauri-drag-region class="header-bar-title">
             唐人院不能没有樱岛麻衣！
         </div>
     </div>
@@ -30,14 +30,13 @@ const MinimizeWindow = () => appWindow.minimize()
 </script>
 
 <style scoped lang="scss">
-.TitleBar-Container {
-    position: fixed;
+.header-bar {
     z-index: 999;
-    backdrop-filter: blur($windouwTitle-Blur);
+    backdrop-filter: $globe-backdrop-filter ;
     border: $simple-border;
     display: flex;
     width: 100%;
-    height: 32px !important;
+    height: $header-bar-height;
     justify-content: center;
     align-items: center;
 
@@ -47,7 +46,7 @@ const MinimizeWindow = () => appWindow.minimize()
         align-items: center;
     }
 
-    .ControlButBar {
+    .header-bar-traficLights {
         position: absolute;
         left: 5px;
 
@@ -60,7 +59,6 @@ const MinimizeWindow = () => appWindow.minimize()
             cursor: pointer;
             text-align: center;
             justify-content: center;
-            color: #fff;
         }
 
         .light:hover {
