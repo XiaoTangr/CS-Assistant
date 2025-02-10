@@ -36,4 +36,4 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: build-output  # Artifact 名称
-        path: src-tauri/target/release/bundle/msi
+        path: src-tauri/target/release/bundle/msi/*.exe
