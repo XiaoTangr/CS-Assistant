@@ -7,7 +7,17 @@
 </template>
 
 <script setup lang="ts">
+import DBCoon from "@/utils/DataService/DbInstall";
+import { onMounted } from 'vue';
 
+onMounted(async () => {
+    const db = new DBCoon;
+    if (!await db.installCheck()) {
+        alert("Loading database failed! Installing");
+        db.tableCreate();
+        db.dataInsert();
+    }
+})
 </script>
 
 <style scoped lang="scss"></style>
