@@ -18,24 +18,6 @@ jobs:
         profile: minimal # 使用最小化配置文件
         override: true # 覆盖任何现有的Rust工具链设置
 
-    - name: Cache Yarn Dependencies
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cache/yarn
-          node_modules
-        key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }
-
-    - name: Restore Yarn Cache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cache/yarn
-          node_modules
-        key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }}
-        restore-keys: |
-          {{ runner.os }}-yarn-{{ runner.os }}-
-
     - name: Install Dependencies
       run: yarn install
 
@@ -51,12 +33,3 @@ jobs:
       with:
         name: build-output  # Artifact 名称
         path: src-tauri/target/release/bundle/msi
-
-    - name: Save Yarn Cache
-      uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cache/yarn
-          node_modules
-        key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }}
-        save-key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }}
