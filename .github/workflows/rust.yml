@@ -28,7 +28,7 @@ jobs:
 
     # Install Node.js dependencies with Yarn
     - name: Install Node.js dependencies
-      run: yarn install -y
+      run: yarn install 
 
     # Install Rust dependencies in /tauri-src directory
     - name: Install Rust dependencies
