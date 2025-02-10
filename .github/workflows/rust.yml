@@ -8,26 +8,23 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2 # 检出仓库代码
+    - uses: actions/checkout@v3
 
-    - name: Set up Rust
-      uses: actions-rs/toolchain@v1 # 设置Rust工具链
+    - name: Set Node.js 20.x
+      uses: actions/setup-node@v3
       with:
-        toolchain: stable # 使用稳定版Rust工具链
-        profile: minimal # 使用最小化配置文件
-        override: true # 覆盖任何现有的Rust工具链设置
+        node-version: 20.x
 
-    # Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
-      with:
-        node-version: '20' # Install Node.js version 20
 
     # Enable corepack (Yarn and pnpm support)
     - name: Enable corepack
       run: corepack enable
+    
 
+    - name: Run install
+      uses: borales/actions-yarn@v4
+      with:
+        cmd: install # will run `yarn install` command
 
     # Build Tauri application
     - name: Build Tauri application
