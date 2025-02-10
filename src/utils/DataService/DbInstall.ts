@@ -1,7 +1,6 @@
 import Database from '@tauri-apps/plugin-sql';
 
 import { appSettingsSQL } from './sqls/appSettings';
-import { tr } from 'element-plus/es/locales.mjs';
 
 
 class DBCoon {

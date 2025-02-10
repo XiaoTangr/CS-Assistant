@@ -33,7 +33,7 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw, onMounted, ref } from 'vue';
+import { onMounted, ref } from 'vue';
 const data = ref([{
     key: 'useViewChicker',
     text: '不提示视图大小兼容性',

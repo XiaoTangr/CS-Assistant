@@ -18,28 +18,45 @@ jobs:
         profile: minimal # 使用最小化配置文件
         override: true # 覆盖任何现有的Rust工具链设置
 
-    # Set up Node.js
-    - name: Set up Node.js
-      uses: actions/setup-node@v2
+    - name: Cache Yarn Dependencies
+      uses: actions/cache@v2
       with:
-        node-version: '20' # Install Node.js version 20
+        path: |
+          ~/.cache/yarn
+          node_modules
+        key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }
 
-    # Enable corepack (Yarn and pnpm support)
-    - name: Enable corepack
-      run: corepack enable
+    - name: Restore Yarn Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/yarn
+          node_modules
+        key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }}
+        restore-keys: |
+          {{ runner.os }}-yarn-{{ runner.os }}-
 
-    # Install Node.js dependencies with Yarn
-    - name: Install Node.js dependencies
-      run: yarn --frozen-lockfile
+    - name: Install Dependencies
+      run: yarn install
 
-    # Install Rust dependencies in /tauri-src directory
-    - name: Install Rust dependencies
-      working-directory: src-tauri
-      run: |
-        cargo install --path .
-        # If you have a specific command to install dependencies, replace the above line with it.
 
     # Build Tauri application
     - name: Build Tauri application
       working-directory: 
-      run: tauri build
+      run: yarn  tauri build
+
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: build-output  # Artifact 名称
+        path: src-tauri/target/release/bundle/msi
+
+    - name: Save Yarn Cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cache/yarn
+          node_modules
+        key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }}
+        save-key: {{ runner.os }}-yarn-{{ hashFiles('**/yarn.lock') }}
