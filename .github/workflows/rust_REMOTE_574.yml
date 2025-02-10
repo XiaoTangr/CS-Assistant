@@ -1,0 +1,51 @@
+name: Rust and Node.js CI with Tauri
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Set up Rust
+    - name: Set up Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+        override: true
+
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20' # Install Node.js version 20
+
+    # Enable corepack (Yarn and pnpm support)
+    - name: Enable corepack
+      run: corepack enable
+
+    # Install Node.js dependencies with Yarn
+    - name: Install Node.js dependencies
+      run: yarn install 
+
+    # Install Rust dependencies in /tauri-src directory
+    - name: Install Rust dependencies
+      working-directory: ./tauri-src
+      run: |
+        cargo install --path .
+        # If you have a specific command to install dependencies, replace the above line with it.
+
+    # Build Rust project
+    - name: Build Rust project
+      run: cargo build --verbose
+
+    # Run tests
+    - name: Run tests
+      run: cargo test --verbose
+
+    # Build Tauri application
+    - name: Build Tauri application
+      working-directory: ./
+      run: tauri build
