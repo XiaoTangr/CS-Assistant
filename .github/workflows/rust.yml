@@ -32,7 +32,7 @@ jobs:
 
     # Install Rust dependencies in /tauri-src directory
     - name: Install Rust dependencies
-      working-directory: ./tauri-src
+      working-directory: tauri-src
       run: |
         cargo install --path .
         # If you have a specific command to install dependencies, replace the above line with it.
@@ -47,5 +47,5 @@ jobs:
 
     # Build Tauri application
     - name: Build Tauri application
-      working-directory: ./
+      working-directory: 
       run: tauri build
