@@ -18,8 +18,15 @@ jobs:
         profile: minimal # 使用最小化配置文件
         override: true # 覆盖任何现有的Rust工具链设置
 
-    - name: Install Dependencies
-      run: yarn install
+    # Set up Node.js
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '20' # Install Node.js version 20
+
+    # Enable corepack (Yarn and pnpm support)
+    - name: Enable corepack
+      run: corepack enable
 
 
     # Build Tauri application
