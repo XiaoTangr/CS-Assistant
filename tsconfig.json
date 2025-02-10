@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     //配置 @
+    "forceConsistentCasingInFileNames": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [
