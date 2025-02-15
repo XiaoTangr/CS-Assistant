@@ -9,6 +9,7 @@
       ]
     },
     "types": [
+      "node",
       "@tauri-apps/api"
     ],
     "esModuleInterop": true,

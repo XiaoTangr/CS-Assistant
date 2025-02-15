@@ -19,7 +19,7 @@ class DBCoon {
         try {
             this.tableCreate();
             let result: any = await db.select("select * from appSettings where key = 'DBInstalled';")
-            console.log(JSON.parse(result[0].desc))
+            // console.log(JSON.parse(result[0].desc))
             if (result.length > 0) {
                 return true;
             }

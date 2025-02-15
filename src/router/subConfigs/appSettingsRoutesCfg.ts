@@ -18,6 +18,13 @@ export const appSettingsRoutesCfg =
                 text: "通用设置"
             },
             component: () => import('../../forms/appSettings/CommSettings.vue')
+        }, {
+            path: '/appSettings/PathSettings',
+            meta: {
+                icon: null,
+                text: "路径设置"
+            },
+            component: () => import('../../forms/appSettings/PathSettings.vue')
         },
         {
             path: '/appSettings/AboutSettings',
