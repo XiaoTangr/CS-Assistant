@@ -39,8 +39,7 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/forms/appSettings/CommSettingsvue"
+    "src/**/*.vue"
   ],
   "references": [
     {

@@ -7,16 +7,17 @@
 </template>
 
 <script setup lang="ts">
-import DBCoon from "@/utils/DataService/DbInstall";
+
+import MapDTO from '@/DBA/DTO/MapDTO';
+import { DBinstall } from '@/DBA/Utils/DbInstall';
+// import { ElNotification } from 'element-plus';
 import { onMounted } from 'vue';
 
 onMounted(async () => {
-    const db = new DBCoon;
-    if (!await db.installCheck()) {
-        alert("Loading database failed! Installing");
-        db.tableCreate();
-        db.dataInsert();
-    }
+    DBinstall();
+    const MapDto = new MapDTO();
+    console.log((await MapDto.queryAll()));
+    // await MapDto.insert([{ key: "test112111112", value: "test1" }])
 })
 </script>
 
