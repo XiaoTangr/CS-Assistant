@@ -1,4 +1,4 @@
-import * as fs from 'fs';
+
 import * as vdfParser from 'vdf-parser';
 import { invoke } from '@tauri-apps/api/core';
 
