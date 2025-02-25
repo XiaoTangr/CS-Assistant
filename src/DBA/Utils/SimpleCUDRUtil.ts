@@ -1,4 +1,4 @@
-import { ro } from "element-plus/es/locales.mjs";
+
 import { DBConn } from "./DBConn"
 
 /**
