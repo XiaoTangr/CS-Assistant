@@ -28,6 +28,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "noEmitOnError": false,
     "jsx": "preserve",
     /* Linting */
     "strict": true,
