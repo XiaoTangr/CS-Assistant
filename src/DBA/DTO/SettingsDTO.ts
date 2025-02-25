@@ -4,6 +4,7 @@ import { SettingsDO } from "../DO/SettingsDO";
 import { simpleQueryAll, simpleQueryOneByColumnName } from "../Utils/SimpleCUDRUtil";
 
 export default class SettingsDTO {
+    // @ts-ignore
     private db!: Promise<Database>;
 
 
