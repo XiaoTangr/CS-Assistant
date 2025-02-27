@@ -1,4 +1,4 @@
-import { DBConn } from "./DBConn";
+import { dbConnUtil } from "./DBConnUtil";
 
 class DBCUDRUtil {
     private static instance: DBCUDRUtil;
@@ -27,7 +27,7 @@ class DBCUDRUtil {
         }
 
         const sql = `SELECT * FROM ${tableName};`;
-        const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
 
         try {
             const rows = await db.select(sql);
@@ -36,7 +36,7 @@ class DBCUDRUtil {
             console.error('查询所有数据时出错:', error);
             return null;
         } finally {
-            await db.close();
+            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -60,16 +60,16 @@ class DBCUDRUtil {
         }
 
         const sql = `SELECT * FROM ${tableName} WHERE ${columnName} = $1;`;
-        const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
 
         try {
-            const rows:any = await db.select(sql, [columnValue]);
+            const rows: any = await db.select(sql, [columnValue]);
             return rows.length > 0 ? (rows[0] as T) : null;
         } catch (error) {
             console.error('查询单行数据时出错:', error);
             return null;
         } finally {
-            await db.close();
+            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -86,7 +86,7 @@ class DBCUDRUtil {
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
             throw new Error('表名无效');
         }
-        const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
         let rowsAffected = 0;
         try {
             const columns = Object.keys(data[0]);
@@ -106,7 +106,7 @@ class DBCUDRUtil {
             console.error('插入数据时出错:', error);
             return 0;
         } finally {
-            await db.close();
+            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -141,7 +141,7 @@ class DBCUDRUtil {
             .join(', ');
 
         const sql = `UPDATE ${tableName} SET ${setClause} WHERE ${columnName} = $${Object.keys(data).length + 1};`;
-        const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
 
         try {
             const params = [...Object.values(data), columnValue];
@@ -151,7 +151,7 @@ class DBCUDRUtil {
             console.error('更新数据时出错:', error);
             return false;
         } finally {
-            await db.close();
+            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -175,7 +175,7 @@ class DBCUDRUtil {
         }
 
         const sql = `DELETE FROM ${tableName} WHERE ${columnName} = $1;`;
-        const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
 
         try {
             const result = await db.execute(sql, [columnValue]);
@@ -184,7 +184,7 @@ class DBCUDRUtil {
             console.error('删除数据时出错:', error);
             return false;
         } finally {
-            await db.close();
+            await dbConnUtil.releaseConnection(db);
         }
     }
 }

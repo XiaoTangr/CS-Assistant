@@ -1,13 +1,14 @@
-import { DBConn } from "./DBConn";
+
 import { SQLs } from "../Sqls/SQLs";
 import { ElNotification } from "element-plus";
+import { dbConnUtil } from "./DBConnUtil";
 
 /**
  *  create table by sqlstr
  * @param sql the sqlstr of create table
  */
 const createTable = async (sql: string) => {
-    const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
     const query = sql;
     db.execute(query).then(() => true).catch((e) => { throw e });
 }
@@ -18,7 +19,7 @@ const createTable = async (sql: string) => {
  * @returns true if table exists, false otherwise
  */
 const isTableExists = async (tableName: string): Promise<boolean> => {
-    const db = await new DBConn().init();
+        const db = await dbConnUtil.getConnection()
     return db.execute(`select * from ${tableName}`).then(() => true).catch(() => false);
 }
 

@@ -1,14 +1,8 @@
-import Database from "@tauri-apps/plugin-sql";
-import { DBConn } from "../Utils/DBConn";
 import { MapDO } from "../DO/MapDO";
 import { dbCUDRUtil } from "../Utils/DBCUDRUtil";
+import { dbConnUtil } from "../Utils/DBConnUtil";
 
 export default class MapDTO {
-    private db!: Promise<Database>;
-
-    constructor() {
-        this.db = new DBConn().init();
-    }
 
     /**
      * query data by key
@@ -32,7 +26,7 @@ export default class MapDTO {
      * @param data - The data to insert.
      */
     async insert(data: Array<MapDO>): Promise<any> {
-        const db = await this.db;
+        const db = await dbConnUtil.getConnection();
         return data.forEach((item: any) => {
             db.execute(`INSERT INTO Map (key, value) VALUES ($1, $2)`, [item.key, item.value])
                 .then((r) => { return r; })

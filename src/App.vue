@@ -21,10 +21,19 @@ import HeaderBar from './components/Layouts/HeaderBar.vue';
 import ContentBar from './components/Layouts/ContentBar.vue';
 import StatusBar from './components/Layouts/StatusBar.vue';
 import BackGround from './components/Common/BackGround.vue';
+import { onMounted } from 'vue';
+import { DBinstall } from './DBA/Utils/DbInstall';
+
 
 const openMenu = () => {
-  console.warn('contextmenu')
+  console.warn('User try open contextmenu!')
+
 }
+
+onMounted(async () => {
+    DBinstall();
+})
+
 </script>
 
 <style lang="scss">

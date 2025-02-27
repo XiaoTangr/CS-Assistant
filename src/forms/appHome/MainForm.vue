@@ -8,21 +8,7 @@
 
 <script setup lang="ts">
 
-import MapDTO from '@/DBA/DTO/MapDTO';
-import { DBinstall } from '@/DBA/Utils/DbInstall';
-import { dbCUDRUtil } from '@/DBA/Utils/DBCUDRUtil';
-// import { ElNotification } from 'element-plus';
-import { onMounted } from 'vue';
 
-onMounted(async () => {
-    DBinstall();
-    const MapDto = new MapDTO();
-
-    // await MapDto.insert([{ key: "test112111112", value: "test1" }])
-
-    console.log(await dbCUDRUtil.updateRow("Map", { key: "test", value: "test改了" }, "key", "test"))
-    console.log((await MapDto.queryAll()));
-})
 </script>
 
 <style scoped lang="scss"></style>
