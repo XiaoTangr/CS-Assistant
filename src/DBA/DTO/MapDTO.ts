@@ -1,7 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 import { DBConn } from "../Utils/DBConn";
 import { MapDO } from "../DO/MapDO";
-import { simpleDeleteByColumnName, simpleInsert, simpleQueryAll, simpleQueryOneByColumnName } from "../Utils/SimpleCUDRUtil";
+import { dbCUDRUtil } from "../Utils/DBCUDRUtil";
 
 export default class MapDTO {
     private db!: Promise<Database>;
@@ -16,7 +16,7 @@ export default class MapDTO {
      * @returns 
      */
     async queryOnebyKey(key: string): Promise<any> {
-        return await simpleQueryOneByColumnName<MapDO | null>("Settings", "key", key);
+        return await dbCUDRUtil.queryOne<MapDO | null>("Settings", "key", key);
     }
 
     /**
@@ -24,7 +24,7 @@ export default class MapDTO {
      * @returns MapDO[] - The list of MapDO objects.
      */
     async queryAll() {
-        return await simpleQueryAll<MapDO[] | null>("Map")
+        return await dbCUDRUtil.queryAll<MapDO[] | null>("Map")
     }
 
     /**
@@ -43,10 +43,7 @@ export default class MapDTO {
     }
 
     async deleteOneByKeyName(KeyName: string): Promise<any> {
-        return await simpleDeleteByColumnName("Map", "key", KeyName);
+        return await dbCUDRUtil.deleteRow("Map", "key", KeyName);
     }
 
-    async it(data: MapDO[]) {
-        return await simpleInsert("Map", data)
-    }
 }
