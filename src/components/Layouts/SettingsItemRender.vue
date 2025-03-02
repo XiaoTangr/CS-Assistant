@@ -5,7 +5,7 @@
             <div class="tips-text modifed">表示已更改,记得保存~</div>
         </div>
         <div v-if="!hasData" class="item-nodata">
-            没有数据!
+            <!--  没有数据! -->
         </div>
         <div v-else v-for="(item, index) in modifedData" class="item-outbox"
             :class="{ modifed: item.selected != originData[index].selected }">
