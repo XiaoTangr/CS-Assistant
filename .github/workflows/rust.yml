@@ -7,10 +7,9 @@ on:
 env:
 
 jobs:
-
+  runs-on: windows-latest
 
   envsetup:
-    - runs-on: windows-latest
     - name: setup env
     - steps:
         - uses: actions/checkout@v3
