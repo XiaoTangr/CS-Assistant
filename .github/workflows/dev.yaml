@@ -23,6 +23,7 @@ jobs:
         run: npm i pnpm -g
 
   build:
+    runs-on: windows-latest
     name: Build
     needs: init
     steps:
@@ -32,6 +33,7 @@ jobs:
         run: pnpm tauri build
 
   publish:
+    runs-on: windows-latest
     name: Publish
     needs: [init, build]
     steps:
