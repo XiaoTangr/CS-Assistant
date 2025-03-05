@@ -5,12 +5,8 @@ import { computed, onMounted, ref } from "vue";
 
 export const useMapStore = defineStore("MapStore", () => {
     const data = ref<MapDO[]>([]);
-
     const modifedData = ref<MapDO[]>([]);
-
-
     const isInitialized = ref(false);
-
     const isDataupdated = computed(() => {
         return JSON.stringify(data.value) !== JSON.stringify(modifedData.value);
     })
