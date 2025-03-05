@@ -25,7 +25,18 @@ jobs:
   build:
     name: Build
     needs: init
+    steps:
+      # Build Tauri application
+      - name: Build Tauri application
+        working-directory:
+        run: pnpm tauri build
 
   publish:
     name: Publish
     needs: [init, build]
+    steps:
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output # Artifact 名称
+          path: src-tauri/target/release/bundle/msi/*.msi
