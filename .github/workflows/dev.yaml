@@ -1,7 +1,9 @@
 name: Dev release
 
 on:
-  push: branches:[Dev]
+  push:
+    branches:
+      - Dev
 
 env:
 
@@ -17,10 +19,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20.x
-          
+
       - name: install pnpm
         run: npm i pnpm -g
-
 
   build:
     name: Build
