@@ -2,9 +2,7 @@ name: Dev release
 
 on:
   push:
-    branches:
-      - Dev
-      
+    branches: [Dev]
 
 env:
 
