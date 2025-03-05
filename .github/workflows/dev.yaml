@@ -4,8 +4,6 @@ on:
   push:
     branches: [Dev]
 
-env:
-
 jobs:
   init:
     name: Env Init
