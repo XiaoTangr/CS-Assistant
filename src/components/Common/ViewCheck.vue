@@ -21,18 +21,29 @@
 </template>
 
 <script setup lang="ts">
+import { useSettingsStore } from "@/store/SettingsStore";
 import { WarningFilled } from "@element-plus/icons-vue"
-import { ref } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
+const SettingsStore = useSettingsStore();
 
 const ignoreOption = ref(false);
 const maskDisplay = ref(true);
 
+const data = ref();
+
 const closeMask = () => {
-    if (ignoreOption) {
-        // TODO: disable this option in settings.db
-    }
+    data.value.selected = ignoreOption.value == true ? "false" : "true";
+    console.log(data.value);
+    SettingsStore.saveRow(data.value);
     maskDisplay.value = false;
 }
+onMounted(async () => {
+    await SettingsStore.fetchData();
+    data.value = SettingsStore.getDataByKeyName("showViewCheck")[0]
+    console.log(data.value);
+    maskDisplay.value = data.value.selected
+})
+
 </script>
 
 <style scoped lang="scss">

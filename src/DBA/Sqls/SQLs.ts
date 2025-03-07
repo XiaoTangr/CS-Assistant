@@ -1,3 +1,4 @@
+
 export const SQLs = [
     {
         tableName: "Settings",
@@ -13,7 +14,9 @@ export const SQLs = [
                 "section" TEXT
             );
         `,
-        defaultData: []
+        defaultData: [{
+            
+        }]
     }, {
         tableName: "Map",
         createSql: `

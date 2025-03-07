@@ -5,7 +5,7 @@
             <div class="tips-text modifed">表示已更改,记得保存~</div>
         </div>
         <div v-if="!hasData" class="item-nodata">
-            <!--  没有数据! -->
+            没有数据!
         </div>
         <div v-else v-for="(item, index) in modifedData" class="item-outbox"
             :class="{ modifed: item.selected != originData[index].selected }">
@@ -31,7 +31,7 @@
                     <el-input v-model="item.selected" :placeholder="item.description" style="width: 100%" />
                 </div>
             </div>
-            <div v-if="item.type === 'PathInput'" class="settings-item  item-FilePath">
+            <div v-if="item.type === 'PathInput'" class="settings-item item-FilePath">
                 <p class="item-text">{{ item.text }}</p>
                 <div class="item-options">
                     <el-input class="path-item" v-model="item.selected" placeholder="输入内容" />
@@ -40,27 +40,42 @@
                 </div>
             </div>
         </div>
+        <div>
+            <el-button @click="savaChanges">
+                保存
+            </el-button>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { FolderOpened } from '@element-plus/icons-vue';
-import { computed, ref, watchEffect } from 'vue';
+import { computed, onMounted, ref, watchEffect } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
+import { useSettingsStore } from '@/store/SettingsStore';
 
 const props = defineProps({
-    renderData: {
-        type: Array<SettingsRow> || undefined
+    chapter: {
+        type: String,
+        required: true
+    },
+    section: {
+        type: String,
+        required: true
     }
 })
 
+
+const SettingsStore = useSettingsStore();
+
 const originData = ref()
 const modifedData = ref()
-
-
+onMounted(() => {
+    SettingsStore.fetchData();
+});
 watchEffect(() => {
-    originData.value = props.renderData;
-    modifedData.value = JSON.parse(JSON.stringify(props.renderData));
+    originData.value = SettingsStore.getDataByChapterAndSection(props.chapter, props.section);
+    modifedData.value = SettingsStore.getModifedDataByChapterAndSection(props.chapter, props.section);
 })
 const hasData = computed(() => {
     return originData.value && originData.value.length > 0 ? true : false
@@ -77,6 +92,9 @@ const openPathChoose = async (index: number) => {
     }
 };
 
+const savaChanges = () => {
+    SettingsStore.saveModifedData();
+}
 
 </script>
 

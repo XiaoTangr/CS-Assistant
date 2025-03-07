@@ -1,10 +1,10 @@
 export class SettingsDO {
-    key!: String;
-    text!: String;
-    description!: String;
-    type!: String;
-    selected!: String;
+    key!: string;
+    text!: string;
+    description!: string;
+    type!: string;
+    selected!: string;
     options!: Array<SettingsRowOptions>
-    chapter!: String
-    section!: String;
+    chapter!: string
+    section!: string;
 }

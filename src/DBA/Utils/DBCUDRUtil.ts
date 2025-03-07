@@ -35,8 +35,6 @@ class DBCUDRUtil {
         } catch (error) {
             console.error('查询所有数据时出错:', error);
             return null;
-        } finally {
-            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -68,8 +66,6 @@ class DBCUDRUtil {
         } catch (error) {
             console.error('查询单行数据时出错:', error);
             return null;
-        } finally {
-            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -105,8 +101,6 @@ class DBCUDRUtil {
         } catch (error) {
             console.error('插入数据时出错:', error);
             return 0;
-        } finally {
-            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -150,8 +144,6 @@ class DBCUDRUtil {
         } catch (error) {
             console.error('更新数据时出错:', error);
             return false;
-        } finally {
-            await dbConnUtil.releaseConnection(db);
         }
     }
 
@@ -182,9 +174,7 @@ class DBCUDRUtil {
             return result.rowsAffected > 0;
         } catch (error) {
             console.error('删除数据时出错:', error);
-            return false;
-        } finally {
-            await dbConnUtil.releaseConnection(db);
+            return false
         }
     }
 }

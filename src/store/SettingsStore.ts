@@ -1,0 +1,91 @@
+import { SettingsDO } from "@/DBA/DO/SettingsDO";
+import SettingsDTO from "@/DBA/DTO/SettingsDTO";
+import { jsonUtil } from "@/utils/JSONUtil";
+import { ElNotification } from "element-plus";
+import { defineStore } from "pinia";
+import { computed, ref } from "vue";
+
+export const useSettingsStore = defineStore("SettingsStore", () => {
+    const data = ref<SettingsDO[]>([]);
+    const modifedData = ref<SettingsDO[]>([]);
+    const isInitialized = ref(false);
+    const isDataupdated = computed(() => {
+        return JSON.stringify(data.value) !== JSON.stringify(modifedData.value);
+    })
+
+    const refreshData = () => {
+        isInitialized.value = false;
+        fetchData();
+    }
+
+
+    const fetchData = async () => {
+        if (!isInitialized.value) {
+            const SettingsDto = new SettingsDTO();
+            const res = await SettingsDto.queryAll();
+            if (res) {
+                console.log(res)
+                const nonNullData = jsonUtil.deepParseJSON(res.filter((item): item is SettingsDO[] => item !== null));
+
+
+                if (nonNullData.length > 0) {
+                    data.value = nonNullData.flat();
+                    modifedData.value = JSON.parse((JSON.stringify(data.value)))
+                }
+            }
+            isInitialized.value = true;
+        } else {
+            console.log("data already initialized")
+        }
+    };
+
+    const getDataByChapterAndSection = (chapter: string, section: string) => {
+        return data.value.filter((item) => item.chapter === chapter && item.section === section);
+    }
+    const getModifedDataByChapterAndSection = (chapter: string, section: string) => {
+        return modifedData.value.filter((item) => item.chapter === chapter && item.section === section);
+    }
+
+    const saveModifedData = async () => {
+        let updatePromises: Promise<any>[] = [];
+        let changedRowsCount = 0;
+
+        // 收集所有需要更新的行的 Promise
+        modifedData.value.forEach((element: SettingsDO, index: number) => {
+            if (element.selected !== data.value[index].selected) {
+                const setdto = new SettingsDTO();
+                const updatePromise = setdto.updateRow(element).then((res) => {
+                    if (res) {
+                        changedRowsCount++;
+                        console.log("updated row: ", element);
+                    }
+                    return res;
+                });
+                updatePromises.push(updatePromise);
+            }
+        });
+
+        // 等待所有更新完成
+        await Promise.all(updatePromises);
+
+        // 更新完成后显示通知并刷新数据
+        if (changedRowsCount > 0) {
+            ElNotification.success(`${changedRowsCount} rows updated`);
+        }
+
+        // 所有更新完成后再获取新数据
+        refreshData();
+    };
+
+    const getDataByKeyName = (keyName: string) => {
+        return data.value.filter((item) => item.key === keyName);
+    }
+
+    const saveRow = async (row: SettingsDO) => {
+        const setdto = new SettingsDTO();
+        await setdto.updateRow(row);
+        refreshData()
+    }
+
+    return { data, modifedData, isDataupdated, saveRow, refreshData, fetchData, getDataByKeyName, getDataByChapterAndSection, getModifedDataByChapterAndSection, saveModifedData };
+});

@@ -40,7 +40,9 @@ class DBinstallUtil {
     * install database
     */
     public async installDB() {
+        
         SQLs.forEach(async (item) => {
+
             if (! await this.isTableExists(item.tableName)) {
                 this.createTable(item.createSql).then(() => {
                     ElNotification.success(`Database ${item.tableName} installed successfully`)
@@ -52,6 +54,9 @@ class DBinstallUtil {
             }
         });
     }
+
+
+
 
 }
 export const dbinstallUtil = DBinstallUtil.getInstance();

@@ -24,6 +24,7 @@ class StartUpUtil {
         });
     }
 
+
     public async startUp(): Promise<void> {
         await this.initDB()
         await this.installDB()
