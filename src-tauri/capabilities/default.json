@@ -16,6 +16,8 @@
     "sql:default",
     "sql:allow-execute",
     "sql:allow-select",
-    "dialog:default"
+    "dialog:default",
+    "core:event:allow-listen",
+    "core:event:default"
   ]
 }

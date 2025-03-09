@@ -21,13 +21,9 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
 
     const fetchData = async () => {
         if (!isInitialized.value) {
-            const SettingsDto = new SettingsDTO();
-            const res = await SettingsDto.queryAll();
+            const res = await SettingsDTO.queryAll();
             if (res) {
-                console.log(res)
                 const nonNullData = jsonUtil.deepParseJSON(res.filter((item): item is SettingsDO[] => item !== null));
-
-
                 if (nonNullData.length > 0) {
                     data.value = nonNullData.flat();
                     modifedData.value = JSON.parse((JSON.stringify(data.value)))
@@ -49,12 +45,10 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
     const saveModifedData = async () => {
         let updatePromises: Promise<any>[] = [];
         let changedRowsCount = 0;
-
         // 收集所有需要更新的行的 Promise
         modifedData.value.forEach((element: SettingsDO, index: number) => {
             if (element.selected !== data.value[index].selected) {
-                const setdto = new SettingsDTO();
-                const updatePromise = setdto.updateRow(element).then((res) => {
+                const updatePromise = SettingsDTO.updateRow(element).then((res) => {
                     if (res) {
                         changedRowsCount++;
                         console.log("updated row: ", element);
@@ -64,26 +58,25 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
                 updatePromises.push(updatePromise);
             }
         });
-
         // 等待所有更新完成
         await Promise.all(updatePromises);
-
         // 更新完成后显示通知并刷新数据
         if (changedRowsCount > 0) {
             ElNotification.success(`${changedRowsCount} rows updated`);
         }
-
         // 所有更新完成后再获取新数据
         refreshData();
     };
 
+    // Modify the getDataByKeyName function in your store
     const getDataByKeyName = (keyName: string) => {
-        return data.value.filter((item) => item.key === keyName);
-    }
+        return computed(() => {
+            return data.value.find(item => item.key === keyName);
+        });
+    };
 
     const saveRow = async (row: SettingsDO) => {
-        const setdto = new SettingsDTO();
-        await setdto.updateRow(row);
+        await SettingsDTO.updateRow(row);
         refreshData()
     }
 

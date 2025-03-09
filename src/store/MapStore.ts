@@ -1,7 +1,7 @@
 import { MapDO } from "@/DBA/DO/MapDO";
 import MapDTO from "@/DBA/DTO/MapDTO";
 import { defineStore } from "pinia";
-import { computed, onMounted, ref } from "vue";
+import { computed, ref } from "vue";
 
 export const useMapStore = defineStore("MapStore", () => {
     const data = ref<MapDO[]>([]);
@@ -11,10 +11,10 @@ export const useMapStore = defineStore("MapStore", () => {
         return JSON.stringify(data.value) !== JSON.stringify(modifedData.value);
     })
 
+
     const fetchData = async () => {
         if (!isInitialized.value) {
-            const MapDto = new MapDTO();
-            const res = await MapDto.queryAll();
+            const res = await MapDTO.queryAll();
             if (res) {
                 const nonNullData = res.filter((item): item is MapDO[] => item !== null);
                 if (nonNullData.length > 0) {
@@ -26,9 +26,7 @@ export const useMapStore = defineStore("MapStore", () => {
         }
     };
 
-    onMounted(() => {
-        fetchData();
-    });
 
-    return { data, modifedData, isDataupdated };
+
+    return { data, modifedData, isDataupdated, fetchData };
 });

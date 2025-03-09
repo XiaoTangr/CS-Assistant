@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { FolderOpened } from '@element-plus/icons-vue';
-import { computed, onMounted, ref, watchEffect } from 'vue';
+import { computed, ref, watchEffect } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useSettingsStore } from '@/store/SettingsStore';
 
@@ -70,9 +70,8 @@ const SettingsStore = useSettingsStore();
 
 const originData = ref()
 const modifedData = ref()
-onMounted(() => {
-    SettingsStore.fetchData();
-});
+
+
 watchEffect(() => {
     originData.value = SettingsStore.getDataByChapterAndSection(props.chapter, props.section);
     modifedData.value = SettingsStore.getModifedDataByChapterAndSection(props.chapter, props.section);

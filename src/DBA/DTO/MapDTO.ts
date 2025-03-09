@@ -9,7 +9,7 @@ export default class MapDTO {
      * @param key - The key to query by.
      * @returns 
      */
-    async queryOnebyKey(key: string): Promise<any> {
+    static async queryOnebyKey(key: string): Promise<any> {
         return await dbCUDRUtil.queryOne<MapDO | null>("Settings", "key", key);
     }
 
@@ -17,7 +17,7 @@ export default class MapDTO {
      * query all data
      * @returns MapDO[] - The list of MapDO objects.
      */
-    async queryAll() {
+    static async queryAll() {
         return await dbCUDRUtil.queryAll<MapDO[] | null>("Map")
     }
 
@@ -25,7 +25,7 @@ export default class MapDTO {
      * insert data 
      * @param data - The data to insert.
      */
-    async insert(data: Array<MapDO>): Promise<any> {
+    static async insert(data: Array<MapDO>): Promise<any> {
         const db = await dbConnUtil.getConnection();
         return data.forEach((item: any) => {
             db.execute(`INSERT INTO Map (key, value) VALUES ($1, $2)`, [item.key, item.value])
@@ -36,8 +36,7 @@ export default class MapDTO {
         });
     }
 
-    async deleteOneByKeyName(KeyName: string): Promise<any> {
+    static async deleteOneByKeyName(KeyName: string): Promise<any> {
         return await dbCUDRUtil.deleteRow("Map", "key", KeyName);
     }
-
 }

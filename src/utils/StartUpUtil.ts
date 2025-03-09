@@ -1,34 +1,34 @@
 import { dbConnUtil } from "@/DBA/Utils/DBConnUtil";
 import { dbinstallUtil } from "@/DBA/Utils/DBinstallUtil";
+import { useMapStore } from "@/store/MapStore";
+import { useSettingsStore } from "@/store/SettingsStore";
 
-class StartUpUtil {
-    private static instance: StartUpUtil
-    private constructor() { }
-    public static getInstance(): StartUpUtil {
-        if (!StartUpUtil.instance) {
-            StartUpUtil.instance = new StartUpUtil();
-        }
-        return StartUpUtil.instance;
-    }
+export default class StartUpUtil {
 
-    private async initDB(): Promise<boolean> {
+    static async initDB(): Promise<boolean> {
         if (!await dbConnUtil.init()) {
             throw new Error("Database Connect ini faild!")
         }
         return true;
     }
 
-    private async installDB(): Promise<boolean> {
+    static async installDB(): Promise<boolean> {
         return dbinstallUtil.installDB().then(() => true).catch((e) => {
             throw new Error(`Database install faild: ${e}`)
         });
     }
 
+    static async initStores(): Promise<void> {
+        const MapStore = useMapStore();
+        const SettingsStore = useSettingsStore();
+        await SettingsStore.fetchData();
+        await MapStore.fetchData();
+    }
 
-    public async startUp(): Promise<void> {
+    static async startUp(): Promise<void> {
         await this.initDB()
+        await this.initStores()
         await this.installDB()
     }
 }
-export const startUpUtil = StartUpUtil.getInstance();
 

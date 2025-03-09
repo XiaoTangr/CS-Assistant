@@ -1,20 +1,23 @@
 <template>
     <div>
-
+        <p v-for="item in data">
+            {{ item.key }} : {{ item.value }}
+        </p>
     </div>
 </template>
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { usePathSettings } from '@/store/appSettings/PathSettingsStore';
 
-const PathSettings = usePathSettings();
+import { MapDO } from '@/DBA/DO/MapDO';
+import { useMapStore } from '@/store/MapStore';
 
+const mapStore = useMapStore();
 
-const data = ref<Array<SettingsRow>>([])
+const data = ref<MapDO[]>([])
 
 onMounted(() => {
-    data.value = PathSettings.rdata
+    data.value = mapStore.data
 })
 </script>
 
