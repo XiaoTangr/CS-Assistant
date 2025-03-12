@@ -1,12 +1,11 @@
 <template>
-    <div>
-        <p v-for="item in data">
-            {{ item.key }} : {{ item.value }}
-        </p>
+    <div class="container">
+        <SettingsItemRender chapter="appSettings" section="PathSettings" />
     </div>
 </template>
 
 <script setup lang="ts">
+import SettingsItemRender from '@/components/Layouts/SettingsItemRender.vue';
 import { onMounted, ref } from 'vue';
 
 import { MapDO } from '@/DBA/DO/MapDO';

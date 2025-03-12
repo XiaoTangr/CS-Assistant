@@ -12,4 +12,13 @@ export default class SettingsDTO {
     static async updateRow(row: SettingsDO): Promise<boolean> {
         return await dbCUDRUtil.updateRow("Settings", row, "key", row.key)
     }
+
+    static async updateRows(rows: SettingsDO[]): Promise<number> {
+        return await dbCUDRUtil.updateRows("Settings", rows, "key")
+    }
+
+    static async useDefaultData() {
+        throw new Error("Method not implemented.")
+        // TODO: 使用默认数据
+    }
 }

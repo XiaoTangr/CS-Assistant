@@ -147,6 +147,24 @@ class DBCUDRUtil {
         }
     }
 
+
+
+    public async updateRows<T extends Record<string, any>>(
+        tableName: string,
+        data: T[],
+        columnName: string,
+    ): Promise<number> {
+        let affectedRows = 0;
+
+        for (const row of data) {
+            const columnValue = row[columnName];
+            const result = await this.updateRow(tableName, row, columnName, columnValue);
+            if (result) {
+                affectedRows++;
+            }
+        }
+        return affectedRows;
+    }
     /**
      * 通用删除：根据列名和列值删除数据
      * @param tableName - 表名
@@ -159,7 +177,7 @@ class DBCUDRUtil {
         columnName: string,
         columnValue: string
     ): Promise<boolean> {
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+        if (!/^ [a - zA - Z_][a - zA - Z0 -9_] * $ /.test(tableName)) {
             throw new Error('表名无效');
         }
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {

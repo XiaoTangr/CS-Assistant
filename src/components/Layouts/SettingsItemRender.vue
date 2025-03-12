@@ -7,43 +7,73 @@
         <div v-if="!hasData" class="item-nodata">
             没有数据!
         </div>
-        <div v-else v-for="(item, index) in modifedData" class="item-outbox"
-            :class="{ modifed: item.selected != originData[index].selected }">
+        <div v-else v-for="(item, index) in modifedData" class="item-outbox">
             <div v-if="item.type === 'Boolean'" class="settings-item item-Boolean">
-                <p class="item-text">{{ item.text }}</p>
-                <div class="item-options">
-                    <el-switch v-model="item.selected" :active-text="item.options[0].text"
-                        :inactive-text="item.options[1].text" />
-                </div>
+                <p :class="{ modifed: item.selected != originData[index].selected }" class="item-name">{{ item.text }}
+                </p>
+                <div class="item-container">
+                    <div class="item-desc">
+                        {{ item.description }}
+                    </div>
 
+                    <div class="item-options">
+                        <el-switch v-model="item.selected" :active-text="item.options[0].text"
+                            :inactive-text="item.options[1].text" />
+                    </div>
+                </div>
             </div>
             <div v-if="item.type === 'Select'" class="settings-item item-Select">
-                <p class="item-text">{{ item.text }}</p>
-                <div class="item-options">
-                    <el-select v-model="item.selected" placeholder="Select" style="width: 100%">
-                        <el-option v-for="i in item.options" :key="i.value" :label="i.text" :value="i.value" />
-                    </el-select>
+
+                <p :class="{ modifed: item.selected != originData[index].selected }" class="item-name">{{ item.text }}
+                </p>
+                <div class="item-container">
+                    <div class="item-desc">
+                        {{ item.description }}
+                    </div>
+
+                    <div class="item-options">
+                        <el-select v-model="item.selected" placeholder="Select" style="width: 100%">
+                            <el-option v-for="i in item.options" :key="i.value" :label="i.text" :value="i.value" />
+                        </el-select>
+                    </div>
                 </div>
+
+
             </div>
             <div v-if="item.type === 'Input'" class="settings-item  item-Input">
-                <p class="item-text">{{ item.text }}</p>
-                <div class="item-options">
-                    <el-input v-model="item.selected" :placeholder="item.description" style="width: 100%" />
+                <p :class="{ modifed: item.selected != originData[index].selected }" class="item-name">{{ item.text }}
+                </p>
+                <div class="item-container">
+                    <div class="item-desc">
+                        {{ item.description }}
+                    </div>
+                    <div class="item-options">
+                        <el-input v-model="item.selected" placeholder="..." style="width: 100%" />
+                    </div>
                 </div>
             </div>
             <div v-if="item.type === 'PathInput'" class="settings-item item-FilePath">
-                <p class="item-text">{{ item.text }}</p>
-                <div class="item-options">
-                    <el-input class="path-item" v-model="item.selected" placeholder="输入内容" />
-                    <el-button class="path-item" @click="openPathChoose(index)" type="primary" :icon="FolderOpened"
-                        circle plain />
+                <p :class="{ modifed: item.selected != originData[index].selected }" class="item-name">{{ item.text
+                }}
+                </p>
+                <div class="item-container">
+                    <div class="item-desc">
+                        {{ item.description }}
+                    </div>
+                    <div class="item-options">
+                        <el-input class="path-item" v-model="item.selected" placeholder="选择路径" />
+                        <el-button class="path-item" @click="openPathChoose(index)" type="primary" :icon="FolderOpened"
+                            circle plain />
+                    </div>
                 </div>
+
             </div>
         </div>
-        <div>
-            <el-button @click="savaChanges">
-                保存
-            </el-button>
+        <div class="Operate-Container">
+            <div class="bg">
+                <el-button type="primary" v-if="isDataupdated == true" @click="savaChanges">保存更改</el-button>
+                <el-button type="warning" @click="useDefault">恢复默认</el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -53,7 +83,6 @@ import { FolderOpened } from '@element-plus/icons-vue';
 import { computed, ref, watchEffect } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
 import { useSettingsStore } from '@/store/SettingsStore';
-
 const props = defineProps({
     chapter: {
         type: String,
@@ -68,6 +97,7 @@ const props = defineProps({
 
 const SettingsStore = useSettingsStore();
 
+
 const originData = ref()
 const modifedData = ref()
 
@@ -78,6 +108,11 @@ watchEffect(() => {
 })
 const hasData = computed(() => {
     return originData.value && originData.value.length > 0 ? true : false
+})
+
+
+const isDataupdated = computed(() => {
+    return JSON.stringify(originData.value) !== JSON.stringify(modifedData.value)
 })
 const openPathChoose = async (index: number) => {
     try {
@@ -92,9 +127,11 @@ const openPathChoose = async (index: number) => {
 };
 
 const savaChanges = () => {
-    SettingsStore.saveModifedData();
+    SettingsStore.saveModifedDataByChapterAndSection(props.chapter, props.section);
 }
-
+const useDefault = () => {
+    
+}
 </script>
 
 <style scoped lang="scss">
@@ -147,41 +184,80 @@ const savaChanges = () => {
 
         .settings-item {
             display: flex;
-            width: calc(100% - $font-size);
-            justify-content: space-between;
-            flex-direction: row;
-            align-items: center;
+            flex-direction: column;
+            width: 100%;
 
-            .item-options {
+            .item-name {
+                padding-top: calc($globe-padding / 4);
+                font-weight: $font-weight-bold;
+                width: 100%;
                 display: flex;
-                justify-content: center;
+                margin-left: $font-size;
+                justify-content: left;
                 align-items: center;
+            }
 
-                .path-item:first-child {
-                    margin-right: calc($globe-margin / 4);
+
+
+            .item-container {
+                display: flex;
+                justify-content: space-between;
+                flex-direction: row;
+                align-items: center;
+                width: calc(100% - $font-size);
+                margin-left: $font-size;
+
+                .item-options {
+                    display: flex;
+                    justify-content: right;
+                    align-items: center;
+
+                    .path-item:first-child {
+                        margin-right: calc($globe-margin / 4);
+                    }
                 }
             }
 
             .item-text,
             .item-options {
-
                 width: 50%;
                 padding: calc($globe-padding / 4);
-
             }
         }
     }
 
-    .modifed::before {
-        content: "●";
+    .Operate-Container {
+        // background-color: red;
         display: flex;
+        position: sticky;
+        bottom: 0;
         justify-content: center;
-        align-items: center;
-        width: $font-size;
-        height: $font-size;
-        font-weight: $font-weight-bold;
-        color: $traffic-light-yellow;
+        transition: all 0.5s;
+
+
+        background: $content-background-color;
+        border-radius: $globe-border-radius;
+        border: $simple-border;
+        margin: calc($globe-margin / 4);
+        margin-bottom: 0;
+        padding: calc($globe-padding / 2);
+        backdrop-filter: $globe-backdrop-filter;
+        box-shadow: $menu-box-shadow;
+
     }
+
+}
+
+.modifed::before {
+    content: "●";
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: $font-size;
+    height: $font-size;
+    font-weight: $font-weight-bold;
+    color: $traffic-light-yellow;
+    margin-left: - $font-size;
 }
 
 @media screen and (max-width: 1024px) {

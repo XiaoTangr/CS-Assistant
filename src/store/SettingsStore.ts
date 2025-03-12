@@ -42,7 +42,21 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         return modifedData.value.filter((item) => item.chapter === chapter && item.section === section);
     }
 
-    const saveModifedData = async () => {
+    const getNeedUpdateDataByChapterAndSection = (chapter: string, section: string) => {
+        return modifedData.value.filter((item) => item.chapter === chapter && item.section === section && item.selected !== data.value.find((dataItem) => dataItem.key === item.key)?.selected);
+    }
+
+    const saveModifedDataByChapterAndSection = async (chapter: string, section: string) => {
+        SettingsDTO.updateRows(getNeedUpdateDataByChapterAndSection(chapter, section)).then((res) => {
+            if (res) {
+                ElNotification.success("保存成功");
+                refreshData();
+                return res;
+            }
+        });
+    }
+
+    const saveAllModifedData = async () => {
         let updatePromises: Promise<any>[] = [];
         let changedRowsCount = 0;
         // 收集所有需要更新的行的 Promise
@@ -80,5 +94,5 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         refreshData()
     }
 
-    return { data, modifedData, isDataupdated, saveRow, refreshData, fetchData, getDataByKeyName, getDataByChapterAndSection, getModifedDataByChapterAndSection, saveModifedData };
+    return { data, modifedData, isDataupdated, saveRow, refreshData, fetchData, getDataByKeyName, getDataByChapterAndSection, getModifedDataByChapterAndSection, saveAllModifedData, saveModifedDataByChapterAndSection };
 });
