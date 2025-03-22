@@ -20,5 +20,6 @@ export default class SettingsDTO {
     static async useDefaultData() {
         throw new Error("Method not implemented.")
         // TODO: 使用默认数据
+        
     }
 }
