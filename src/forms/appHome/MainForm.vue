@@ -1,44 +1,14 @@
 <template>
-    <div class="container">
-        <div class="top">
-            <div class="tl">tl</div>
-            <div class="tr">
-                <Notice />
-            </div>
-        </div>
-        <div class="bottom">
-            bot
-        </div>
+    <div>
+        首页-蚂蚁在爬
+        <div class="l" v-for="i in 50">{{ i }}</div>
+
     </div>
 </template>
 
 <script setup lang="ts">
-import Notice from '@/components/Common/Notice.vue';
+
 
 </script>
-<style scoped lang="scss">
-.container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
 
-
-
-    .top {
-        display: flex;
-        width: 100%;
-        flex-direction: row;
-        flex: 3;
-
-        .tl {
-            flex-grow: 1;
-        }
-
-        .tr {}
-    }
-
-    .bottom {
-        flex: 2;
-    }
-}
-</style>
+<style scoped lang="scss"></style>
