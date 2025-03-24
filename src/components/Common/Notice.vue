@@ -6,6 +6,7 @@
                 <p>公告</p>
             </div>
             <div class="context">
+                
                 注意： 使用 position: absolute 会使元素相对于其最近的定位祖先元素（即 position 属性不为 static
                 的祖先元素）进行绝对定位。如果没有这样的祖先元素，则相对于初始包含块（通常是视口）。
             </div>
