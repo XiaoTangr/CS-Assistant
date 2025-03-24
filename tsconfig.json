@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     //配置 @
+    "forceConsistentCasingInFileNames": false,
     "baseUrl": ".",
     "paths": {
       "@/*": [
@@ -8,6 +9,7 @@
       ]
     },
     "types": [
+      "node",
       "@tauri-apps/api"
     ],
     "esModuleInterop": true,
@@ -26,6 +28,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
+    "noEmitOnError": false,
     "jsx": "preserve",
     /* Linting */
     "strict": true,
@@ -37,8 +40,7 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/forms/appSettings/CommSettingsvue"
+    "src/**/*.vue"
   ],
   "references": [
     {

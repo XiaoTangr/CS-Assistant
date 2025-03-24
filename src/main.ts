@@ -6,13 +6,20 @@ import "@/css/import.scss"
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { MainRouter } from "./router/Router";
-
+import { createPinia } from 'pinia'
+import StartUpUtil from "./utils/StartUpUtil";
 const app = createApp(App)
+const store = createPinia();
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)
 }
 
 app.use(ElementPlus)
+    .use(store)
     .use(MainRouter)
     .mount("#app");
+
+StartUpUtil.startUp();
+
+export default app

@@ -17,14 +17,15 @@
   </div>
 </template>
 <script setup lang="ts">
-import HeaderBar from './components/Layout/HeaderBar.vue';
-import ContentBar from './components/Layout/ContentBar.vue';
-import StatusBar from './components/Layout/StatusBar.vue';
+import HeaderBar from './components/Layouts/HeaderBar.vue';
+import ContentBar from './components/Layouts/ContentBar.vue';
+import StatusBar from './components/Layouts/StatusBar.vue';
 import BackGround from './components/Common/BackGround.vue';
 
 const openMenu = () => {
-  console.warn('contextmenu')
+  console.warn('User try open contextmenu!')
 }
+
 </script>
 
 <style lang="scss">

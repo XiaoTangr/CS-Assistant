@@ -4,12 +4,25 @@ import { resolve } from 'path'
 import VueDevTools from 'vite-plugin-vue-devtools';
 const host = process.env.TAURI_DEV_HOST;
 
+
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
   plugins: [
     vue(),
     VueDevTools(),
   ],
+  build: {
+    chunkSizeWarningLimit: 1500,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            return id.toString().split('node_modules/.pnpm/')[1].split('/')[0].toString();
+          }
+        }
+      }
+    }
+  },
   resolve: {
     // 设置文件./src路径为 @
     alias: [
