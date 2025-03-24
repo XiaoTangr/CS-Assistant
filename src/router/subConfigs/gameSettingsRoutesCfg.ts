@@ -1,4 +1,6 @@
-export const gameSettingsRoutesCfg =
+import { RouteRecordRaw } from 'vue-router';
+
+export const gameSettingsRoutesCfg: RouteRecordRaw =
 
 
 {

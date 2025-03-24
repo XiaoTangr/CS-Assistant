@@ -1,4 +1,6 @@
-export const appSettingsRoutesCfg =
+import { RouteRecordRaw } from 'vue-router';
+
+export const appSettingsRoutesCfg: RouteRecordRaw =
 {
     path: '/appSettings',
     redirect: "/appSettings/CommSettings",

@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import SettingsItemRender from '@/components/Layouts/SettingsItemRender.vue';
+import SettingsItemRender from '@/components/Renders/SettingsItemRender.vue';
 import { onMounted, ref } from 'vue';
 
 import { MapDO } from '@/DBA/DO/MapDO';

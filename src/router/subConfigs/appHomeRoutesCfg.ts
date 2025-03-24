@@ -1,5 +1,6 @@
+import { RouteRecordRaw } from 'vue-router';
 
-export const appHomeRoutesCfg =
+export const appHomeRoutesCfg: RouteRecordRaw =
 {
     path: '/',
     redirect: "/appHome/welcome",

@@ -1,4 +1,6 @@
-export const specialFuncsRoutesCfg =
+import { RouteRecordRaw } from 'vue-router';
+
+export const specialFuncsRoutesCfg: RouteRecordRaw =
 {
     path: '/specialFuncs',
     redirect: "/specialFuncs/keyBindSettings",

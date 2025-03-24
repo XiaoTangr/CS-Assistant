@@ -34,7 +34,9 @@ import Notice from '@/components/Common/Notice.vue';
             flex-grow: 1;
         }
 
-        .tr {}
+        .tr {
+            width: 40%;
+        }
     }
 
     .bottom {

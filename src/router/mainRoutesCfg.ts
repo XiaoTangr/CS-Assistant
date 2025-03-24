@@ -3,6 +3,7 @@ import { specialFuncsRoutesCfg } from './subConfigs/specialFuncsRoutesCfg'
 import { appHomeRoutesCfg } from './subConfigs/appHomeRoutesCfg'
 import { appSettingsRoutesCfg } from './subConfigs/appSettingsRoutesCfg'
 import { gameSettingsRoutesCfg } from './subConfigs/gameSettingsRoutesCfg'
+import { DevToolsRoutesCfg } from './subConfigs/DevToolsRoutesCfg'
 
 export const mainsRouteCfg: RouteRecordRaw[] =
     [
@@ -10,4 +11,5 @@ export const mainsRouteCfg: RouteRecordRaw[] =
         specialFuncsRoutesCfg,
         gameSettingsRoutesCfg,
         appSettingsRoutesCfg,
+        DevToolsRoutesCfg
     ]
