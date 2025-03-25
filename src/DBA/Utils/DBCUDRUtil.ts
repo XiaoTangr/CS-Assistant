@@ -21,10 +21,10 @@ class DBCUDRUtil {
      * @returns 返回一个包含所有行的数组，如果发生错误则返回 null
      */
     public async queryAll<T>(tableName: string): Promise<T[] | null> {
-        // 校验表名，防止 SQL 注入
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
-            throw new Error('表名无效');
-        }
+        // // 校验表名，防止 SQL 注入
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+        //     throw new Error('表名无效');
+        // }
 
         const sql = `SELECT * FROM ${tableName};`;
         const db = await dbConnUtil.getConnection()
@@ -32,9 +32,8 @@ class DBCUDRUtil {
         try {
             const rows = await db.select(sql);
             return rows as T[];
-        } catch (error) {
-            console.error('查询所有数据时出错:', error);
-            return null;
+        } catch (error: any) {
+            throw new Error(error)
         }
     }
 
@@ -50,12 +49,12 @@ class DBCUDRUtil {
         columnName: string,
         columnValue: string
     ): Promise<T | null> {
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
-            throw new Error('表名无效');
-        }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
-            throw new Error('列名无效');
-        }
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+        //     throw new Error('表名无效');
+        // }
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
+        //     throw new Error('列名无效');
+        // }
 
         const sql = `SELECT * FROM ${tableName} WHERE ${columnName} = $1;`;
         const db = await dbConnUtil.getConnection()
@@ -63,9 +62,8 @@ class DBCUDRUtil {
         try {
             const rows: any = await db.select(sql, [columnValue]);
             return rows.length > 0 ? (rows[0] as T) : null;
-        } catch (error) {
-            console.error('查询单行数据时出错:', error);
-            return null;
+        } catch (error: any) {
+            throw new Error(error)
         }
     }
 
@@ -79,9 +77,9 @@ class DBCUDRUtil {
         tableName: string,
         data: T[]
     ): Promise<number> {
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
-            throw new Error('表名无效');
-        }
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+        //     throw new Error('表名无效');
+        // }
         const db = await dbConnUtil.getConnection()
         let rowsAffected = 0;
         try {
@@ -98,9 +96,8 @@ class DBCUDRUtil {
             const results = await Promise.all(promises);
             rowsAffected = results.reduce((total, res) => total + res.rowsAffected, 0);
             return rowsAffected;
-        } catch (error) {
-            console.error('插入数据时出错:', error);
-            return 0;
+        } catch (error: any) {
+            throw new Error(error)
         }
     }
 
@@ -117,13 +114,13 @@ class DBCUDRUtil {
         data: T,
         columnName: string,
         columnValue: string
-    ): Promise<boolean> {
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
-            throw new Error('表名无效');
-        }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
-            throw new Error('列名无效');
-        }
+    ): Promise<number> {
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
+        //     throw new Error('表名无效');
+        // }
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
+        //     throw new Error('列名无效');
+        // }
 
         const setClause = Object.keys(data)
             .map((key, index) => {
@@ -140,10 +137,9 @@ class DBCUDRUtil {
         try {
             const params = [...Object.values(data), columnValue];
             const result = await db.execute(sql, params);
-            return result.rowsAffected > 0;
-        } catch (error) {
-            console.error('更新数据时出错:', error);
-            return false;
+            return result.rowsAffected;
+        } catch (error: any) {
+            throw new Error(error)
         }
     }
 
@@ -176,26 +172,25 @@ class DBCUDRUtil {
         tableName: string,
         columnName: string,
         columnValue: string
-    ): Promise<boolean> {
-        if (!/^ [a - zA - Z_][a - zA - Z0 -9_] * $ /.test(tableName)) {
-            throw new Error('表名无效');
-        }
-        if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
-            throw new Error('列名无效');
-        }
-
+    ): Promise<number> {
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$ /.test(tableName)) {
+        //     throw new Error('表名无效');
+        // }
+        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
+        //     throw new Error('列名无效');
+        // }
         const sql = `DELETE FROM ${tableName} WHERE ${columnName} = $1;`;
+        console.error(sql + columnValue)
         const db = await dbConnUtil.getConnection()
 
         try {
             const result = await db.execute(sql, [columnValue]);
-            return result.rowsAffected > 0;
-        } catch (error) {
-            console.error('删除数据时出错:', error);
-            return false
+            return result.rowsAffected;
+        } catch (error: any) {
+            throw new Error(error)
         }
     }
 }
 
 // 导出单例对象
-export const dbCUDRUtil = DBCUDRUtil.getInstance();
+export const dbCUDRUtil = DBCUDRUtil.getInstance(); 

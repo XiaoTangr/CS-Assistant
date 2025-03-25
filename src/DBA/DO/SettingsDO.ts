@@ -2,7 +2,7 @@ export class SettingsDO {
     key!: string;
     text!: string;
     description!: string;
-    type!: string;
+    type!: "Input" | "Boolean" | "Select" | "PathInput" | string;
     selected!: string | boolean;
     options!: Array<SettingsRowOptions>
     chapter!: string
@@ -10,7 +10,7 @@ export class SettingsDO {
 
 
 }
-class SettingsRowOptions {
+export class SettingsRowOptions {
     /**
      * @description 选项的值，用于存储和比较
      */
