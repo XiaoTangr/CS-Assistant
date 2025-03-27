@@ -13,7 +13,8 @@ fn main() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             fs::list_files_and_directories,
-            fs::read_text_file
+            fs::read_text_file,
+            fs::is_file_exists
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

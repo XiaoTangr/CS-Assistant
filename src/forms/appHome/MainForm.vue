@@ -1,7 +1,9 @@
 <template>
     <div class="container">
         <div class="top">
-            <div class="tl">tl</div>
+            <div class="tl">
+                <GameCheck />
+            </div>
             <div class="tr">
                 <Notice />
             </div>
@@ -14,14 +16,14 @@
 
 <script setup lang="ts">
 import Notice from '@/components/Common/Notice.vue';
-
+import GameCheck from '@/components/Forms/appHome/GameCheck.vue';
 </script>
 <style scoped lang="scss">
 .container {
     display: flex;
     flex-direction: column;
     height: 100%;
-
+    
 
 
     .top {

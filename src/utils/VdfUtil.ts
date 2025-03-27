@@ -1,6 +1,7 @@
 
 import * as vdfParser from 'vdf-parser';
 import { invoke } from '@tauri-apps/api/core';
+import { jsonUtil } from './JSONUtil';
 
 
 namespace VdfUtil {
@@ -12,7 +13,7 @@ namespace VdfUtil {
      */
     export const getVdfObjectbyFilePath = async (filePath: string): Promise<Object> => {
         let fileContent: string = await invoke("read_text_file", { filepath: filePath });
-        return vdfParser.parse(fileContent);
+        return jsonUtil.deepParseJSON(vdfParser.parse(fileContent))
     }
 }
 
