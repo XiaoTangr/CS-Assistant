@@ -14,6 +14,7 @@
     "os:default",
     "sql:allow-load",
     "sql:default",
+    "sql:allow-close",
     "sql:allow-execute",
     "sql:allow-select",
     "dialog:default",

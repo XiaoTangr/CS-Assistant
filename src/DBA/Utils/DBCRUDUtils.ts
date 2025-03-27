@@ -1,18 +1,18 @@
 import { dbConnUtil } from "./DBConnUtil";
 
-class DBCUDRUtil {
-    private static instance: DBCUDRUtil;
+class DBCRUDUtil {
+    private static instance: DBCRUDUtil;
 
     private constructor() { } // 私有构造函数，确保单例模式
 
     /**
      * 获取单例实例
      */
-    public static getInstance(): DBCUDRUtil {
-        if (!DBCUDRUtil.instance) {
-            DBCUDRUtil.instance = new DBCUDRUtil();
+    public static getInstance(): DBCRUDUtil {
+        if (!DBCRUDUtil.instance) {
+            DBCRUDUtil.instance = new DBCRUDUtil();
         }
-        return DBCUDRUtil.instance;
+        return DBCRUDUtil.instance;
     }
 
     /**
@@ -144,14 +144,19 @@ class DBCUDRUtil {
     }
 
 
-
+    /**
+     * 通用更新
+     * @param tableName 指定表
+     * @param data 对应表的数据对象
+     * @param columnName 主键列名
+     * @returns 受影响的数据行数
+     */
     public async updateRows<T extends Record<string, any>>(
         tableName: string,
         data: T[],
         columnName: string,
     ): Promise<number> {
         let affectedRows = 0;
-
         for (const row of data) {
             const columnValue = row[columnName];
             const result = await this.updateRow(tableName, row, columnName, columnValue);
@@ -173,24 +178,77 @@ class DBCUDRUtil {
         columnName: string,
         columnValue: string
     ): Promise<number> {
-        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$ /.test(tableName)) {
-        //     throw new Error('表名无效');
-        // }
-        // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
-        //     throw new Error('列名无效');
-        // }
         const sql = `DELETE FROM ${tableName} WHERE ${columnName} = $1;`;
-        console.error(sql + columnValue)
-        const db = await dbConnUtil.getConnection()
-
+        console.log(sql)
+        const bv = [columnValue as string];
+        console.log(bv)
+        const db = await dbConnUtil.getConnection();
         try {
-            const result = await db.execute(sql, [columnValue]);
+            const result = await db.execute(sql, bv);
             return result.rowsAffected;
         } catch (error: any) {
-            throw new Error(error)
+            throw new Error(error);
         }
+    }
+    /**
+     * **query**
+     *
+     * Passes in a SELECT query to the database for execution.
+     *
+     * @example
+     * ```ts
+     * // for sqlite & postgres
+     * const result = await db.select(
+     *    "SELECT * from todos WHERE id = $1", [ id ]
+     * );
+     *
+     * // for mysql
+     * const result = await db.select(
+     *    "SELECT * from todos WHERE id = ?", [ id ]
+     * );
+     * ```
+     */
+    public async querySQL<T>(query: string, bindvalues: unknown[]): Promise<T> {
+        const db = await dbConnUtil.getConnection();
+        return await db.select(query, bindvalues)
+    }
+    /**
+     * **execute**
+     *
+     * Passes a SQL expression to the database for execution.
+     *
+     * @example
+     * ```ts
+     * // for sqlite & postgres
+     * // INSERT example
+     * const result = await db.execute(
+     *    "INSERT into todos (id, title, status) VALUES ($1, $2, $3)",
+     *    [ todos.id, todos.title, todos.status ]
+     * );
+     * // UPDATE example
+     * const result = await db.execute(
+     *    "UPDATE todos SET title = $1, completed = $2 WHERE id = $3",
+     *    [ todos.title, todos.status, todos.id ]
+     * );
+     *
+     * // for mysql
+     * // INSERT example
+     * const result = await db.execute(
+     *    "INSERT into todos (id, title, status) VALUES (?, ?, ?)",
+     *    [ todos.id, todos.title, todos.status ]
+     * );
+     * // UPDATE example
+     * const result = await db.execute(
+     *    "UPDATE todos SET title = ?, completed = ? WHERE id = ?",
+     *    [ todos.title, todos.status, todos.id ]
+     * );
+     * ```
+     */
+    public async executeSQL(query: string, bindvalues?: unknown[]): Promise<number> {
+        const db = await dbConnUtil.getConnection();
+        return (await db.execute(query, bindvalues)).rowsAffected;
     }
 }
 
 // 导出单例对象
-export const dbCUDRUtil = DBCUDRUtil.getInstance(); 
+export const dbCRUDUtil = DBCRUDUtil.getInstance(); 

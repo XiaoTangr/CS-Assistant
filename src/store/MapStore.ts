@@ -1,5 +1,5 @@
 import { MapDO } from "@/DBA/DO/MapDO";
-import MapDTO from "@/DBA/DTO/MapDTO";
+import MapDAO from "@/DBA/DTO/MapDAO";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
@@ -14,7 +14,7 @@ export const useMapStore = defineStore("MapStore", () => {
 
     const fetchData = async () => {
         if (!isInitialized.value) {
-            const res = await MapDTO.queryAll();
+            const res = await MapDAO.queryAll();
             if (res) {
                 const nonNullData = res.filter((item): item is MapDO[] => item !== null);
                 if (nonNullData.length > 0) {

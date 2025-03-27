@@ -66,7 +66,8 @@
 
 <script setup lang="ts">
 import { SettingsDO, SettingsRowOptions } from '@/DBA/DO/SettingsDO';
-import SettingsDTO from '@/DBA/DTO/SettingsDTO';
+import SettingsDAO from '@/DBA/DTO/SettingsDAO';
+
 import { ElNotification, FormInstance } from 'element-plus';
 import { reactive, ref } from 'vue';
 
@@ -102,7 +103,6 @@ const addSettingsOption = () => {
     })
 }
 const generateSettingsdbSQL = () => {
-    // 检查 dbsettings 中的每个字段是否都不为空 
     const fields = ["key", "text", "description", "selected", "type", "chapter", "section"];
     for (const field of fields) {
         if (!dbsettings[field as keyof typeof dbsettings]) {
@@ -134,7 +134,6 @@ const generateSettingsdbSQL = () => {
     dbsettingsSQLout.value = sql;
 };
 const insertSettingsRowtodb = () => {
-    // 检查 dbsettings 中的每个字段是否都不为空 
     const fields = ["key", "text", "description", "selected", "type", "chapter", "section"];
     for (const field of fields) {
         if (!dbsettings[field as keyof typeof dbsettings]) {
@@ -144,11 +143,11 @@ const insertSettingsRowtodb = () => {
     }
     let rows: SettingsDO[] = []
     rows.push(dbsettings)
-    SettingsDTO.insertRow(rows).then((res) => {
+    SettingsDAO.insertRow(rows).then((res) => {
         if (res > 0) {
             ElNotification.success(`Insert Success : ${res}`)
         }
-    })
+    }).catch(e => ElNotification.error(e))
 }
 const updateSettingsRow = () => {
     const fields = ["key", "text", "description", "selected", "type", "chapter", "section"];
@@ -158,29 +157,36 @@ const updateSettingsRow = () => {
             return;
         }
     }
-    SettingsDTO.updateRow(dbsettings).then((res) => {
-        ElNotification.success(`${res}`)
-    }).catch((err) => {
-        ElNotification.error(err.toString())
-    })
+    SettingsDAO.updateRow(dbsettings).then((res) => {
+        res > 0 ?
+            ElNotification.success(`Update success with key = ${dbsettings.key}`) :
+            ElNotification.warning("No data fetched!")
+    }).catch(e => ElNotification.error(e))
 
 }
-const deleteSettingsRow = () => {
+const deleteSettingsRow = async () => {
     if (!dbsettings.key) {
         ElNotification.error("key cannot be empty.")
+        return;
     }
-    SettingsDTO.deleteRow(dbsettings.key).then((res) => {
-        ElNotification.success(`${res}`)
-    }).catch((err) => {
-        ElNotification.error(err.toString())
-    })
+    let v = []
+    v.push(dbsettings.key)
+    // console.log(await dbCRUDUtil.executeSQL("delete from Settings where key = $1;", ["111"]))
+    SettingsDAO.deleteRow(dbsettings.key).then((res) => {
+        res > 0 ?
+            ElNotification.success(`delete success with key = ${dbsettings.key}`) :
+            ElNotification.warning("No data fetched!")
+    }).catch(e => ElNotification.error(e))
 }
 const querySettingsRow = () => {
     if (!dbsettings.key) {
         ElNotification.error("key cannot be empty.")
+        return;
     }
-    SettingsDTO.queryOneByKey(dbsettings.key).then((res) => {
-        console.log(res)
+    SettingsDAO.queryOneByKey(dbsettings.key).then((res) => {
+        res ?
+            ElNotification.success(`query success with key = ${dbsettings.key}`) :
+            ElNotification.warning("No data fetched!");
 
         dbsettings.key = res?.key || '';
         dbsettings.description = res?.description || "";
@@ -191,14 +197,8 @@ const querySettingsRow = () => {
         dbsettings.selected = res?.selected.toString() || '';
         dbsettings.chapter = res?.chapter || '';
         dbsettings.section = res?.section || '';
-    }).catch((err) => {
-        ElNotification.error(err)
-    })
-
+    }).catch(e => ElNotification.error(e))
 }
-
-
-
 </script>
 
 <style scoped lang="scss"></style>

@@ -1,16 +1,15 @@
 import { MapDO } from "../DO/MapDO";
-import { dbCUDRUtil } from "../Utils/DBCUDRUtil";
+import { dbCRUDUtil } from "../Utils/DBCRUDUtils";
 import { dbConnUtil } from "../Utils/DBConnUtil";
 
-export default class MapDTO {
-
+export default class MapDAO {
     /**
      * query data by key
      * @param key - The key to query by.
      * @returns 
      */
     static async queryOnebyKey(key: string): Promise<any> {
-        return await dbCUDRUtil.queryOne<MapDO | null>("Settings", "key", key);
+        return await dbCRUDUtil.queryOne<MapDO | null>("Settings", "key", key);
     }
 
     /**
@@ -18,7 +17,7 @@ export default class MapDTO {
      * @returns MapDO[] - The list of MapDO objects.
      */
     static async queryAll() {
-        return await dbCUDRUtil.queryAll<MapDO[] | null>("Map")
+        return await dbCRUDUtil.queryAll<MapDO[] | null>("Map")
     }
 
     /**
@@ -37,6 +36,6 @@ export default class MapDTO {
     }
 
     static async deleteOneByKeyName(KeyName: string): Promise<any> {
-        return await dbCUDRUtil.deleteRow("Map", "key", KeyName);
+        return await dbCRUDUtil.deleteRow("Map", "key", KeyName);
     }
 }
