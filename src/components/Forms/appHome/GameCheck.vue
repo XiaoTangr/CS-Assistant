@@ -98,8 +98,8 @@ const cs2Check = async () => {
                 row.selected = path;
                 SettingsStore.saveRow(row).then(() => {
                     ElNotification.success("CS2路径已自动检测到并保存")
-                }).catch((e) => {
-                    ElNotification.error("CS2路径已自动检测到,但保存失败")
+                }).catch((e: any) => {
+                    ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
                 })
             }
         }
