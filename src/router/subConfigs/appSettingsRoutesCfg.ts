@@ -17,18 +17,24 @@ export const appSettingsRoutesCfg: RouteRecordRaw =
             path: '/appSettings/CommSettings',
             meta: {
                 icon: null,
-                text: "通用设置"
+                text: "一般"
             },
             component: () => import('../../forms/appSettings/CommSettings.vue')
+        }, {
+            path: '/appSettings/NetSettings',
+            meta: {
+                icon: null,
+                text: "网络"
+            },
+            component: () => import('../../forms/appSettings/NetSettings.vue')
         }, {
             path: '/appSettings/PathSettings',
             meta: {
                 icon: null,
-                text: "路径设置"
+                text: "路径"
             },
             component: () => import('../../forms/appSettings/PathSettings.vue')
-        },
-        {
+        }, {
             path: '/appSettings/AboutSettings',
             meta: {
                 icon: null,

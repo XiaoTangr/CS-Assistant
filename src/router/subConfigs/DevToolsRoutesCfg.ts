@@ -14,11 +14,18 @@ export const DevToolsRoutesCfg: RouteRecordRaw =
     },
     children: [
         {
-            path: '/devTools/devTools',
+            path: '/devTools/DbRender',
             meta: {
                 icon: null,
                 text: "开发者工具"
             },
             component: () => import('../../forms/DevTools/DevTools.vue')
+        }, {
+            path: '/devTools/devTools',
+            meta: {
+                icon: null,
+                text: "设置渲染"
+            },
+            component: () => import('../../forms/DevTools/DbTest.vue')
         }]
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <SettingsItemRender chapter="appSettings" section="PathSettings" />
+        <SettingsItemRender chapter="appSettings" section="pathSettings" />
     </div>
 </template>
 
