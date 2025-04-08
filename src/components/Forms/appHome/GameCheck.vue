@@ -12,7 +12,8 @@
                     未检测到Steam
                 </div>
                 <div class="pb">
-                    <el-button round size="small" plain class="b" type="warning">指定Steam安装位置</el-button>
+                    <el-button @click="selectSteamPath" round size="small" plain class="b"
+                        type="warning">指定Steam安装位置</el-button>
                 </div>
             </div>
         </el-card>
@@ -25,10 +26,7 @@
             </div>
             <div v-else class="v">
                 <div class="pt">
-                    未检测到CS2
-                </div>
-                <div class="pb">
-                    <el-button round size="small" plain class="b" type="warning">指定Steam位置以自动搜索</el-button>
+                    未检测到CS2,未安装或者指定Steam安装位置以自动检测
                 </div>
             </div>
         </el-card>
@@ -42,7 +40,7 @@ import VdfUtil from '@/utils/VdfUtil';
 import { invoke } from '@tauri-apps/api/core';
 import { ElNotification } from 'element-plus';
 import { onMounted, ref } from 'vue';
-
+import { open } from '@tauri-apps/plugin-dialog';
 const SettingsStore = useSettingsStore();
 
 const steamData = ref({
@@ -53,69 +51,86 @@ const steamData = ref({
     }
 })
 
-const getPathFromDB = async () => {
-    let AppPath = SettingsStore.getDataByKeyName("steamInstallPath").value?.selected;
-    if (!AppPath) {
-        ElNotification.error("请先指定Steam安装位置:设置->路径设置->Steam安装位置")
-        return;
-    }
-    steamData.value.pathFromdb = AppPath as string;
-}
+const rowsFromDb = ref<SettingsDO[]>([]);
 
-const steamCheck = async () => {
-    let steamAppPath = steamData.value.pathFromdb;
-    if (steamAppPath == "") {
-        return;
-    }
-    let exePath = steamAppPath + "\\steam.exe";
-    if (!await invoke("is_file_exists", { filepath: exePath })) {
-        ElNotification.error(`File not found:${exePath}`)
-        return;
-    }
-    steamData.value.pathCheck.appPath = exePath;
-};
+const pathCheck = async () => {
 
-const cs2Check = async () => {
-    let steamAppPath = steamData.value.pathFromdb;
-    if (steamAppPath == "") {
+    let steamInstallPathRow = SettingsStore.getDataByKeyName("steamInstallPath").value as SettingsDO;
+    let cs2InstallPathRow = SettingsStore.getDataByKeyName("cs2InstallPath").value as SettingsDO;
+    rowsFromDb.value = [steamInstallPathRow, cs2InstallPathRow];
+
+
+
+    let steamPath;
+    let cs2Path;
+    let steamExePath;
+    let cs2Exepath;
+    steamPath = rowsFromDb.value[0].selected as string;
+    cs2Path = rowsFromDb.value[1].selected as string;
+    steamExePath = steamPath + "\\steam.exe";
+    cs2Exepath = cs2Path + "\\game\\bin\\win64\\cs2.exe";
+    if (!steamPath) {
+        ElNotification.error("请先指定Steam和CS2安装位置:设置->路径设置->Steam安装位置和CS2安装位置")
         return;
     }
-    let libraryfoldersPath = steamAppPath + "\\steamapps\\libraryfolders.vdf";
-    if (!await invoke("is_file_exists", { filepath: libraryfoldersPath })) {
-        ElNotification.error(`File not found:${libraryfoldersPath}`)
-        return;
-    }
-    let libfVdfObj = await VdfUtil.getVdfObjectbyFilePath(libraryfoldersPath);
-    // @ts-ignore
-    let libs = libfVdfObj.libraryfolders;
-    for (const libraryId in libs) {
-        const library = libs[libraryId];
-        for (const appId in library.apps) {
-            if (appId === "730") {
-                let path = library.path.replace(/\\\\/g, `\\`) + "\\steamapps\\common\\Counter-Strike Global Offensive\\game\\bin\\win64\\cs2.exe"
-                steamData.value.pathCheck.cs2Path = path;
-                let row = SettingsStore.getDataByKeyName("cs2InstallPath").value as SettingsDO;
-                row.selected = path;
-                SettingsStore.saveRow(row).then(() => {
-                    ElNotification.success("CS2路径已自动检测到并保存")
-                }).catch((e: any) => {
-                    ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
-                })
+
+    if (!await invoke("is_file_exists", { filepath: steamExePath })) {
+        ElNotification.error(`File not found:${steamExePath}`)
+    } else {
+        steamData.value.pathCheck.appPath = steamPath;
+        if (await invoke("is_file_exists", { filepath: cs2Exepath })) {
+            steamData.value.pathCheck.cs2Path = cs2Path;
+        } else {
+            // 尝试通过vdf获取
+            let libraryfoldersPath = steamPath + "\\steamapps\\libraryfolders.vdf";
+            let libfVdfObj = await VdfUtil.getVdfObjectbyFilePath(libraryfoldersPath);
+            // @ts-ignore
+            let libs = libfVdfObj.libraryfolders;
+            for (const libraryId in libs) {
+                const library = libs[libraryId];
+                for (const appId in library.apps) {
+                    if (appId === "730") {
+                        let path = library.path.replace(/\\\\/g, `\\`) + "\\steamapps\\common\\Counter-Strike Global Offensive"
+                        steamData.value.pathCheck.cs2Path = path;
+                        let row = SettingsStore.getDataByKeyName("cs2InstallPath").value as SettingsDO;
+                        row.selected = path;
+                        SettingsStore.saveRow(row).then(() => {
+                            ElNotification.success("CS2路径已自动检测到并保存")
+                        }).catch((e: any) => {
+                            ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
+                        })
+                    }
+                }
             }
         }
     }
 }
 
+const selectSteamPath = async () => {
+    const path = await open({
+        multiple: false,
+        directory: true,
+    });
+    if (path) {
+
+        let steamExePath = path + "\\steam.exe";
+
+        if (!await invoke("is_file_exists", { filepath: steamExePath })) {
+            ElNotification.error(`文件不存在,请重试:${steamExePath}`)
+        } else {
+            rowsFromDb.value[0].selected = path as string;
+            SettingsStore.saveRow(rowsFromDb.value[0]).then(() => {
+                ElNotification.success("Steam路径已保存")
+                pathCheck();
+            })
+        }
+    }
+}
+
+
 onMounted(async () => {
-    getPathFromDB();
-    steamCheck();
-    cs2Check();
+    pathCheck();
 })
-
-
-
-
-
 </script>
 
 <style scoped lang="scss">

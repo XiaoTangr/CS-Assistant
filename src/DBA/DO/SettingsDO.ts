@@ -7,8 +7,6 @@ export class SettingsDO {
     options!: Array<SettingsRowOptions>
     chapter!: string
     section!: string;
-
-
 }
 export class SettingsRowOptions {
     /**

@@ -28,11 +28,11 @@
                     <div v-if="dbsettings.type === 'Select'">
                         <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'e' + i"
                             :prop="'e.' + i + '.value'">
-                            <el-form-item label="value">
-                                <el-input v-model="e.value" />
-                            </el-form-item>
                             <el-form-item label="text">
                                 <el-input v-model="e.text" />
+                            </el-form-item>
+                            <el-form-item label="value">
+                                <el-input v-model="e.value" />
                             </el-form-item>
                             <el-form-item>
                                 <el-button @click.prevent="delSettingsOption(e)" type="warning">del this</el-button>

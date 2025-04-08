@@ -82,5 +82,3 @@ pub fn list_files_and_directories(dir_path: &str) -> Result<FileOrDir, String> {
     list_files_and_directories_internal(dir_path).map_err(|e| e.to_string())
     // 将内部函数的返回值转换为Result类型，如果内部函数返回错误，则将错误信息转换为字符串
 }
-
-
