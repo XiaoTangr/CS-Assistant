@@ -33,7 +33,7 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
 
-const data = ref<Array<NoticeO>>([
+const data = ref<Array<notice>>([
     {
         publishDate: '',
         publishContent: ''

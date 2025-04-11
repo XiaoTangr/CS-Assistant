@@ -26,7 +26,6 @@ import ViewCheck from '@/components/Common/ViewCheck.vue';
     // flex-direction: column;
     height: 100%;
 
-
     .Menu-Container {
         border-radius: 4px;
         display: flex;
@@ -47,7 +46,6 @@ import ViewCheck from '@/components/Common/ViewCheck.vue';
         display: flex;
         flex-direction: column;
         overflow-y: auto !important;
-
     }
 }
 </style>

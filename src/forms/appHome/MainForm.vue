@@ -24,8 +24,6 @@ import GameCheck from '@/components/Forms/appHome/GameCheck.vue';
     flex-direction: column;
     height: 100%;
     
-
-
     .top {
         display: flex;
         width: 100%;

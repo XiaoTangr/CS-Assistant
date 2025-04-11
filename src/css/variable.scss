@@ -9,7 +9,8 @@ $traffic-light-green: rgb(36, 204, 61);
 
 // base font
 $font-color: rgb(0, 0, 0);
-$font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
+$font-family: 'DefaultFont',
+sans-serif;
 $font-weight-regular: normal;
 $font-weight-bold: bold;
 $font-size: 14px;
@@ -23,15 +24,20 @@ $globe-border-radius: 4px;
 $globe-margin: 1em;
 $globe-backdrop-filter: blur(1em);
 
-
-// window title bar
+// headerbar
 $header-bar-Blur: 10em;
 $header-bar-height-windowsStyle: 32px;
 $header-bar-height-macosStyle: 24px;
 
-$header-bar-height: $header-bar-height-windowsStyle;
+$header-bar-height: $header-bar-height-macosStyle;
 
-$status-bar-height: 24px;
+
+// contentbar
+$content-bar-height:calc(100% - $header-bar-height * 2);
+
+// statusbar
+$status-bar-height: $header-bar-height;
+
 
 
 

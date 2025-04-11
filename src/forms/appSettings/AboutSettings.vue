@@ -14,9 +14,10 @@ const vdfo = ref();
 
 
 onMounted(async () => {
-    const path = "D:\\Program Files (x86)\\Steam\\config\\config.vdf";
-    vdfo.value = await VdfUtil.getVdfObjectbyFilePath(path)
-    console.log(vdfo.value.InstallConfigStore.Software.Valve.steam.ShaderCacheManager.App)
+    const p1 = 'D:\\Program Files (x86)\\Steam\\userdata\\907438300\\config\\localconfig.vdf'
+    // const path = "D:\\Program Files (x86)\\Steam\\config\\config.vdf";
+    vdfo.value = await VdfUtil.getVdfObjectbyFilePath(p1)
+    console.log(vdfo.value.UserLocalConfigStore.friends[323474316])
 })
 
 </script>

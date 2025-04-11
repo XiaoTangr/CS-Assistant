@@ -1,4 +1,4 @@
-interface NoticeO {
+interface notice {
     publishDate: string
     publishContent: string
 }

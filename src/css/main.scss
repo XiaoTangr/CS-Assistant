@@ -1,4 +1,4 @@
-@use './variable.scss' as *;
+@use './variable.scss'as *;
 
 * {
     padding: 0;
@@ -21,7 +21,8 @@ body {
     /* padding: 5px; */
     /* padding-top: 0; */
     cursor: default;
-    font-family: $font-family;
+    font-family: 'DefaultFont',
+        sans-serif;
     font-size: $font-size;
     font-weight: $font-weight-regular;
     display: flex;

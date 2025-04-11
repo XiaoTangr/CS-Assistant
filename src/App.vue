@@ -14,6 +14,7 @@
         <StatusBar />
       </div>
     </div>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -30,7 +31,9 @@ const openMenu = () => {
 
 <style lang="scss">
 .App-Container {
-  height: 100%;
+  font-size: $font-size;
+  
+  height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -40,8 +43,6 @@ const openMenu = () => {
     height: 100%;
     width: 100%;
     background: $globe-layout-color;
-    display: flex;
-    flex-direction: column;
 
     .header {
       z-index: 999;
@@ -51,10 +52,9 @@ const openMenu = () => {
     .content {
       z-index: 2;
       // overflow: hidden;
-      flex: 1;
       padding: $globe-padding;
       display: block;
-      height: calc(100% - $header-bar-height - $status-bar-height);
+      height: $content-bar-height;
     }
 
     .status {

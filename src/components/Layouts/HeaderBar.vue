@@ -4,11 +4,17 @@
             <el-popconfirm icon-color="#fd6458" :icon="WarningFilled" width="16em" confirm-button-text="确定"
                 cancel-button-text="取消" title="未保存的内容将会丢失!" @confirm="CloseWindow">
                 <template #reference>
-                    <a class="light red " id="header-bar-close" />
+                    <div class="light red " id="header-bar-close">
+                        <el-icon class="inicon" size="70%"><Close /></el-icon>
+                    </div>
                 </template>
             </el-popconfirm>
-            <a class="light yellow" id="header-bar-toggleMaximize" @click="toggleMaximizeWindow" />
-            <a class="light green " id="header-bar-minimize" @click="MinimizeWindow" />
+            <div class="light yellow" id="header-bar-toggleMaximize" @click="toggleMaximizeWindow">
+                <el-icon class="inicon" size="70%"><FullScreen /></el-icon>
+            </div>
+            <div class="light green " id="header-bar-minimize" @click="MinimizeWindow" >
+                <el-icon class="inicon" size="70%"><Minus /></el-icon>
+            </div>
         </div>
         <div data-tauri-drag-region class="header-bar-title">
             唐人院不能没有樱岛麻衣！
@@ -59,6 +65,14 @@ const MinimizeWindow = () => appWindow.minimize()
             cursor: pointer;
             text-align: center;
             justify-content: center;
+            transition:ease-in-out;
+
+            .inicon{
+                opacity: 0;
+            }
+            .inicon:hover{
+                opacity: 1;
+            }
         }
 
         .light:hover {

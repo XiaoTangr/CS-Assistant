@@ -2,7 +2,6 @@ import { dbConnUtil } from "@/DBA/Utils/DBConnUtil";
 import { dbinstallUtil } from "@/DBA/Utils/DBinstallUtil";
 import { useMapStore } from "@/store/MapStore";
 import { useSettingsStore } from "@/store/SettingsStore";
-
 export default class StartUpUtil {
 
     static async initDB(): Promise<boolean> {

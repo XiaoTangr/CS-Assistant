@@ -10,10 +10,13 @@
 
 <style scoped lang="scss">
 .status-bar {
+    display: flex;
+    align-items: center;
+    height: $status-bar-height;
     border: $simple-border;
     border-radius: $globe-border-radius;
-    height: 100%;
     padding: 0 $globe-padding;
     backdrop-filter: $globe-backdrop-filter;
+    font-size: $font-size;
 }
 </style>
