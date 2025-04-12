@@ -26,8 +26,9 @@ export default class StartUpUtil {
 
     static async startUp(): Promise<void> {
         await this.initDB()
-        await this.initStores()
         await this.installDB()
+        await this.initStores()
+
     }
 }
 
