@@ -32,6 +32,9 @@ import { Bell } from '@element-plus/icons-vue';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
+import { useSettingsStore } from '@/store/SettingsStore';
+
+const SettingsStore = useSettingsStore();
 
 const data = ref<Array<notice>>([
     {
@@ -41,8 +44,9 @@ const data = ref<Array<notice>>([
 ])
 
 onMounted(() => {
+    const baseUrl = SettingsStore.getDataByKeyName('remoteUrlPrefix').value?.selected;
     axios.get(
-        "https://cdn.jsdelivr.net/gh/XiaoTangr/CS2H_Data/Notice.json"
+        `${baseUrl}/Notice.json`
     ).then((res) => {
         data.value = res.data
     }).catch((e) => {

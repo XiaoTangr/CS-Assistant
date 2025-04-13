@@ -14,13 +14,10 @@ pub struct FileOrDir {
     children: Vec<FileOrDir>,
 }
 
-
 #[tauri::command]
 pub fn is_file_exists(filepath: &str) -> bool {
     return Path::new(&filepath).exists();
 }
-
-
 
 #[tauri::command]
 // 定义一个函数，用于读取文本文件
@@ -74,11 +71,20 @@ pub fn list_files_and_directories_internal<P: AsRef<Path>>(dir: P) -> io::Result
     })
 }
 
-
 // 定义一个函数，用于列出指定路径下的文件和目录
 #[tauri::command]
 pub fn list_files_and_directories(dir_path: &str) -> Result<FileOrDir, String> {
     // 调用内部函数list_files_and_directories_internal，传入路径参数
     list_files_and_directories_internal(dir_path).map_err(|e| e.to_string())
     // 将内部函数的返回值转换为Result类型，如果内部函数返回错误，则将错误信息转换为字符串
+}
+
+#[tauri::command]
+pub fn read_file(path: &str) -> Vec<u8> {
+    std::fs::read(path).unwrap()
+}
+
+#[tauri::command]
+pub fn write_file(path: std::path::PathBuf, data: Vec<u8>) {
+    std::fs::write(path, data).unwrap()
 }

@@ -9,7 +9,10 @@ interface steamLoginUser {
     Timestamp: number;
 }
 
-interface steamFID {
-    steamUid: string,
-    steamFriendId: string;
+interface steamUserLessInfo {
+    AccountName: string;
+    PersonaName: string;
+    steamId: string,
+    FriendId: string;
+    avatarBase64: string;
 } 

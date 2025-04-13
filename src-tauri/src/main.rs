@@ -14,7 +14,9 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             fs::list_files_and_directories,
             fs::read_text_file,
-            fs::is_file_exists
+            fs::is_file_exists,
+            fs::write_file,
+            fs::read_file
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
