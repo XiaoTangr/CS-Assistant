@@ -5,7 +5,6 @@
 
 ## For Developer
 
-Tauri , vue , vite and yarn
+Tauri , vue , vite and pnpm
 
-now uee yarn v4.0 instead v1.4
-view [Yarn-migration](https://www.yarnpkg.cn/getting-started/migration) to use new yarn version.
+now uee pnpm
