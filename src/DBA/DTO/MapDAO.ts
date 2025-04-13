@@ -1,6 +1,6 @@
 import { MapDO } from "../DO/MapDO";
-import { dbCRUDUtil } from "../Utils/DBCRUDUtils";
-import { dbConnUtil } from "../Utils/DBConnUtil";
+import { dbBaseCRUD } from "../DA/DBBaseCRUD";
+import { dbConnecter } from "../DA/DBConnecter";
 
 export default class MapDAO {
     /**
@@ -9,7 +9,7 @@ export default class MapDAO {
      * @returns 
      */
     static async queryOnebyKey(key: string): Promise<any> {
-        return await dbCRUDUtil.queryOne<MapDO | null>("Settings", "key", key);
+        return await dbBaseCRUD.queryOne<MapDO | null>("Settings", "key", key);
     }
 
     /**
@@ -17,7 +17,7 @@ export default class MapDAO {
      * @returns MapDO[] - The list of MapDO objects.
      */
     static async queryAll() {
-        return await dbCRUDUtil.queryAll<MapDO[] | null>("Map")
+        return await dbBaseCRUD.queryAll<MapDO[] | null>("Map")
     }
 
     /**
@@ -25,10 +25,10 @@ export default class MapDAO {
      * @param data - The data to insert.
      */
     static async insert(data: Array<MapDO>): Promise<any> {
-        const db = await dbConnUtil.getConnection();
+        const db = await dbConnecter.getConnection();
         return data.forEach((item: any) => {
             db.execute(`INSERT INTO Map (key, value) VALUES ($1, $2)`, [item.key, item.value])
-                .then((r) => { return r; })
+                .then((r: any) => { return r; })
                 .catch((err: any) => {
                     throw (err);
                 });
@@ -36,6 +36,6 @@ export default class MapDAO {
     }
 
     static async deleteOneByKeyName(KeyName: string): Promise<any> {
-        return await dbCRUDUtil.deleteRow("Map", "key", KeyName);
+        return await dbBaseCRUD.deleteRow("Map", "key", KeyName);
     }
 }

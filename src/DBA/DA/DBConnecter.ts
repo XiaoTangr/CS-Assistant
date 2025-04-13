@@ -1,7 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 
-export class DBConnUtil {
-    private static instance: DBConnUtil; // 单例实例
+export class DBConnecter {
+    private static instance: DBConnecter; // 单例实例
     private db: Database | null = null; // 单个数据库连接
     private isInitialized: boolean = false; // 是否已初始化
 
@@ -16,11 +16,11 @@ export class DBConnUtil {
      * 获取单例实例
      * @returns 返回单例实例
      */
-    public static getInstance(): DBConnUtil {
-        if (!DBConnUtil.instance) {
-            DBConnUtil.instance = new DBConnUtil();
+    public static getInstance(): DBConnecter {
+        if (!DBConnecter.instance) {
+            DBConnecter.instance = new DBConnecter();
         }
-        return DBConnUtil.instance;
+        return DBConnecter.instance;
     }
 
     /**
@@ -58,8 +58,6 @@ export class DBConnUtil {
 
     /**
      * 关闭数据库连接
-     * 注意：在使用单个连接的模式中，我们通常不会在每次操作后关闭连接
-     * 而是在应用程序退出时关闭
      */
     public async close(): Promise<boolean> {
         if (!this.isInitialized || !this.db) {
@@ -81,4 +79,4 @@ export class DBConnUtil {
 }
 
 // 导出单例对象
-export const dbConnUtil = DBConnUtil.getInstance();
+export const dbConnecter = DBConnecter.getInstance();

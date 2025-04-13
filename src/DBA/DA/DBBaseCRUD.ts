@@ -1,18 +1,18 @@
-import { dbConnUtil } from "./DBConnUtil";
+import { dbConnecter } from "./DBConnecter";
 
-class DBCRUDUtil {
-    private static instance: DBCRUDUtil;
+class DBBaseCRUD {
+    private static instance: DBBaseCRUD;
 
     private constructor() { } // 私有构造函数，确保单例模式
 
     /**
      * 获取单例实例
      */
-    public static getInstance(): DBCRUDUtil {
-        if (!DBCRUDUtil.instance) {
-            DBCRUDUtil.instance = new DBCRUDUtil();
+    public static getInstance(): DBBaseCRUD {
+        if (!DBBaseCRUD.instance) {
+            DBBaseCRUD.instance = new DBBaseCRUD();
         }
-        return DBCRUDUtil.instance;
+        return DBBaseCRUD.instance;
     }
 
     /**
@@ -27,7 +27,7 @@ class DBCRUDUtil {
         // }
 
         const sql = `SELECT * FROM ${tableName};`;
-        const db = await dbConnUtil.getConnection()
+        const db = await dbConnecter.getConnection()
 
         try {
             const rows = await db.select(sql);
@@ -57,7 +57,7 @@ class DBCRUDUtil {
         // }
 
         const sql = `SELECT * FROM ${tableName} WHERE ${columnName} = $1;`;
-        const db = await dbConnUtil.getConnection()
+        const db = await dbConnecter.getConnection()
 
         try {
             const rows: any = await db.select(sql, [columnValue]);
@@ -80,7 +80,7 @@ class DBCRUDUtil {
         // if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
         //     throw new Error('表名无效');
         // }
-        const db = await dbConnUtil.getConnection()
+        const db = await dbConnecter.getConnection()
         let rowsAffected = 0;
         try {
             const columns = Object.keys(data[0]);
@@ -132,7 +132,7 @@ class DBCRUDUtil {
             .join(', ');
 
         const sql = `UPDATE ${tableName} SET ${setClause} WHERE ${columnName} = $${Object.keys(data).length + 1};`;
-        const db = await dbConnUtil.getConnection()
+        const db = await dbConnecter.getConnection()
 
         try {
             const params = [...Object.values(data), columnValue];
@@ -182,7 +182,7 @@ class DBCRUDUtil {
         console.log(sql)
         const bv = [columnValue as string];
         console.log(bv)
-        const db = await dbConnUtil.getConnection();
+        const db = await dbConnecter.getConnection();
         try {
             const result = await db.execute(sql, bv);
             return result.rowsAffected;
@@ -209,7 +209,7 @@ class DBCRUDUtil {
      * ```
      */
     public async querySQL<T>(query: string, bindvalues: unknown[]): Promise<T> {
-        const db = await dbConnUtil.getConnection();
+        const db = await dbConnecter.getConnection();
         return await db.select(query, bindvalues)
     }
     /**
@@ -245,10 +245,10 @@ class DBCRUDUtil {
      * ```
      */
     public async executeSQL(query: string, bindvalues?: unknown[]): Promise<number> {
-        const db = await dbConnUtil.getConnection();
+        const db = await dbConnecter.getConnection();
         return (await db.execute(query, bindvalues)).rowsAffected;
     }
 }
 
 // 导出单例对象
-export const dbCRUDUtil = DBCRUDUtil.getInstance(); 
+export const dbBaseCRUD = DBBaseCRUD.getInstance(); 
