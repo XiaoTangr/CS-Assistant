@@ -1,4 +1,4 @@
-interface steamLoginUser {
+interface SteamLoginUser {
     AccountName: string;
     PersonaName: string;
     RememberPassword: number;
@@ -9,7 +9,7 @@ interface steamLoginUser {
     Timestamp: number;
 }
 
-interface steamUserLessInfo {
+interface SteamUserBasicInfo {
     AccountName: string;
     PersonaName: string;
     steamId: string,

@@ -5,12 +5,15 @@
             <el-popconfirm icon-color="#fd6458" :icon="WarningFilled" width="16em" title="较小窗口可能出现显示异常!"
                 @confirm="closeMask">
                 <template #reference>
-                    <el-button plain type="warning"> 继续使用 </el-button>
+                    <el-button plain type="warning">
+                        忽略
+                    </el-button>
                 </template>
                 <template #actions="{ confirm }">
                     <div class="btn-container">
-                        <el-checkbox v-model="disableSettings" size="small">不再提示</el-checkbox>
-                        <el-button plain type="warning" size="small" @click="confirm">忽略本次</el-button>
+                        <el-checkbox v-model="isChecked" size="small">不再提示</el-checkbox>
+                        <el-button plain type="warning" size="small" @click="confirm">{{ isChecked ? "确定" : "忽略本次"
+                        }}</el-button>
                     </div>
                 </template>
             </el-popconfirm>
@@ -19,52 +22,39 @@
 </template>
 
 <script setup lang="ts">
+import { SettingsDO } from "@/DBA/DO/SettingsDO";
 import { useSettingsStore } from "@/store/SettingsStore";
 import { WarningFilled } from "@element-plus/icons-vue"
-import { storeToRefs } from "pinia";
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 
-
-
 const SettingsStore = useSettingsStore();
-const { data } = storeToRefs(SettingsStore)
-
 const viewportHeight = ref(0);
 const viewportWidth = ref(0);
-
-// 数据库数据
-const showViewCheckData = ref()
-
+const dataFromDB = ref<SettingsDO | any>();
 // 遮罩层状态
 const isMaskNeedShow = computed(() => {
-    return showViewCheckData.value?.selected && (viewportHeight.value < 600 || viewportWidth.value < 800)
+    return dataFromDB.value?.selected && (viewportHeight.value < 600 || viewportWidth.value < 800)
 })
-// 不再提示
-const disableSettings = ref(false);
-// 设置中是否禁用
-const neverCheck = ref(false);
+const isChecked = ref(false);
 
-watch(data, () => {
-    showViewCheckData.value = data.value.find((item) => item.key == "showViewCheck");
-    neverCheck.value = !showViewCheckData.value.selected;
-})
+const closeMask = async () => {
+    dataFromDB.value.selected = false;
 
-const closeMask = () => {
-    showViewCheckData.value!.selected = false;
-    if (disableSettings.value) {
-        SettingsStore.saveRow(showViewCheckData.value!);
+    if (isChecked.value) {
+        await SettingsStore.saveRow(dataFromDB.value);
     }
-    disableSettings.value = false;
 }
-
-
 const getWindowSize = () => {
     viewportHeight.value = document.body.clientHeight;
     viewportWidth.value = document.body.clientWidth;
 }
-onMounted(() => {
+watch(SettingsStore, () => {
+    dataFromDB.value = SettingsStore.getDataByKeyName("showViewCheck").value;
+})
+onMounted(async () => {
     getWindowSize();
     window.addEventListener('resize', getWindowSize);
+    dataFromDB.value = JSON.parse(JSON.stringify(SettingsStore.getDataByKeyName("showViewCheck").value))
 });
 onBeforeUnmount(() => {
     window.removeEventListener('resize', getWindowSize);
@@ -72,7 +62,6 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped lang="scss">
-
 .Meida-masker {
     z-index: 10 !important;
     backdrop-filter: blur(calc($header-bar-Blur * 2));

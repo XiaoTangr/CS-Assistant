@@ -6,27 +6,30 @@
             </template>
             <template #default>
                 <div class="users-container">
-                    <el-card class="user-container" v-for="(v) in steamUserLessInfo">
+                    <el-card class="user-container" v-for="(v) in steamUserBasicInfo">
                         <div class="user-container-inner">
                             <div class="l">
                                 <el-avatar class="avatar" shape="square" :src="v.avatarBase64" />
                             </div>
-                            <div class="r">
+                            <div class="r select-text">
                                 <div class="text">
-                                    用户昵称: {{ v.PersonaName }}
+                                    用户昵称:
+                                    <CopyText :text="v.PersonaName" />
                                 </div>
                                 <div class="text">
-                                    用户名称: {{ v.AccountName }}
+                                    用户名称:
+                                    <CopyText :text="v.AccountName" />
                                 </div>
                                 <div class="text">
-                                    SteamID: {{ v.steamId }}
+                                    SteamID:
+                                    <CopyText :text="v.steamId" />
                                 </div>
                                 <div class="text">
-                                    FriendID: {{ v.FriendId }}
+                                    FriendID:
+                                    <CopyText :text="v.FriendId" />
                                 </div>
                             </div>
                         </div>
-
                     </el-card>
                 </div>
             </template>
@@ -41,8 +44,9 @@ import { onMounted, ref } from 'vue';
 import defAvatar from '@/assets/imgs/defAvatar.png';
 
 import { invoke } from '@tauri-apps/api/core';
+import CopyText from '@/components/Common/CopyText.vue';
 
-const steamUserLessInfo = ref<steamUserLessInfo[]>([]);
+const steamUserBasicInfo = ref<SteamUserBasicInfo[]>([]);
 
 const SettingsStore = useSettingsStore()
 
@@ -63,7 +67,7 @@ const getSteamLoginUsers = async () => {
             FriendId: await linkUserDirToInfo(v[1].PersonaName),
             avatarBase64: await getUsersAvatar(avatarpath) || defAvatar
         }
-        steamUserLessInfo.value.push(obj)
+        steamUserBasicInfo.value.push(obj)
     });
 }
 
