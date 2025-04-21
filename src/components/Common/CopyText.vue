@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import { ElNotification } from 'element-plus';
-import { defineProps, ref, getCurrentInstance } from 'vue';
+import { ref, getCurrentInstance } from 'vue';
 
 const props = defineProps({
     text: {

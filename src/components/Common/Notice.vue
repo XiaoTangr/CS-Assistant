@@ -1,30 +1,27 @@
 <template>
-    <div class="container">
-        <el-card class="card">
-            <template #header>
-                <div class="header">
-                    <Bell class="icon" />
-                    <div class="text"> 公告 </div>
+    <el-card class="container" body-class="container-body">
+        <template #header>
+            <div class="header">
+                <Bell class="icon" />
+                <div class="text"> 公告 </div>
+            </div>
+        </template>
+        <template #default>
+            <div class="default">
+                <el-text v-html="data[0].publishContent" line-clamp="5" />
+            </div>
+        </template>
+        <template #footer>
+            <div class="footer">
+                <div class="publish-data">
+                    {{ data[0].publishDate }}
                 </div>
-            </template>
-            <template #default>
-                <div class="default">
-                    <el-text v-html="data[0].publishContent" line-clamp="5" />
+                <div class="read-more">
+                    <el-link type="warning">历史公告</el-link>
                 </div>
-            </template>
-            <template #footer>
-                <div class="footer">
-                    <div class="publish-data">
-                        {{ data[0].publishDate }}
-                    </div>
-                    <div class="read-more">
-                        <el-link type="warning">历史公告</el-link>
-                    </div>
-                </div>
-            </template>
-        </el-card>
-    </div>
-
+            </div>
+        </template>
+    </el-card>
 </template>
 
 <script setup lang="ts">
@@ -59,46 +56,33 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    position: relative;
-    width: 100%;
-    height: 100%;
+    .header {
+        display: flex;
+        justify-content: left;
+        align-items: center;
 
-    .card {
-        width: 80%;
-        /* 卡片宽度100% */
-        position: absolute;
-
-
-        .header {
-            display: flex;
-            justify-content: left;
-            align-items: center;
-
-            .icon {
-                height: $font-size;
-            }
-
-            .text {
-                padding: 0 $globe-padding ;
-            }
-
+        .icon {
+            height: $font-size;
         }
 
-
-        .default {
-            flex: 1;
+        .text {
+            padding: 0 $globe-padding ;
         }
 
-        .footer {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-        }
     }
+
+
+    .default {
+        width: 100%;
+        flex: 1;
+    }
+
+    .footer {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+    }
+
 
 
 }

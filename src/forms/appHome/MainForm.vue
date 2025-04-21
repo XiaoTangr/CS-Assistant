@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="bottom">
-            bot
+            <LoginedSteamUsersRender />
         </div>
     </div>
 </template>
@@ -17,13 +17,14 @@
 <script setup lang="ts">
 import Notice from '@/components/Common/Notice.vue';
 import GameCheck from '@/components/Forms/appHome/GameCheck.vue';
+import LoginedSteamUsersRender from '@/components/Renders/LoginedSteamUsersRender.vue';
 </script>
 <style scoped lang="scss">
 .container {
     display: flex;
     flex-direction: column;
     height: 100%;
-    
+
     .top {
         display: flex;
         width: 100%;
@@ -31,15 +32,18 @@ import GameCheck from '@/components/Forms/appHome/GameCheck.vue';
         flex: 3;
 
         .tl {
+            margin: calc($globe-margin / 2);
             flex-grow: 1;
         }
 
         .tr {
+            margin: calc($globe-margin / 2);
             width: 40%;
         }
     }
 
     .bottom {
+        margin: calc($globe-margin / 2);
         flex: 2;
     }
 }

@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <el-card class="container" v-loading="isloading" body-class="container-body">
         <el-card class="notFound" :class="{ 'Found': steamData.pathCheck.appPath !== '' }">
             <div class="v" v-if="steamData.pathCheck.appPath !== ''">
                 <div class="pt">
@@ -30,10 +30,11 @@
                 </div>
             </div>
         </el-card>
-    </div>
+    </el-card>
 </template>
 
 <script setup lang="ts">
+
 import { SettingsDO } from '@/DBA/DO/SettingsDO';
 import { useSettingsStore } from '@/store/SettingsStore';
 import VdfUtil from '@/utils/VdfUtil';
@@ -44,13 +45,14 @@ import { open } from '@tauri-apps/plugin-dialog';
 const SettingsStore = useSettingsStore();
 
 const steamData = ref({
+
     pathFromdb: "",
     pathCheck: {
         appPath: "",
         cs2Path: ""
     }
 })
-
+const isloading = ref(true);
 const rowsFromDb = ref<SettingsDO[]>([]);
 
 const pathCheck = async () => {
@@ -69,6 +71,8 @@ const pathCheck = async () => {
     cs2Path = rowsFromDb.value[1].selected as string;
     steamExePath = steamPath + "\\steam.exe";
     cs2Exepath = cs2Path + "\\game\\bin\\win64\\cs2.exe";
+    isloading.value = false
+
     if (!steamPath) {
         ElNotification.error("请先指定Steam和CS2安装位置:设置->路径设置->Steam安装位置和CS2安装位置")
         return;
@@ -125,6 +129,7 @@ const selectSteamPath = async () => {
             })
         }
     }
+
 }
 
 
@@ -138,7 +143,9 @@ onMounted(async () => {
 
 .container {
 
+
     .notFound {
+        width: 100%;
         margin: calc($globe-margin / 2) 0;
         background-color: color.scale($traffic-light-red, $lightness: 40%);
 
@@ -158,7 +165,18 @@ onMounted(async () => {
     }
 
     .Found {
+        width: 100%;
         background-color: color.scale($traffic-light-green, $lightness: 40%);
     }
+}
+</style>
+<style lang="scss">
+.container-body {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
 }
 </style>
