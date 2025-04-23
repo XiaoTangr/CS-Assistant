@@ -1,5 +1,6 @@
 import { dbConnecter } from "@/DBA/DA/DBConnecter";
 import { DBInstaller } from "@/DBA/DA/DBInstaller";
+import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
 import { useMapStore } from "@/store/MapStore";
 import { useSettingsStore } from "@/store/SettingsStore";
 export default class StartUpUtil {
@@ -19,10 +20,9 @@ export default class StartUpUtil {
     }
 
     static async initStores(): Promise<void> {
-        const MapStore = useMapStore();
-        const SettingsStore = useSettingsStore();
-        await SettingsStore.fetchData();
-        await MapStore.fetchData();
+        await useSettingsStore().fetchData();
+        await useMapStore().fetchData();
+        await useLoginedSteamUserStore().fetchData();
     }
 
     static async startUp(): Promise<void> {
