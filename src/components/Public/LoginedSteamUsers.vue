@@ -1,47 +1,46 @@
 <template>
-    <div class="container">
-        <el-card class="steam-users">
-            <template #header>
-                本机已登录的Steam账号
-            </template>
-            <template #default>
-                <div class="users-container">
-                    <el-card class="user-container" v-for="(v) in data as any">
-                        <div class="user-container-inner">
-                            <div class="l">
-                                <el-avatar class="avatar" shape="square" :src="v.avatarBase64" />
+    <el-card class="steam-users">
+        <template #header>
+            本机已登录的Steam账号:{{data?.length}}
+            (部分账号再次登录可能需要授权)
+        </template>
+        <template #default>
+            <div class="users-container">
+                <el-card class="user-container" v-for="(v) in data as any">
+                    <div class="user-container-inner">
+                        <div class="l">
+                            <el-avatar class="avatar" shape="square" :src="v.avatarBase64" />
+                        </div>
+                        <div class="r select-text">
+                            <div class="text">
+                                用户昵称:
+                                <CopyText :text="v.PersonaName" />
                             </div>
-                            <div class="r select-text">
-                                <div class="text">
-                                    用户昵称:
-                                    <CopyText :text="v.PersonaName" />
-                                </div>
-                                <div class="text">
-                                    用户名称:
-                                    <CopyText :text="v.AccountName" />
-                                </div>
-                                <div class="text">
-                                    SteamID:
-                                    <CopyText :text="v.steamId" />
-                                </div>
-                                <div class="text">
-                                    FriendID:
-                                    <CopyText :text="v.FriendId" />
-                                </div>
+                            <div class="text">
+                                用户名称:
+                                <CopyText :text="v.AccountName" />
+                            </div>
+                            <div class="text">
+                                SteamID:
+                                <CopyText :text="v.steamId" />
+                            </div>
+                            <div class="text">
+                                FriendID:
+                                <CopyText :text="v.FriendId" />
                             </div>
                         </div>
-                    </el-card>
-                    <el-empty :description="description" v-if="data === undefined">
-                        <el-button type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
-                    </el-empty>
-                </div>
-            </template>
-        </el-card>
-    </div>
+                    </div>
+                </el-card>
+                <el-empty :description="description" v-if="data === undefined">
+                    <el-button type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
+                </el-empty>
+            </div>
+        </template>
+    </el-card>
 </template>
 
 <script setup lang="ts">
-import CopyText from '@/components/Common/CopyText.vue';
+import CopyText from '@/components/Public/CopyText.vue';
 import { RefreshRight } from '@element-plus/icons-vue';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { storeToRefs } from 'pinia';

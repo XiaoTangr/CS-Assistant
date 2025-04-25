@@ -21,7 +21,7 @@
 import HeaderBar from './components/Layouts/HeaderBar.vue';
 import ContentBar from './components/Layouts/ContentBar.vue';
 import StatusBar from './components/Layouts/StatusBar.vue';
-import BackGround from './components/Common/BackGround.vue';
+import BackGround from './components/Layouts/BackGround.vue';
 
 const openMenu = () => {
   console.warn('User try open contextmenu!')
@@ -32,7 +32,7 @@ const openMenu = () => {
 <style lang="scss">
 .App-Container {
   font-size: $font-size;
-  
+
   height: 100vh;
   width: 100%;
   display: flex;

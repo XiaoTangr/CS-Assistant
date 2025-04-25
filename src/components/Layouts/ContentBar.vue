@@ -17,7 +17,7 @@
 import { RouterView } from 'vue-router';
 
 import MainMenu from '@/components/Menu/MainMenu.vue';
-import ViewCheck from '@/components/Common/ViewCheck.vue';
+import ViewCheck from '@/components/Layouts/ViewCheck.vue';
 </script>
 
 <style scoped lang="scss">

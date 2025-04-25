@@ -1,27 +1,31 @@
 <template>
-    <el-card class="container" body-class="container-body">
-        <template #header>
-            <div class="header">
-                <Bell class="icon" />
-                <div class="text"> 公告 </div>
-            </div>
-        </template>
-        <template #default>
-            <div class="default">
-                <el-text v-html="data[0].publishContent" line-clamp="5" />
-            </div>
-        </template>
-        <template #footer>
-            <div class="footer">
-                <div class="publish-data">
-                    {{ data[0].publishDate }}
+    <div class="container">
+        <el-card style="display:flex;flex-direction:column;flex: 1;" :body-style="{ flex: 1 }">
+            <template #header>
+                <div class="header">
+                    <Bell class="icon" />
+                    <div class="text"> 公告 </div>
                 </div>
-                <div class="read-more">
-                    <el-link type="warning">历史公告</el-link>
+
+            </template>
+            <template #default>
+                <div class="default">
+                    <el-text v-html="data[0].publishContent" line-clamp="5" />
                 </div>
-            </div>
-        </template>
-    </el-card>
+            </template>
+            <template #footer>
+                <div class="footer">
+                    <div class="publish-data">
+                        {{ data[0].publishDate }}
+                    </div>
+                    <div class="read-more">
+                        <el-link type="warning">历史公告</el-link>
+                    </div>
+                </div>
+            </template>
+        </el-card>
+    </div>
+
 </template>
 
 <script setup lang="ts">
@@ -30,9 +34,7 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
 import { useSettingsStore } from '@/store/SettingsStore';
-
 const SettingsStore = useSettingsStore();
-
 const data = ref<Array<notice>>([
     {
         publishDate: '',
@@ -56,13 +58,16 @@ onMounted(() => {
 
 <style scoped lang="scss">
 .container {
+    display: flex;
+    flex-direction: column;
+
     .header {
         display: flex;
         justify-content: left;
         align-items: center;
 
         .icon {
-            height: $font-size;
+            height: 100%;
         }
 
         .text {
@@ -71,9 +76,9 @@ onMounted(() => {
 
     }
 
-
     .default {
         width: 100%;
+        height: 100%;
         flex: 1;
     }
 
@@ -82,8 +87,5 @@ onMounted(() => {
         justify-content: space-around;
         align-items: center;
     }
-
-
-
 }
 </style>

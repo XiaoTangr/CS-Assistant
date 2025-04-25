@@ -1,12 +1,11 @@
 <template>
     <div class="container">
-        <SettingsItemRender chapter="appSettings" section="netSettings" />
+        <SettingsItem  chapter="appSettings" section="netSettings" />
     </div>
 </template>
 
 <script setup lang="ts">
-import SettingsItemRender from '@/components/Renders/SettingsItemRender.vue';
-
+import SettingsItem from '@/components/Forms/appSettings/SettingsItem.vue';
 
 </script>
 

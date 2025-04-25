@@ -1,36 +1,32 @@
 <template>
-    <el-card class="container" v-loading="isloading" body-class="container-body">
-        <el-card class="notFound" :class="{ 'Found': steamData.pathCheck.appPath !== '' }">
-            <div class="v" v-if="steamData.pathCheck.appPath !== ''">
-                <div class="pt">
-                    Steam已安装!
+    <div class="container" v-loading="isloading">
+        <el-card style=" display:flex;flex-direction:column;flex: 1;" :body-style="{ flex: 1 }">
+            <template #default>
+                <div class="default">
+                    <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.appPath !== '' }">
+                        <div class="inner-item">
+                            {{ steamData.pathCheck.appPath !== '' ? "Steam已安装! " : "未检测到Steam" }}
+                        </div>
+                        <CopyText :text="steamData.pathCheck.appPath" v-if="steamData.pathCheck.appPath !== ''">
+                            <el-text class="inner-item " type="primary" v-html="steamData.pathCheck.appPath" />
+                        </CopyText>
+                        <el-button style="justify-content: center;" class="inner-item " v-else @click="selectSteamPath"
+                            round plain type="warning">指定Steam安装位置</el-button>
+                    </el-card>
+                    <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.cs2Path !== '' }">
+                        <div class="inner-item">
+                            {{ steamData.pathCheck.cs2Path !== '' ? "CS2已安装! " : "未检测到CS2,未安装或者指定Steam安装位置以自动检测" }}
+                        </div>
+                        <CopyText :text="steamData.pathCheck.cs2Path" v-if="steamData.pathCheck.cs2Path !== ''">
+                            <el-text class="inner-item" type="primary" v-html="steamData.pathCheck.cs2Path" />
+                        </CopyText>
+
+                    </el-card>
                 </div>
-                <el-text class="pb" type="primary" v-html="steamData.pathCheck.appPath" />
-            </div>
-            <div v-else class="v">
-                <div class="pt">
-                    未检测到Steam
-                </div>
-                <div class="pb">
-                    <el-button @click="selectSteamPath" round size="small" plain class="b"
-                        type="warning">指定Steam安装位置</el-button>
-                </div>
-            </div>
+            </template>
         </el-card>
-        <el-card class="notFound" :class="{ 'Found': steamData.pathCheck.cs2Path !== '' }">
-            <div class="v" v-if="steamData.pathCheck.cs2Path !== ''">
-                <div class="pt">
-                    CS2已安装!
-                </div>
-                <el-text class="pb" type="primary" v-html="steamData.pathCheck.cs2Path" />
-            </div>
-            <div v-else class="v">
-                <div class="pt">
-                    未检测到CS2,未安装或者指定Steam安装位置以自动检测
-                </div>
-            </div>
-        </el-card>
-    </el-card>
+    </div>
+
 </template>
 
 <script setup lang="ts">
@@ -42,6 +38,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { ElNotification } from 'element-plus';
 import { onMounted, ref } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
+import CopyText from '@/components/Public/CopyText.vue';
 const SettingsStore = useSettingsStore();
 
 const steamData = ref({
@@ -142,41 +139,54 @@ onMounted(async () => {
 @use "sass:color";
 
 .container {
-
-
-    .notFound {
-        width: 100%;
-        margin: calc($globe-margin / 2) 0;
-        background-color: color.scale($traffic-light-red, $lightness: 40%);
-
-        .v {
-
-            .pt,
-            .pb {
-                margin: calc($globe-margin / 4)
-            }
-
-            .pb {
-                .b {
-                    width: 100%;
-                }
-            }
-        }
-    }
-
-    .Found {
-        width: 100%;
-        background-color: color.scale($traffic-light-green, $lightness: 40%);
-    }
-}
-</style>
-<style lang="scss">
-.container-body {
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    align-items: center;
+
+    .default {
+        width: 100%;
+        height: 100%;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+
+
+        .item {
+            margin-bottom: calc($globe-margin / 2);
+
+
+            .inner-item {
+                margin-bottom: calc($globe-margin / 2);
+                width: 100%;
+                display: flex;
+                flex-direction: row;
+                justify-content: start;
+                align-items: center;
+            }
+
+            .inner-item:last-child {
+                margin-bottom: 0;
+            }
+        }
+
+        .item:last-child {
+            margin-bottom: 0;
+        }
+
+        .notFound {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            background-color: color.scale($traffic-light-red, $lightness: 40%);
+        }
+
+        .Found {
+            width: 100%;
+            background-color: color.scale($traffic-light-green, $lightness: 40%);
+        }
+    }
 }
 </style>

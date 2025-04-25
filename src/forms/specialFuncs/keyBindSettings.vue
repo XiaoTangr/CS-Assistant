@@ -1,6 +1,8 @@
 <template>
     <div>
-        kbd
+        <el-card>
+            dd
+        </el-card>
     </div>
 </template>
 

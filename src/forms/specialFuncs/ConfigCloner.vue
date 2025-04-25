@@ -1,11 +1,8 @@
 <template>
     <div class="container">
-        <div class="logined-steam-users-container item">
-            <LoginedSteamUsers />
-        </div>
-        <div class="config-cloner-container item">
-            <ConfigCloner />
-        </div>
+        <LoginedSteamUsers class="logined-steam-users-container item" />
+        <ConfigCloner class="config-cloner-container item" />
+        <el-card></el-card>
     </div>
 </template>
 
@@ -21,8 +18,11 @@ import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 
     .item {
         overflow-y: auto;
-        margin: calc($globe-margin /2);
+        margin-bottom: $globe-margin;
     }
 
+    .item:last-child {
+        margin-bottom: 0;
+    }
 }
 </style>

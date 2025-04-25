@@ -13,6 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
+        "transparent": true,
         "decorations": false,
         "title": "CS2 Helper",
         "center": true,

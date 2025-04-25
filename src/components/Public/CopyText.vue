@@ -1,6 +1,6 @@
 <template>
     <p @click="copyToClipboard" class="copy-container" ref="copyContainer">
-        <el-tooltip :show-after="100" :hide-after="0" placement="top-start" :offset="4" content="单击复制到剪切板">
+        <el-tooltip :show-after="100" :hide-after="0" placement="top" :offset="4" content="单击复制到剪切板">
             <slot>
                 {{ text }}
             </slot>

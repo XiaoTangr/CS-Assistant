@@ -1,11 +1,11 @@
 <template>
     <div class="container">
-        <SettingsItemRender chapter="appSettings" section="pathSettings" />
+        <SettingsItem chapter="appSettings" section="pathSettings" />
     </div>
 </template>
 
 <script setup lang="ts">
-import SettingsItemRender from '@/components/Renders/SettingsItemRender.vue';
+import SettingsItem from '@/components/Forms/appSettings/SettingsItem.vue';
 import { onMounted, ref } from 'vue';
 
 import { MapDO } from '@/DBA/DO/MapDO';

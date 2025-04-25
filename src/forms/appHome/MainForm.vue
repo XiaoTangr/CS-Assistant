@@ -1,50 +1,50 @@
 <template>
     <div class="container">
-        <div class="top">
-            <div class="tl">
-                <GameCheck />
-            </div>
-            <div class="tr">
-                <Notice />
-            </div>
+        <div class="item">
+            <GameCheck class="inner-item gc" />
+            <Notice class="inner-item nt" />
         </div>
-        <div class="bottom">
-            <LoginedSteamUsers />
+        <div class="item">
+            <LoginedSteamUsers class="inner-item" />
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import Notice from '@/components/Common/Notice.vue';
+import Notice from '@/components/Forms/appHome/Notice.vue';
 import GameCheck from '@/components/Forms/appHome/GameCheck.vue';
 import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 </script>
 <style scoped lang="scss">
 .container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-
-    .top {
+    .item {
         display: flex;
         width: 100%;
         flex-direction: row;
-        flex: 3;
+        margin-bottom: $globe-margin;
 
-        .tl {
-            margin: calc($globe-margin / 2);
-            flex-grow: 1;
+        .inner-item {
+            flex: 1;
+            position: relative;
+            margin-right: $globe-margin;
         }
 
-        .tr {
-            margin: calc($globe-margin / 2);
-            width: 40%;
+
+        .inner-item:last-child {
+            margin-right: 0;
+        }
+
+        .gc {
+            flex: 2;
+        }
+
+        .nt {
+            flex: 1;
         }
     }
 
-    .bottom {
-        margin: calc($globe-margin / 2);
-        flex: 2;
+    .item:last-child {
+        margin-bottom: 0;
     }
 }
 </style>
