@@ -9,7 +9,7 @@
             </div>
         </div>
         <div class="bottom">
-            <LoginedSteamUsersRender />
+            <LoginedSteamUsers />
         </div>
     </div>
 </template>
@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import Notice from '@/components/Common/Notice.vue';
 import GameCheck from '@/components/Forms/appHome/GameCheck.vue';
-import LoginedSteamUsersRender from '@/components/Renders/LoginedSteamUsersRender.vue';
+import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 </script>
 <style scoped lang="scss">
 .container {

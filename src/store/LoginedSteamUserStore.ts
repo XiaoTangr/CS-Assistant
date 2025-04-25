@@ -72,7 +72,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     }
 
     const fetchData = async () => {
-        getLoginedSteamUsers();
+        await getLoginedSteamUsers();
     }
     return { data, fetchData }
 })

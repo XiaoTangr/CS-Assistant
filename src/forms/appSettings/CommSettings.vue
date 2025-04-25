@@ -1,11 +1,11 @@
 <template>
     <div class="container">
-        <SettingsItemRender chapter="appSettings" section="commSettings" />
+        <SettingsItem chapter="appSettings" section="commSettings" />
     </div>
 </template>
 
 <script setup lang="ts">
-import SettingsItemRender from '@/components/Renders/SettingsItemRender.vue';
+import SettingsItem from '@/components/Forms/appSettings/SettingsItem.vue';
 </script>
 
 <style scoped lang="scss"></style>
