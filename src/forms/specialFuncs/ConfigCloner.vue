@@ -1,8 +1,9 @@
 <template>
     <div class="container">
-        <LoginedSteamUsers class="logined-steam-users-container item" />
-        <ConfigCloner class="config-cloner-container item" />
-        <el-card></el-card>
+        <!-- <el-space direction="vertical" alignment="stretch" fill fill-ratio="1"> -->
+            <LoginedSteamUsers class="logined-steam-users-container item" />
+            <ConfigCloner class="config-cloner-container item" />
+        <!-- </el-space> -->
     </div>
 </template>
 

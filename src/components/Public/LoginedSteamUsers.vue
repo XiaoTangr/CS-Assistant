@@ -5,7 +5,7 @@
             (部分账号再次登录可能需要授权)
         </template>
         <template #default>
-            <div class="users-container">
+            <el-space wrap  fill-ratio="1" class="users-container">
                 <el-card class="user-container" v-for="(v) in data as any">
                     <div class="user-container-inner">
                         <div class="l">
@@ -34,7 +34,7 @@
                 <el-empty :description="description" v-if="data === undefined">
                     <el-button type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
                 </el-empty>
-            </div>
+            </el-space>
         </template>
     </el-card>
 </template>
@@ -67,20 +67,20 @@ const getSteamLoginUsers = async () => {
 
     .users-container {
         display: flex;
-        width: 100%;
+        // width: 100%;
         flex-wrap: wrap;
         justify-content: center;
 
         .user-container {
 
-            margin: calc($globe-margin /2);
+            // margin: calc($globe-margin /2);
 
             .user-container-inner {
                 // width: $avatar-size;
                 // height: calc($item-height /1.5);
                 display: flex;
-                flex-direction: row !important;
-                flex-wrap: nowrap;
+                // flex-direction: row !important;
+                // flex-wrap: nowrap;
 
                 .l {
                     display: flex;
