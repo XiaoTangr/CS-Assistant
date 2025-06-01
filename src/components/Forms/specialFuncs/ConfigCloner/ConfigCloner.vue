@@ -38,7 +38,7 @@ import { useSettingsStore } from '@/store/SettingsStore';
 import { ElMessageBox, ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router';
+import {  useRouter } from 'vue-router';
 
 const router = useRouter();
 
