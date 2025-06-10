@@ -2,7 +2,7 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useSettingsStore } from "./SettingsStore";
 import { invoke } from "@tauri-apps/api/core";
-import VdfUtil from "@/utils/VdfUtil";
+import { getVdfObjectByFilePath } from "@/utils/VdfUtil";
 import defAvatar from '@/assets/imgs/defAvatar.png';
 import { watch } from "vue";
 
@@ -24,7 +24,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         steamPath.value = SettingsStore.getDataByKeyName("steamInstallPath").value?.selected;
         const vdfpath = `${steamPath.value}\\config\\loginusers.vdf`;
         // @ts-ignore
-        let result = Object.entries((await VdfUtil.getVdfObjectbyFilePath(vdfpath).finally(() => { data.value = undefined })).users)
+        let result = Object.entries((await getVdfObjectByFilePath(vdfpath).finally(() => { data.value = undefined })).users)
         data.value = [];
         result.forEach(async (v: any) => {
             const avatarpath = `${steamPath.value}\\config\\avatarcache\\${v[0]}.png`;
@@ -45,7 +45,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         const promises = res.children.map(async (v: any) => {
             const FriendID = v.name as string;
             const vdfpath = `${steamPath.value}\\userdata\\${FriendID}\\config\\localconfig.vdf`;
-            const result: any = await VdfUtil.getVdfObjectbyFilePath(vdfpath);
+            const result: any = await getVdfObjectByFilePath(vdfpath);
             const PersonaNameOfDir = result.UserLocalConfigStore.friends.PersonaName;
             if (PersonaNameOfDir === PersonaNameToFind) {
                 return FriendID;

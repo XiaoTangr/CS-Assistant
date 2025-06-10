@@ -1,4 +1,4 @@
-import { jsonUtil } from "@/utils/JSONUtil";
+import { deepParseJSON } from "@/utils/JSONUtil";
 import { SettingsDO } from "../DO/SettingsDO";
 import { dbBaseCRUD } from "../DA/DBBaseCRUD";
 
@@ -10,7 +10,7 @@ export default class SettingsDAO {
      * @returns the queried row, or null if not found
      */
     static async queryOneByKey(key: string) {
-        return jsonUtil.deepParseJSON(await dbBaseCRUD.queryOne<SettingsDO | null>("Settings", "key", key))
+        return deepParseJSON(await dbBaseCRUD.queryOne<SettingsDO | null>("Settings", "key", key))
     }
 
     /**
@@ -18,7 +18,7 @@ export default class SettingsDAO {
      * @returns the queried rows, or null if none found
      */
     static async queryAll() {
-        return jsonUtil.deepParseJSON(await dbBaseCRUD.queryAll<SettingsDO[] | null>("Settings"))
+        return deepParseJSON(await dbBaseCRUD.queryAll<SettingsDO[] | null>("Settings"))
     }
     /**
      * Update a row in the Settings table

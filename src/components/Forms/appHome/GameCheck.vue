@@ -33,7 +33,7 @@
 
 import { SettingsDO } from '@/DBA/DO/SettingsDO';
 import { useSettingsStore } from '@/store/SettingsStore';
-import VdfUtil from '@/utils/VdfUtil';
+import { getVdfObjectByFilePath } from '@/utils/VdfUtil';
 import { invoke } from '@tauri-apps/api/core';
 import { ElNotification } from 'element-plus';
 import { onMounted, ref } from 'vue';
@@ -84,7 +84,7 @@ const pathCheck = async () => {
         } else {
             // 尝试通过vdf获取
             let libraryfoldersPath = steamPath + "\\steamapps\\libraryfolders.vdf";
-            let libfVdfObj = await VdfUtil.getVdfObjectbyFilePath(libraryfoldersPath);
+            let libfVdfObj = await getVdfObjectByFilePath(libraryfoldersPath);
             // @ts-ignore
             let libs = libfVdfObj.libraryfolders;
             for (const libraryId in libs) {

@@ -16,6 +16,7 @@
     </div>
 
   </div>
+
 </template>
 <script setup lang="ts">
 import HeaderBar from './components/Layouts/HeaderBar.vue';

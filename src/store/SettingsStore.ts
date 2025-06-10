@@ -1,6 +1,6 @@
 import { SettingsDO } from "@/DBA/DO/SettingsDO";
 import SettingsDTO from "@/DBA/DTO/SettingsDAO";
-import { jsonUtil } from "@/utils/JSONUtil";
+import { deepParseJSON } from "@/utils/JSONUtil";
 import { ElNotification } from "element-plus";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
@@ -23,7 +23,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         if (!isInitialized.value) {
             const res = await SettingsDTO.queryAll();
             if (res) {
-                const nonNullData = jsonUtil.deepParseJSON(res.filter((item: any): item is SettingsDO[] => item !== null));
+                const nonNullData = deepParseJSON(res.filter((item: any): item is SettingsDO[] => item !== null));
                 if (nonNullData.length > 0) {
                     data.value = nonNullData.flat();
                     modifedData.value = JSON.parse((JSON.stringify(data.value)))

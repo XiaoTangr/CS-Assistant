@@ -16,7 +16,8 @@ fn main() {
             fs::read_text_file,
             fs::is_file_exists,
             fs::write_file,
-            fs::read_file
+            fs::read_file,
+            fs::cp_dir_deep
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

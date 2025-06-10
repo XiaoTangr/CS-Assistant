@@ -32,6 +32,9 @@ importers:
       element-plus:
         specifier: ^2.9.8
         version: 2.9.8(vue@3.5.13(typescript@5.6.3))
+      lru-cache:
+        specifier: ^11.1.0
+        version: 11.1.0
       sass:
         specifier: ^1.84.0
         version: 1.85.1
@@ -45,6 +48,9 @@ importers:
       '@tauri-apps/cli':
         specifier: ^2
         version: 2.3.1
+      '@types/lru-cache':
+        specifier: ^7.10.10
+        version: 7.10.10
       '@types/node':
         specifier: ^22.13.4
         version: 22.13.9
@@ -715,6 +721,10 @@ packages:
   '@types/lodash@4.17.16':
     resolution: {integrity: sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==}
 
+  '@types/lru-cache@7.10.10':
+    resolution: {integrity: sha512-nEpVRPWW9EBmx2SCfNn3ClYxPL7IktPX12HhIoSc/H5mMjdeW3+YsXIpseLQ2xF35+OcpwKQbEUw5VtqE4PDNA==}
+    deprecated: This is a stub types definition. lru-cache provides its own type definitions, so you do not need this installed.
+
   '@types/node@22.13.9':
     resolution: {integrity: sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==}
 
@@ -1138,6 +1148,10 @@ packages:
 
   lodash@4.17.21:
     resolution: {integrity: sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==}
+
+  lru-cache@11.1.0:
+    resolution: {integrity: sha512-QIXZUBJUx+2zHUdQujWejBkcD9+cs94tLn0+YL8UrCh+D5sCXZ4c7LaEH48pNwRY3MLDgqUFyhlCyjJPf1WP0A==}
+    engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
@@ -1978,6 +1992,10 @@ snapshots:
 
   '@types/lodash@4.17.16': {}
 
+  '@types/lru-cache@7.10.10':
+    dependencies:
+      lru-cache: 11.1.0
+
   '@types/node@22.13.9':
     dependencies:
       undici-types: 6.20.0
@@ -2474,6 +2492,8 @@ snapshots:
       lodash-es: 4.17.21
 
   lodash@4.17.21: {}
+
+  lru-cache@11.1.0: {}
 
   lru-cache@5.1.1:
     dependencies:

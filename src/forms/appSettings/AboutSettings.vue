@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 
-import VdfUtil from '@/utils/VdfUtil';
+import { getVdfObjectByFilePath } from '@/utils/VdfUtil';
 import { onMounted, ref } from 'vue';
 
 const vdfo = ref();
@@ -16,7 +16,7 @@ const vdfo = ref();
 onMounted(async () => {
     const p1 = 'D:\\Program Files (x86)\\Steam\\userdata\\907438300\\config\\localconfig.vdf'
     // const path = "D:\\Program Files (x86)\\Steam\\config\\config.vdf";
-    vdfo.value = await VdfUtil.getVdfObjectbyFilePath(p1)
+    vdfo.value = await getVdfObjectByFilePath(p1)
     console.log(vdfo.value.UserLocalConfigStore.friends[323474316])
 })
 

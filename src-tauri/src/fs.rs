@@ -1,10 +1,11 @@
 use serde::{Deserialize, Serialize};
+use std::fs;
 use std::fs::File;
+use std::io;
 use std::io::prelude::*;
 use std::io::BufReader;
 use std::io::Error;
 use std::path::Path;
-use std::{fs, io};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileOrDir {
@@ -87,4 +88,44 @@ pub fn read_file(path: &str) -> Vec<u8> {
 #[tauri::command]
 pub fn write_file(path: std::path::PathBuf, data: Vec<u8>) {
     std::fs::write(path, data).unwrap()
+}
+
+#[tauri::command]
+pub fn cp_dir_deep(origin_path: &str, target_path: &str) -> i32 {
+    let origin = Path::new(origin_path);
+    let target = Path::new(target_path);
+
+    if !origin.exists() {
+        eprintln!("Origin path does not exist: {}", origin_path);
+        return -1; // 返回 -1 表示源路径不存在
+    }
+
+    // 递归复制函数
+    fn copy_dir_recursive(origin: &Path, target: &Path) -> Result<(), std::io::Error> {
+        if !target.exists() {
+            fs::create_dir(target)?;
+        }
+
+        for entry in fs::read_dir(origin)? {
+            let entry = entry?;
+            let path = entry.path();
+            let dest_path = target.join(entry.file_name());
+
+            if path.is_dir() {
+                copy_dir_recursive(&path, &dest_path)?;
+            } else {
+                fs::copy(&path, &dest_path)?;
+            }
+        }
+
+        Ok(())
+    }
+
+    match copy_dir_recursive(origin, target) {
+        Ok(_) => 0,   // 成功返回 0
+        Err(e) => {
+            eprintln!("Failed to copy directory: {}", e);
+            -1  // 失败返回 -1
+        }
+    }
 }

@@ -35,10 +35,11 @@
 import { SettingsDO } from '@/DBA/DO/SettingsDO';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { useSettingsStore } from '@/store/SettingsStore';
-import { ElMessageBox, ElNotification } from 'element-plus';
+import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue'
-import {  useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
+// import { invoke } from '@tauri-apps/api/core';
 
 const router = useRouter();
 
@@ -54,7 +55,7 @@ const backupUserSettings = ref(true)
 const LoginedSteamUserStore = useLoginedSteamUserStore();
 
 
-const buckupFolderPath = ref<string>();
+const backupFolderPath = ref<string>();
 
 const { data } = storeToRefs(LoginedSteamUserStore);
 const userSettingsArr = ref<Array<SettingsArrItem>>();
@@ -93,34 +94,39 @@ const getBackupFolderPath = (): Promise<string> => {
 }
 
 const copyHandler = async () => {
-
-
+    const SELECT_ORIGIN_AND_TARGET = '请选择复制源和目标';
     if (!CopyOriginSelected.value || CopyTargetSelected.value.length === 0) {
-        ElNotification.error({ message: '请选择复制源和目标' });
+        ElNotification.error({ message: SELECT_ORIGIN_AND_TARGET });
         return;
     }
-    if (backupUserSettings.value) {
-        try {
-            // 获取备份文件夹路径
-            buckupFolderPath.value = await getBackupFolderPath();
-            await ElMessageBox.alert(`备份 ${CopyTargetSelected.value.join(', ')} 的配置文件到 ${buckupFolderPath.value}`, '提示').then(() => {
-                ElNotification.info('OK')
-            }).catch(() => {
-                ElNotification.info('cancel')
-            })
-        } catch (e: any) {
-            ElNotification.error(`error:${e},请前往设置页设置备份文件夹路径。`);
-            router.push({ path: '/appSettings/PathSettings' });
-            return;
-        }
-    }
 
-    ElMessageBox.alert(`复制 ${CopyOriginSelected.value} 的配置到 ${CopyTargetSelected.value.join(' , ')} `, '提示').then(() => {
-        ElNotification.info('OK')
-    }).catch(() => {
-        ElNotification.info('cancel')
-    })
-}
+    for (const item of CopyTargetSelected.value) {
+        // 每个 item 单独判断是否启用备份
+        if (backupUserSettings.value) {
+            try {
+                const path = await getBackupFolderPath();
+                if (!path) {
+                    throw new Error('获取备份路径失败');
+                }
+                // 下面的路径在此基础上追击以YYMMDD_HHmmSS的文件夹作为备份路径
+                backupFolderPath.value = path;
+
+
+
+
+                ElNotification.info({ message: `正在备份目标项：${item}` });
+                // 执行备份操作（具体实现暂不提供）
+            } catch (e: any) {
+                ElNotification.error({ message: `错误：${e.message}，请前往设置页设置备份文件夹路径。` });
+                router.push({ path: '/appSettings/PathSettings' });
+                return;
+            }
+        }
+
+        // ElNotification.success({ message: `开始复制配置至：${item}` });
+        // 执行复制操作（具体实现暂不提供）
+    }
+};
 </script>
 
 <style lang="scss" scoped>
