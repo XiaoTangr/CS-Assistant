@@ -46,11 +46,8 @@ importers:
         version: 4.5.0(vue@3.5.13(typescript@5.6.3))
     devDependencies:
       '@tauri-apps/cli':
-        specifier: ^2
+        specifier: ^2.3.1
         version: 2.3.1
-      '@types/lru-cache':
-        specifier: ^7.10.10
-        version: 7.10.10
       '@types/node':
         specifier: ^22.13.4
         version: 22.13.9
@@ -720,10 +717,6 @@ packages:
 
   '@types/lodash@4.17.16':
     resolution: {integrity: sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==}
-
-  '@types/lru-cache@7.10.10':
-    resolution: {integrity: sha512-nEpVRPWW9EBmx2SCfNn3ClYxPL7IktPX12HhIoSc/H5mMjdeW3+YsXIpseLQ2xF35+OcpwKQbEUw5VtqE4PDNA==}
-    deprecated: This is a stub types definition. lru-cache provides its own type definitions, so you do not need this installed.
 
   '@types/node@22.13.9':
     resolution: {integrity: sha512-acBjXdRJ3A6Pb3tqnw9HZmyR3Fiol3aGxRCK1x3d+6CDAMjl7I649wpSd+yNURCjbOUGu9tqtLKnTGxmK6CyGw==}
@@ -1991,10 +1984,6 @@ snapshots:
       '@types/lodash': 4.17.16
 
   '@types/lodash@4.17.16': {}
-
-  '@types/lru-cache@7.10.10':
-    dependencies:
-      lru-cache: 11.1.0
 
   '@types/node@22.13.9':
     dependencies:

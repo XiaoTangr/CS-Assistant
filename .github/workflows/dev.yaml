@@ -3,16 +3,21 @@ name: Dev release
 on:
   push:
     branches: [Dev]
+  # 可选：只在某些文件变更时触发构建
+  # paths:
+  #   - 'package.json'
+  #   - 'src/**'
+  #   - 'src-tauri/**'
 
 jobs:
   init:
     name: Release DevVersion
-    runs-on: Ubuntu-latest
+    runs-on: windows-latest
     steps:
-      - name: checkout
+      - name: Checkout code
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # 需要获取完整历史记录以进行 diff 比较
+          fetch-depth: 0 # 获取完整历史用于 diff 判断
 
       - name: Check for package.json changes
         id: check-package-json
@@ -31,30 +36,35 @@ jobs:
         if: steps.check-package-json.outputs.changed == 'false'
         uses: actions/cache@v3
         with:
-          path: ~/.pnpm-store
+          path: node_modules/.pnpm-store
           key: ${{ runner.os }}-pnpm-store-${{ github.sha }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
       - name: Install pnpm
+        if: steps.check-package-json.outputs.changed == 'true' || steps.restore-cache.outputs.found == 'false'
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Install dependencies
-        if: steps.check-package-json.outputs.changed == 'true' || steps.check-package-json.outputs.changed == 'false' && steps.restore-cache.outputs.found == 'false'
-
-        run: pnpm install
+        shell: pwsh
+        env:
+          PATH: ${{ github.workspace }}\node_modules\.bin;${{ env.PATH }}
+        run: |
+          node_modules\.bin\pnpm install --frozen-lockfile
         working-directory: .
 
       - name: Build Tauri application
         shell: pwsh
+        env:
+          PATH: ${{ github.workspace }}\node_modules\.bin;${{ env.PATH }}
         run: |
-          npx tauri build
+          node_modules\.bin\tauri build
         working-directory: .
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-output # Artifact 名称
+          name: build-output
           path: src-tauri/target/release/bundle/msi/*.msi
