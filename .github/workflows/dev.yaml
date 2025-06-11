@@ -3,68 +3,32 @@ name: Dev release
 on:
   push:
     branches: [Dev]
-  # 可选：只在某些文件变更时触发构建
-  # paths:
-  #   - 'package.json'
-  #   - 'src/**'
-  #   - 'src-tauri/**'
 
 jobs:
   init:
     name: Release DevVersion
     runs-on: windows-latest
     steps:
-      - name: Checkout code
+      - name: checkout
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # 获取完整历史用于 diff 判断
-
-      - name: Check for package.json changes
-        id: check-package-json
-        shell: pwsh
-        run: |
-          $changedFiles = git diff --name-only HEAD^ HEAD
-          if ($changedFiles -match "package.json") {
-            Write-Host "package.json has changed"
-            echo "::set-output name=changed::true"
-          } else {
-            Write-Host "package.json has not changed"
-            echo "::set-output name=changed::false"
-          }
-
-      - name: Restore pnpm cache if package.json hasn't changed
-        if: steps.check-package-json.outputs.changed == 'false'
-        uses: actions/cache@v3
-        with:
-          path: node_modules/.pnpm-store
-          key: ${{ runner.os }}-pnpm-store-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
-
-      - name: Install pnpm
-        if: steps.check-package-json.outputs.changed == 'true' || steps.restore-cache.outputs.found == 'false'
-        uses: pnpm/action-setup@v4
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
         with:
           version: 10
-
+          run_install: false
+      - name: Install Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "pnpm"
       - name: Install dependencies
-        shell: pwsh
-        env:
-          PATH: ${{ github.workspace }}\node_modules\.bin;${{ env.PATH }}
-        run: |
-          node_modules\.bin\pnpm install --frozen-lockfile
-        working-directory: .
-
+        run: pnpm install
+      # Build Tauri application
       - name: Build Tauri application
-        shell: pwsh
-        env:
-          PATH: ${{ github.workspace }}\node_modules\.bin;${{ env.PATH }}
-        run: |
-          node_modules\.bin\tauri build
-        working-directory: .
-
+        working-directory:
+        run: pnpm tauri build
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-output
+          name: build-output # Artifact 名称
           path: src-tauri/target/release/bundle/msi/*.msi
