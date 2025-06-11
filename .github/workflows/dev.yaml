@@ -12,18 +12,20 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
         with:
-          fetch-depth: 0  # 需要获取完整历史记录以进行 diff 比较
+          fetch-depth: 0 # 需要获取完整历史记录以进行 diff 比较
 
       - name: Check for package.json changes
         id: check-package-json
+        shell: pwsh
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q "package.json"; then
-            echo "package.json has changed"
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            Write-Host "package.json has changed"
             echo "::set-output name=changed::true"
-          else
-            echo "package.json has not changed"
+          } else {
+            Write-Host "package.json has not changed"
             echo "::set-output name=changed::false"
-          fi
+          }
 
       - name: Restore pnpm cache if package.json hasn't changed
         if: steps.check-package-json.outputs.changed == 'false'
