@@ -9,26 +9,47 @@ jobs:
     name: Release DevVersion
     runs-on: windows-latest
     steps:
-      - name: checkout
+      - name: Checkout code
         uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+        with:
+          fetch-depth: 0 # 获取完整历史用于 diff 比较
+
+      - name: Check if package.json changed
+        id: check-package-json
+        shell: pwsh
+        run: |
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            echo "::set-output name=changed::true"
+          } else {
+            echo "::set-output name=changed::false"
+          }
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v3
+        id: restore-pnpm-cache
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10
           run_install: false
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-      - name: Install dependencies
+
+      - name: Install dependencies if package.json changed
+        if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
         run: pnpm install
-      # Build Tauri application
+
       - name: Build Tauri application
-        working-directory:
         run: pnpm tauri build
+        working-directory: .
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-output # Artifact 名称
+          name: build-output
           path: src-tauri/target/release/bundle/msi/*.msi
