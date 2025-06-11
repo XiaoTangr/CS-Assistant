@@ -48,7 +48,7 @@ jobs:
         working-directory: .
 
       - name: Build Tauri application
-        run: pnpm tauri build
+        run: pnpm tauri dev
         working-directory: .
 
       - name: Upload artifact
