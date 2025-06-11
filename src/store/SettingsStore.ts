@@ -1,13 +1,13 @@
-import { SettingsDO } from "@/DBA/DO/SettingsDO";
-import SettingsDTO from "@/DBA/DTO/SettingsDAO";
-import { deepParseJSON } from "@/utils/JSONUtil";
+import { Settings } from "@/models/Settings.model";
+import SettingsDTO from "@/repositories/SettingsRepository";
+import { deepParseJSON } from "@/core/utils/JSONUtil";
 import { ElNotification } from "element-plus";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 
 export const useSettingsStore = defineStore("SettingsStore", () => {
-    const data = ref<SettingsDO[]>([]);
-    const modifedData = ref<SettingsDO[]>([]);
+    const data = ref<Settings[]>([]);
+    const modifedData = ref<Settings[]>([]);
     const isInitialized = ref(false);
     const isDataupdated = computed(() => {
         return JSON.stringify(data.value) !== JSON.stringify(modifedData.value);
@@ -23,7 +23,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         if (!isInitialized.value) {
             const res = await SettingsDTO.queryAll();
             if (res) {
-                const nonNullData = deepParseJSON(res.filter((item: any): item is SettingsDO[] => item !== null));
+                const nonNullData = deepParseJSON(res.filter((item: any): item is Settings[] => item !== null));
                 if (nonNullData.length > 0) {
                     data.value = nonNullData.flat();
                     modifedData.value = JSON.parse((JSON.stringify(data.value)))
@@ -60,7 +60,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         let updatePromises: Promise<any>[] = [];
         let changedRowsCount = 0;
         // 收集所有需要更新的行的 Promise
-        modifedData.value.forEach((element: SettingsDO, index: number) => {
+        modifedData.value.forEach((element: Settings, index: number) => {
             if (element.selected !== data.value[index].selected) {
                 const updatePromise = SettingsDTO.updateRow(element).then((res) => {
                     if (res) {
@@ -89,7 +89,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         });
     };
 
-    const saveRow = async (row: SettingsDO) => {
+    const saveRow = async (row: Settings) => {
         await SettingsDTO.updateRow(row);
         refreshData()
     }

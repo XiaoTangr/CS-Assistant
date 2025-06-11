@@ -2,9 +2,10 @@ import { defineStore } from "pinia";
 import { ref } from "vue";
 import { useSettingsStore } from "./SettingsStore";
 import { invoke } from "@tauri-apps/api/core";
-import { getVdfObjectByFilePath } from "@/utils/VdfUtil";
+import { getVdfObjectByFilePath } from "@/core/utils/VdfUtil";
 import defAvatar from '@/assets/imgs/defAvatar.png';
 import { watch } from "vue";
+import { SteamUserBasicInfo } from "@/core/types/types";
 
 export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () => {
     // const data = ref<SteamUserBasicInfo[]>([]);

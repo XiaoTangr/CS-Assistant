@@ -1,0 +1,103 @@
+// src/core/db/migrations.ts
+
+import baseCRUD from '@/core/db/baseCRUD';
+import { DbData } from '@/core/db/dbData';
+import { MigrationResult } from '@/core/types/types';
+
+/**
+ * 初始化数据库表结构和默认数据
+ * @returns 返回迁移结果对象
+ */
+export async function runMigrations(): Promise<MigrationResult> {
+    const result: MigrationResult = {
+        success: true,
+        createdTables: [],
+        insertedDataResults: []
+    };
+
+    try {
+        for (const table of DbData) {
+            const tableName = table.tableName;
+            const columns = table.Structure;
+
+            // 构建 CREATE TABLE SQL
+            const columnDefs = columns.map((col, index) => {
+                let def = `${col.name} ${mapType(col.type)}`;
+                if (index === 0) {
+                    def += ' PRIMARY KEY'; // 第一个字段为主键
+                }
+                if (!col.nullable) {
+                    def += ' NOT NULL';
+                }
+                return def;
+            });
+
+            const createTableSql = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefs.join(', ')});`;
+
+            console.log(`[DB] Creating table: ${tableName}`);
+            await baseCRUD.executeRaw(createTableSql);
+            result.createdTables.push(tableName);
+
+            // 插入默认数据（如果存在）
+            if (table.defaultData && table.defaultData.length > 0) {
+                const insertSuccess = await insertDefaultData(tableName, table.defaultData);
+                result.insertedDataResults.push({
+                    table: tableName,
+                    success: insertSuccess
+                });
+            }
+        }
+
+        console.log('[DB] Database initialized successfully.');
+        return result;
+    } catch (error) {
+        console.error('[DB] Failed to initialize database:', error);
+        result.success = false;
+        result.error = error as Error;
+        return result;
+    }
+}
+
+/**
+ * 将 JS 类型映射为 SQLite 类型
+ */
+function mapType(jsType: string): string {
+    switch (jsType) {
+        case 'string':
+        case 'text':
+            return 'TEXT';
+        case 'integer':
+        case 'number':
+            return 'INTEGER';
+        case 'boolean':
+            return 'INTEGER'; // 用 0/1 表示布尔值
+        case 'json':
+            return 'TEXT'; // JSON 存储为字符串
+        default:
+            return 'TEXT';
+    }
+}
+
+/**
+ * 插入默认数据（如果表为空）
+ * @param tableName 表名
+ * @param defaultData 默认数据数组
+ * @returns 成功返回 true，失败返回 false
+ */
+async function insertDefaultData(tableName: string, defaultData: any[]): Promise<boolean> {
+    try {
+        const count = await baseCRUD.count(tableName);
+
+        if (count === 0) {
+            console.log(`[DB] Inserting default data into ${tableName}`);
+            const rowsAffected = await baseCRUD.insertRows(tableName, defaultData);
+            console.log(`[DB] Inserted ${rowsAffected} rows into ${tableName}`);
+            return rowsAffected > 0;
+        }
+
+        return true; // 表中已有数据，无需插入
+    } catch (error) {
+        console.error(`[DB] Failed to insert default data into ${tableName}:`, error);
+        return false;
+    }
+}

@@ -19,6 +19,20 @@
     "sql:allow-select",
     "dialog:default",
     "core:event:allow-listen",
-    "core:event:default"
+    "core:event:default",
+    "core:path:allow-resolve-directory",
+    "core:path:default",
+    "fs:default",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        {
+          "path": "$APPDATA"
+        },
+        {
+          "path": "$APPDATA/**"
+        }
+      ]
+    }
   ]
 }

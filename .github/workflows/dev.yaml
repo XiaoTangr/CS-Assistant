@@ -1,35 +1,57 @@
-
 name: Dev release
 
 on:
   push:
     branches: [Dev]
+    # 新增：仅当 package.json 发生变化时触发
+    paths:
+      - 'package.json'
+      - '.github/workflows/dev.yaml'
+      - 'src/**'
+      - 'src-tauri/**'
 
 jobs:
   init:
     name: Release DevVersion
     runs-on: windows-latest
     steps:
-      - name: checkout
+      - name: Checkout code
         uses: actions/checkout@v3
-      - uses: pnpm/action-setup@v4
-        name: Install pnpm
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
         with:
           version: 10
           run_install: false
-      - name: Install Node.js
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: "pnpm"
+          cache: pnpm
+
+      # 新增：检测 package.json 是否更改
+      - name: Check if package.json changed
+        id: changed
+        uses: tufanaksoy/check-if-changed@main
+        with:
+          files: 'package.json'
+
+      # 新增：如果 package.json 更改，清除缓存
+      - name: Clear pnpm cache
+        if: steps.changed.outputs.changed == 'true'
+        run: |
+          pnpm store prune
+          pnpm cache clean --all
+
       - name: Install dependencies
         run: pnpm install
-      # Build Tauri application
+
       - name: Build Tauri application
-        working-directory:
         run: pnpm tauri build
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-output # Artifact 名称
+          name: build-output
           path: src-tauri/target/release/bundle/msi/*.msi

@@ -22,7 +22,7 @@
 </template>
 
 <script setup lang="ts">
-import { SettingsDO } from "@/DBA/DO/SettingsDO";
+import { Settings } from "@/models/Settings.model";
 import { useSettingsStore } from "@/store/SettingsStore";
 import { WarningFilled } from "@element-plus/icons-vue"
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
@@ -30,7 +30,7 @@ import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 const SettingsStore = useSettingsStore();
 const viewportHeight = ref(0);
 const viewportWidth = ref(0);
-const dataFromDB = ref<SettingsDO | any>();
+const dataFromDB = ref<Settings | any>();
 // 遮罩层状态
 const isMaskNeedShow = computed(() => {
     return dataFromDB.value?.selected && (viewportHeight.value < 600 || viewportWidth.value < 800)

@@ -12,7 +12,7 @@ export const gameSettingsRoutesCfg: RouteRecordRaw =
     },
     components: {
         default: () => import('@/components/Menu/SubMenu.vue'),
-        content: () => import('../../forms/gameSettings/AudioSettings.vue')
+        content: () => import('../../views/gameSettings/AudioSettings.vue')
     },
     children: [
         {
@@ -21,7 +21,7 @@ export const gameSettingsRoutesCfg: RouteRecordRaw =
                 icon: null,
                 text: "音频"
             },
-            component: () => import('../../forms/gameSettings/AudioSettings.vue')
+            component: () => import('../../views/gameSettings/AudioSettings.vue')
         },
         {
             path: '/gameSettings/VideoSettings',
@@ -29,7 +29,7 @@ export const gameSettingsRoutesCfg: RouteRecordRaw =
                 icon: null,
                 text: "视频"
             },
-            component: () => import('../../forms/gameSettings/VideoSettings.vue')
+            component: () => import('../../views/gameSettings/VideoSettings.vue')
         }
     ]
 }

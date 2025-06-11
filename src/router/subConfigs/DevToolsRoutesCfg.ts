@@ -10,7 +10,7 @@ export const DevToolsRoutesCfg: RouteRecordRaw =
     },
     components: {
         default: () => import('@/components/Menu/SubMenu.vue'),
-        content: () => import('../../forms/DevTools/DevTools.vue')
+        content: () => import('../../views/DevTools/DevTools.vue')
     },
     children: [
         {
@@ -19,13 +19,13 @@ export const DevToolsRoutesCfg: RouteRecordRaw =
                 icon: null,
                 text: "开发者工具"
             },
-            component: () => import('../../forms/DevTools/DevTools.vue')
+            component: () => import('../../views/DevTools/DevTools.vue')
         }, {
             path: '/devTools/devTools',
             meta: {
                 icon: null,
                 text: "设置渲染"
             },
-            component: () => import('../../forms/DevTools/DbTest.vue')
+            component: () => import('../../views/DevTools/DbTest.vue')
         }]
 }

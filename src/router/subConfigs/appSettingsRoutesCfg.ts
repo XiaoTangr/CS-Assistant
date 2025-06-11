@@ -10,7 +10,7 @@ export const appSettingsRoutesCfg: RouteRecordRaw =
     },
     components: {
         default: () => import('@/components/Menu/SubMenu.vue'),
-        content: () => import('../../forms/appSettings/CommSettings.vue')
+        content: () => import('../../views/appSettings/CommSettings.vue')
     },
     children: [
         {
@@ -19,28 +19,28 @@ export const appSettingsRoutesCfg: RouteRecordRaw =
                 icon: null,
                 text: "一般"
             },
-            component: () => import('../../forms/appSettings/CommSettings.vue')
+            component: () => import('../../views/appSettings/CommSettings.vue')
         }, {
             path: '/appSettings/NetSettings',
             meta: {
                 icon: null,
                 text: "网络"
             },
-            component: () => import('../../forms/appSettings/NetSettings.vue')
+            component: () => import('../../views/appSettings/NetSettings.vue')
         }, {
             path: '/appSettings/PathSettings',
             meta: {
                 icon: null,
                 text: "路径"
             },
-            component: () => import('../../forms/appSettings/PathSettings.vue')
+            component: () => import('../../views/appSettings/PathSettings.vue')
         }, {
             path: '/appSettings/AboutSettings',
             meta: {
                 icon: null,
                 text: "关于"
             },
-            component: () => import('../../forms/appSettings/AboutSettings.vue')
+            component: () => import('../../views/appSettings/AboutSettings.vue')
         }
     ]
 }

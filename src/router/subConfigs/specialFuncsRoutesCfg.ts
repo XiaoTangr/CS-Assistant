@@ -10,7 +10,7 @@ export const specialFuncsRoutesCfg: RouteRecordRaw =
     },
     components: {
         default: () => import('@/components/Menu/SubMenu.vue'),
-        // content: () => import('../forms/specialFuncs/keyBindSettings.vue')
+        // content: () => import('../views/specialFuncs/keyBindSettings.vue')
     },
     children: [
         {
@@ -19,14 +19,14 @@ export const specialFuncsRoutesCfg: RouteRecordRaw =
                 icon: null,
                 text: "配置克隆"
             },
-            component: () => import('../../forms/specialFuncs/ConfigCloner.vue')
+            component: () => import('../../views/specialFuncs/ConfigCloner.vue')
         }, {
             path: '/specialFuncs/keyBindSettings',
             meta: {
                 icon: null,
                 text: "键位"
             },
-            component: () => import('../../forms/specialFuncs/KeyBindSettings.vue')
+            component: () => import('../../views/specialFuncs/KeyBindSettings.vue')
         }
     ]
 }

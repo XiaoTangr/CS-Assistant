@@ -10,7 +10,7 @@ export const appHomeRoutesCfg: RouteRecordRaw =
     },
     components: {
         default: () => import('@/components/Menu/SubMenu.vue'),
-        // content: () => import('../../forms/appHome/MainForm.vue')
+        // content: () => import('../../views/appHome/MainForm.vue')
     },
     children: [
         {
@@ -20,7 +20,7 @@ export const appHomeRoutesCfg: RouteRecordRaw =
                 icon: null,
                 text: "首页"
             },
-            component: () => import('../../forms/appHome/MainForm.vue')
+            component: () => import('../../views/appHome/MainForm.vue')
         },
     ]
 }
