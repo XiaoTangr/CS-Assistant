@@ -24,6 +24,37 @@ body {
     transition: all .5s ease-in-out;
 }
 
+/* 卡片容器 */
+.liquid-card {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+    box-shadow:
+        0 8px 32px rgba(31, 38, 135, 0.08),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+
+
+// /* 标准Liquid Glass按钮 */
+// .liquid-button {
+//     background: rgba(255, 255, 255, 0.4);
+//     backdrop-filter: blur(16px) saturate(150%);
+//     -webkit-backdrop-filter: blur(16px) saturate(150%);
+//     box-shadow:
+//         0 2px 8px rgba(0, 0, 0, 0.06),
+//         inset 0 1px 2px rgba(255, 255, 255, 0.6);
+//     border: 1px solid rgba(255, 255, 255, 0.3);
+// }
+
+// .liquid-button:hover {
+//     background-color: rgba(250, 250, 250, 0.25);
+//     // border-color: #ff9900;
+//     color: #409EFF;
+// }
+
+
+
 .select-text {
     -webkit-user-select: text;
     /*webkit浏览器*/
@@ -48,7 +79,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    color: $font-color;
+    color: $color-text-primary;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -68,12 +99,12 @@ body {
 // 美化滚动条
 ::-webkit-scrollbar {
 
-    width: .5em;
+    width: 12px;
     height: .5em;
 }
 
 ::-webkit-scrollbar-track {
-    width: .5em;
+    width: 12px;
 
     background: rgba($scrollbar-track-background, 0.1);
     -webkit-border-radius: .25em;

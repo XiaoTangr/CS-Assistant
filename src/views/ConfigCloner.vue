@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import ConfigCloner from '@/components/views/specialFuncs/ConfigCloner/ConfigCloner.vue';
+import ConfigCloner from '@/components/views/ConfigCloner/ConfigCloner.vue';
 import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 
 

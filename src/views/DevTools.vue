@@ -1,72 +1,85 @@
 <template>
     <div>
         <el-text v-for=" in 3" type="danger" size="large">这些功能仅供开发者使用!<br></el-text>
-        <el-card>
-            <template #header>
-                database - SettingsDB
-            </template>
-            <template #default>
-                <el-form :ref="dbformRef" label-position="left" label-width="auto" :model="dbsettings">
-                    <el-form-item label="key">
-                        <el-input v-model="dbsettings.key" />
-                    </el-form-item>
-                    <el-form-item label="text">
-                        <el-input v-model="dbsettings.text" />
-                    </el-form-item>
-                    <el-form-item label="description">
-                        <el-input v-model="dbsettings.description" />
-                    </el-form-item>
-                    <el-form-item label="Default selected">
-                        <el-input v-model="dbsettings.selected" />
-                    </el-form-item>
-                    <el-form-item label="Type">
-                        <el-select v-model="dbsettings.type" placeholder="Select" size="large">
-                            <el-option v-for="item in dbsettingsType" :key="item" :label="item" :value="item" />
-                        </el-select>
-                    </el-form-item>
+        <div class="container">
+            <!-- <SettingsItem chapter="testSettings" section="testSettings" /> -->
+        </div>
 
-                    <div v-if="dbsettings.type === 'Select'">
-                        <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'e' + i"
-                            :prop="'e.' + i + '.value'">
-                            <el-form-item label="text">
-                                <el-input v-model="e.text" />
-                            </el-form-item>
-                            <el-form-item label="value">
-                                <el-input v-model="e.value" />
+
+        <div>
+
+            <el-card>
+                <template #header>
+                    database - SettingsDB
+                </template>
+                <template #default>
+                    <el-form :ref="dbformRef" label-position="left" label-width="auto" :model="dbsettings">
+                        <el-form-item label="key(PK)">
+                            <el-input v-model="dbsettings.key" />
+                        </el-form-item>
+                        <el-form-item label="index">
+                            <el-input v-model="dbsettings.index" />
+                        </el-form-item>
+                        <el-form-item label="Text">
+                            <el-input v-model="dbsettings.text" />
+                        </el-form-item>
+                        <el-form-item label="Description">
+                            <el-input v-model="dbsettings.description" />
+                        </el-form-item>
+                        <el-form-item label="Selected">
+                            <el-input v-model="dbsettings.selected" />
+                        </el-form-item>
+                        <el-form-item label="Type">
+                            <el-select v-model="dbsettings.type" placeholder="Select" size="large">
+                                <el-option v-for="item in dbsettingsType" :key="item" :label="item" :value="item" />
+                            </el-select>
+                        </el-form-item>
+
+                        <div v-if="dbsettings.type === 'Select'">
+                            <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'e' + i"
+                                :prop="'e.' + i + '.value'">
+                                <el-form-item label="text">
+                                    <el-input v-model="e.text" />
+                                </el-form-item>
+                                <el-form-item label="value">
+                                    <el-input v-model="e.value" />
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button @click.prevent="delSettingsOption(e)" type="warning">del this</el-button>
+                                </el-form-item>
                             </el-form-item>
                             <el-form-item>
-                                <el-button @click.prevent="delSettingsOption(e)" type="warning">del this</el-button>
+                                <el-button @click="addSettingsOption" type="primary">add option item</el-button>
                             </el-form-item>
+                        </div>
+                        <!-- <el-form-item label="chapter">
+                            <el-input v-model="dbsettings.chapter" />
+                        </el-form-item> -->
+                        <el-form-item label="section">
+                            <el-input v-model="dbsettings.section" />
                         </el-form-item>
-                        <el-form-item>
-                            <el-button @click="addSettingsOption" type="primary">add option item</el-button>
-                        </el-form-item>
-                    </div>
-                    <el-form-item label="chapter">
-                        <el-input v-model="dbsettings.chapter" />
-                    </el-form-item>
-                    <el-form-item label="section">
-                        <el-input v-model="dbsettings.section" />
-                    </el-form-item>
-                    <el-form-item label="操作">
+                        <el-form-item label="操作">
 
-                        <el-button type="info" @click="generateSettingsdbSQL">generate Sql</el-button>
-                        <el-button type="success" @click="querySettingsRow">query</el-button>
-                        <el-button type="primary" @click="insertSettingsRowtodb">insert</el-button>
-                        <el-button type="warning" @click="updateSettingsRow">update</el-button>
-                        <el-button type="danger" @click="deleteSettingsRow">delete</el-button>
-                    </el-form-item>
-                </el-form>
-                <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea" placeholder="SQL Output..."></el-input>
-            </template>
-        </el-card>
+                            <el-button type="info" @click="generateSettingsdbSQL">generate Sql</el-button>
+                            <el-button type="success" @click="querySettingsRow">query</el-button>
+                            <el-button type="primary" @click="insertSettingsRowtodb">insert</el-button>
+                            <el-button type="warning" @click="updateSettingsRow">update</el-button>
+                            <el-button type="danger" @click="deleteSettingsRow">delete</el-button>
+                        </el-form-item>
+                    </el-form>
+                    <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea"
+                        placeholder="SQL Output..."></el-input>
+                </template>
+            </el-card>
+        </div>
     </div>
+
 
 </template>
 
 <script setup lang="ts">
 import { Settings, SettingsRowOptions } from '@/models/Settings.model';
-import SettingsDAO from '@/repositories/SettingsRepository';
+import SettingsDAO from '@/repositories/Settings.Repository';
 
 import { ElNotification, FormInstance } from 'element-plus';
 import { reactive, ref } from 'vue';
@@ -83,7 +96,7 @@ const dbsettings = reactive<Settings>(
         type: "",
         selected: "",
         options: [],
-        chapter: "",
+        index: 0,
         section: ""
     }
 );
@@ -103,7 +116,7 @@ const addSettingsOption = () => {
     })
 }
 const generateSettingsdbSQL = () => {
-    const fields = ["key", "text", "description", "selected", "type", "chapter", "section"];
+    const fields = ["key", "text", "description", "selected", "type", "index", "section"];
     for (const field of fields) {
         if (!dbsettings[field as keyof typeof dbsettings]) {
             ElNotification.error(`${field} cannot be empty.`);
@@ -128,13 +141,13 @@ const generateSettingsdbSQL = () => {
       '${dbsettings.type}',
       '${dbsettings.selected}',
       '${optionsValue.replace(/'/g, "''")}',
-      '${dbsettings.chapter}',
+      '${dbsettings.index}',
       '${dbsettings.section}'
     );`;
     dbsettingsSQLout.value = sql;
 };
 const insertSettingsRowtodb = () => {
-    const fields = ["key", "text", "description", "selected", "type", "chapter", "section"];
+    const fields = ["key", "text", "description", "selected", "type", "index", "section"];
     for (const field of fields) {
         if (!dbsettings[field as keyof typeof dbsettings]) {
             ElNotification.error(`${field} cannot be empty.`);
@@ -150,7 +163,7 @@ const insertSettingsRowtodb = () => {
     }).catch(e => ElNotification.error(e))
 }
 const updateSettingsRow = () => {
-    const fields = ["key", "text", "description", "selected", "type", "chapter", "section"];
+    const fields = ["key", "text", "description", "selected", "type", "index", "section"];
     for (const field of fields) {
         if (!dbsettings[field as keyof typeof dbsettings]) {
             ElNotification.error(`${field} cannot be empty.`);
@@ -195,7 +208,7 @@ const querySettingsRow = () => {
         dbsettings.type = res?.type || "";
         dbsettings.text = res?.text || '';
         dbsettings.selected = res?.selected.toString() || '';
-        dbsettings.chapter = res?.chapter || '';
+        dbsettings.index = res?.index || -1;
         dbsettings.section = res?.section || '';
     }).catch(e => ElNotification.error(e))
 }

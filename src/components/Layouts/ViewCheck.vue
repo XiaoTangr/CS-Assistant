@@ -13,7 +13,7 @@
                     <div class="btn-container">
                         <el-checkbox v-model="isChecked" size="small">不再提示</el-checkbox>
                         <el-button plain type="warning" size="small" @click="confirm">{{ isChecked ? "确定" : "忽略本次"
-                        }}</el-button>
+                            }}</el-button>
                     </div>
                 </template>
             </el-popconfirm>
@@ -41,7 +41,7 @@ const closeMask = async () => {
     dataFromDB.value.selected = false;
 
     if (isChecked.value) {
-        await SettingsStore.saveRow(dataFromDB.value);
+        // await SettingsStore.updateModifedSetting(dataFromDB.value);
     }
 }
 const getWindowSize = () => {
@@ -49,12 +49,12 @@ const getWindowSize = () => {
     viewportWidth.value = document.body.clientWidth;
 }
 watch(SettingsStore, () => {
-    dataFromDB.value = SettingsStore.getDataByKeyName("showViewCheck").value;
+    dataFromDB.value = SettingsStore.qetSettingsByKey("showViewCheck");
 })
 onMounted(async () => {
     getWindowSize();
     window.addEventListener('resize', getWindowSize);
-    dataFromDB.value = JSON.parse(JSON.stringify(SettingsStore.getDataByKeyName("showViewCheck").value))
+    dataFromDB.value = SettingsStore.qetSettingsByKey("showViewCheck")
 });
 onBeforeUnmount(() => {
     window.removeEventListener('resize', getWindowSize);
@@ -63,10 +63,10 @@ onBeforeUnmount(() => {
 
 <style scoped lang="scss">
 .Meida-masker {
-    z-index: 10 !important;
-    backdrop-filter: blur(calc($header-bar-Blur * 2));
+    z-index: 1000 !important;
+    backdrop-filter: blur(calc($simpe-blur * 2));
     position: absolute;
-    top: $header-bar-height;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;

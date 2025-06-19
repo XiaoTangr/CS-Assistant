@@ -1,74 +1,88 @@
 <template>
   <div class="App-Container" @contextmenu.prevent="openMenu()">
-    <div class="funcs">
-      <BackGround />
+    <div class="nav-container">
+      <NavBar />
     </div>
-    <div class="layouts">
-      <div class="header">
-        <HeaderBar />
+    <div class="window-container">
+      <div class="global-command-container">
+        <GlobalCommand/>
       </div>
-      <div class="content">
-        <ContentBar />
-      </div>
-      <div class="status">
-        <StatusBar />
+      <div class="content-container">
+          <RouterView />
       </div>
     </div>
-
+    <ViewCheck />
+    <BackGround />
   </div>
 
 </template>
 <script setup lang="ts">
-import HeaderBar from './components/Layouts/HeaderBar.vue';
-import ContentBar from './components/Layouts/ContentBar.vue';
-import StatusBar from './components/Layouts/StatusBar.vue';
 import BackGround from './components/Layouts/BackGround.vue';
-
+import NavBar from './components/Layouts/NavBar.vue';
+import ViewCheck from './components/Layouts/ViewCheck.vue';
+import GlobalCommand from './components/Public/GlobalCommand.vue';
 const openMenu = () => {
   console.warn('User try open contextmenu!')
 }
 
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.App-Container::before {
+  z-index: 2;
+  content: "";
+  background: rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5em;
+  backdrop-filter: blur(10em);
+  -webkit-backdrop-filter: blur(10em);
+  mask: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.5) 10%,
+      rgba(0, 0, 0, 0) 100%);
+  // -webkit-app-region: drag;
+}
+
 .App-Container {
-  font-size: $font-size;
-
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   display: flex;
-  flex-direction: column;
+  border: $simple-border;
 
-  .layouts {
-    z-index: 1;
+  .nav-container {
+    height: 100vh;
+    width: 240px;
+  }
+
+
+
+  .window-container {
+    flex: 1;
     height: 100%;
-    width: 100%;
-    background: $globe-layout-color;
+    overflow-y: auto;
+    background: rgb(250, 250, 250);
 
-    .header {
-      z-index: 999;
-      height: $header-bar-height;
+    .global-command-container {
+      z-index: 9;
+      display: flex;
+      align-items: center;
+      height: 5em;
+      padding: 0 1em;
+      position: sticky;
+      top: 0;
+
+
+
     }
 
-    .content {
-      z-index: 2;
-      // overflow: hidden;
-      padding: $globe-padding;
-      display: block;
-      height: $content-bar-height;
-    }
-
-    .status {
-      z-index: 1;
-      height: $status-bar-height;
+    .content-container {
+      flex: 1;
+      padding: 1em;
     }
   }
 
-  .funcs {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    left: 0;
-  }
+
 }
 </style>

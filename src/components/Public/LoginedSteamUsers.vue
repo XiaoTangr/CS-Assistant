@@ -40,7 +40,7 @@
 </template>
 
 <script setup lang="ts">
-import CopyText from '@/components/Public/CopyText.vue';
+import CopyText from '@/components/Common/CopyText.vue';
 import { RefreshRight } from '@element-plus/icons-vue';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { storeToRefs } from 'pinia';

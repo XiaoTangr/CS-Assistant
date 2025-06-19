@@ -38,7 +38,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { ElNotification } from 'element-plus';
 import { onMounted, ref } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
-import CopyText from '@/components/Public/CopyText.vue';
+import CopyText from '@/components/Common/CopyText.vue';
 import { Settings } from '@/models/Settings.model';
 const SettingsStore = useSettingsStore();
 
@@ -55,8 +55,8 @@ const rowsFromDb = ref<Settings[]>([]);
 
 const pathCheck = async () => {
 
-    let steamInstallPathRow = SettingsStore.getDataByKeyName("steamInstallPath").value as Settings;
-    let cs2InstallPathRow = SettingsStore.getDataByKeyName("cs2InstallPath").value as Settings;
+    let steamInstallPathRow = SettingsStore.qetSettingsByKey("steamInstallPath") as Settings;
+    let cs2InstallPathRow = SettingsStore.qetSettingsByKey("cs2InstallPath") as Settings;
     rowsFromDb.value = [steamInstallPathRow, cs2InstallPathRow];
 
 
@@ -94,13 +94,13 @@ const pathCheck = async () => {
                     if (appId === "730") {
                         let path = library.path.replace(/\\\\/g, `\\`) + "\\steamapps\\common\\Counter-Strike Global Offensive"
                         steamData.value.pathCheck.cs2Path = path;
-                        let row = SettingsStore.getDataByKeyName("cs2InstallPath").value as Settings;
+                        let row = SettingsStore.qetSettingsByKey("cs2InstallPath") as Settings;
                         row.selected = path;
-                        SettingsStore.saveRow(row).then(() => {
-                            ElNotification.success("CS2路径已自动检测到并保存")
-                        }).catch((e: any) => {
-                            ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
-                        })
+                        // SettingsStore.saveRow(row).then(() => {
+                        //     ElNotification.success("CS2路径已自动检测到并保存")
+                        // }).catch((e: any) => {
+                        //     ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
+                        // })
                     }
                 }
             }
@@ -121,10 +121,10 @@ const selectSteamPath = async () => {
             ElNotification.error(`文件不存在,请重试:${steamExePath}`)
         } else {
             rowsFromDb.value[0].selected = path as string;
-            SettingsStore.saveRow(rowsFromDb.value[0]).then(() => {
-                ElNotification.success("Steam路径已保存")
-                pathCheck();
-            })
+            // SettingsStore.saveRow(rowsFromDb.value[0]).then(() => {
+            //     ElNotification.success("Steam路径已保存")
+            //     pathCheck();
+            // })
         }
     }
 
@@ -181,12 +181,12 @@ onMounted(async () => {
             flex-direction: column;
             justify-content: center;
             width: 100%;
-            background-color: color.scale($traffic-light-red, $lightness: 40%);
+            background-color: color.scale($mac-red, $lightness: 40%);
         }
 
         .Found {
             width: 100%;
-            background-color: color.scale($traffic-light-green, $lightness: 40%);
+            background-color: color.scale($mac-green, $lightness: 40%);
         }
     }
 }

@@ -86,7 +86,7 @@ const asOrigintSelerterChangeHandler = (value: string) => {
 }
 const getBackupFolderPath = (): Promise<string> => {
     return new Promise((resolve, reject) => {
-        let r = SettingsStore.getDataByKeyName("backupFolderPath").value as Settings;
+        let r = SettingsStore.qetSettingsByKey("backupFolderPath") as Settings;
         if (!r || !r.selected || r.selected === '') {
             reject("The value of backupFolderPath is empty or illegal! ");
         }

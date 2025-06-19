@@ -5,7 +5,7 @@
             <Notice class="inner-item nt" />
         </div>
         <div class="item">
-            <LoginedSteamUsers class="inner-item" />
+            <!-- <LoginedSteamUsers class="inner-item" /> -->
         </div>
     </div>
 </template>
@@ -13,7 +13,6 @@
 <script setup lang="ts">
 import Notice from '@/components/views/appHome/Notice.vue';
 import GameCheck from '@/components/views/appHome/GameCheck.vue';
-import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 </script>
 <style scoped lang="scss">
 .container {

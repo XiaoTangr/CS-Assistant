@@ -12,7 +12,7 @@ const PARSE_CACHE = new LRUCache<string, any>({ max: 100 });
  * @param input - 要解析的内容，可以是 JSON 字符串或对象/数组
  * @returns 解析后的 JavaScript 对象或数组
  */
-export function deepParseJSON<T = any>(input: string | T): T {
+export const deepParseJSON = <T = any>(input: string | T): T => {
     // 空值直接返回
     if (input === null || input === undefined) {
         return input as T;
@@ -62,7 +62,7 @@ export function deepParseJSON<T = any>(input: string | T): T {
  * @param input - 要序列化的对象
  * @returns 序列化后的对象，其中所有可序列化的值都被转为 JSON 字符串
  */
-export function deepStringifyJSON<T = any>(input: T): Record<keyof T, string> {
+export const deepStringifyJSON = <T = any>(input: T): Record<keyof T, string> => {
     // 如果是数组，单独处理
     if (Array.isArray(input)) {
         return input.map(item => JSON.stringify(item)) as any;

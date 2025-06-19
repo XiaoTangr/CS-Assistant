@@ -1,4 +1,4 @@
-import MapRepository from "@/repositories/MapRepository";
+import MapRepository from "@/repositories/Map.Repository";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { Map } from "@/models/Map.model";

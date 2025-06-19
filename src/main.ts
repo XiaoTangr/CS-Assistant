@@ -11,7 +11,7 @@ import StartUpUtil from "./core/utils/StartUpUtil";
 const app = createApp(App)
 const store = createPinia();
 
-import { Window } from '@tauri-apps/api/window';
+// import { Window } from '@tauri-apps/api/window';
 
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
@@ -27,11 +27,12 @@ app.use(ElementPlus)
 StartUpUtil.startUp().then(() => {
     app.mount("#app");
 }).catch(async (error) => {
-    const appWindow = new Window("main")
-    const r = await window.confirm(`应用启动失败:${error},\n访问www.javat.cn获得技术支持`)
-    if (r !== undefined) {
-        appWindow.close();
-    }
+    console.error(error)
+    // const appWindow = new Window("main")
+    // const r = await window.confirm(`应用启动失败:${error},\n访问www.javat.cn获得技术支持`)
+    // if (r !== undefined) {
+    //     appWindow.close();
+    // }
 });
 
 export default app

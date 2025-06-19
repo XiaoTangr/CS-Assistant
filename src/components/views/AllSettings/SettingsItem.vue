@@ -82,20 +82,20 @@
 import { FolderOpened } from '@element-plus/icons-vue';
 import { computed, ref, watchEffect } from 'vue';
 import { open } from '@tauri-apps/plugin-dialog';
-import { useSettingsStore } from '@/store/SettingsStore';
-const props = defineProps({
-    chapter: {
-        type: String,
-        required: true
-    },
-    section: {
-        type: String,
-        required: true
-    }
-})
+// import { useSettingsStore } from '@/store/SettingsStore';
+// const props = defineProps({
+//     chapter: {
+//         type: Number,
+//         required: true
+//     },
+//     section: {
+//         type: String,
+//         required: true
+//     }
+// })
 
 
-const SettingsStore = useSettingsStore();
+// const SettingsStore = useSettingsStore();
 
 
 const originData = ref()
@@ -103,8 +103,8 @@ const modifedData = ref()
 
 
 watchEffect(() => {
-    originData.value = SettingsStore.getDataByChapterAndSection(props.chapter, props.section);
-    modifedData.value = SettingsStore.getModifedDataByChapterAndSection(props.chapter, props.section);
+    // originData.value = SettingsStore.getDataByChapterAndSection(props.chapter, props.section);
+    // modifedData.value = SettingsStore.getModifedDataByChapterAndSection(props.chapter, props.section);
 })
 const hasData = computed(() => {
     return originData.value && originData.value.length > 0 ? true : false
@@ -127,7 +127,7 @@ const openPathChoose = async (index: number) => {
 };
 
 const savaChanges = () => {
-    SettingsStore.saveModifedDataByChapterAndSection(props.chapter, props.section);
+    // SettingsStore.saveModifedDataByChapterAndSection(props.chapter, props.section);
 }
 const useDefault = () => {
     
@@ -242,7 +242,7 @@ const useDefault = () => {
         margin-bottom: 0;
         padding: calc($globe-padding / 2);
         backdrop-filter: $globe-backdrop-filter;
-        box-shadow: $menu-box-shadow;
+        box-shadow: $simple-box-shadow;
 
     }
 
@@ -256,7 +256,7 @@ const useDefault = () => {
     width: $font-size;
     height: $font-size;
     font-weight: $font-weight-bold;
-    color: $traffic-light-yellow;
+    color: $mac-yellow;
     margin-left: - $font-size;
 }
 

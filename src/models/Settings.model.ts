@@ -5,7 +5,7 @@ export interface Settings {
     type: "Input" | "Boolean" | "Select" | "PathInput" | string;
     selected: string | boolean;
     options: Array<SettingsRowOptions>;
-    chapter: string;
+    index: number;
     section: string;
 }
 export interface SettingsRowOptions {
@@ -19,3 +19,4 @@ export interface SettingsRowOptions {
      */
     text: string;
 }
+export type SettingsGroup = Record<string, Settings[]>;
