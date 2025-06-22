@@ -1,67 +1,69 @@
 <template>
     <div class="container ">
-        <div v-if="unSavedSettingsItem.type === 'Boolean'" class="settings-item   item-Boolean">
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(unSavedSettingsItem.key) }" class="item-name">{{
-                unSavedSettingsItem.text }}
+        <div v-if="viewSettingsDataItem.type === 'Boolean'" class="settings-item   item-Boolean">
+            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
+                viewSettingsDataItem.text }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ unSavedSettingsItem.description }}
+                    {{ viewSettingsDataItem.description }}
                 </div>
 
                 <div class="item-options">
-                    <el-switch v-model="unSavedSettingsItem.selected" :active-text="unSavedSettingsItem.options[0].text"
-                        :inactive-text="unSavedSettingsItem.options[1].text" />
+                    <el-switch v-model="viewSettingsDataItem.selected"
+                        :active-text="viewSettingsDataItem.options[0].text"
+                        :inactive-text="viewSettingsDataItem.options[1].text" />
                 </div>
             </div>
         </div>
-        <div v-if="unSavedSettingsItem.type === 'Select'" class="settings-item item-Select">
+        <div v-if="viewSettingsDataItem.type === 'Select'" class="settings-item item-Select">
 
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(unSavedSettingsItem.key) }" class="item-name">{{
-                unSavedSettingsItem.text }}
+            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
+                viewSettingsDataItem.text }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ unSavedSettingsItem.description }}
+                    {{ viewSettingsDataItem.description }}
                 </div>
 
                 <div class="item-options">
-                    <el-select v-model="unSavedSettingsItem.selected" placeholder="Select" style="width: 100%">
-                        <el-option v-for="i in unSavedSettingsItem.options" :key="i.value" :label="i.text"
+                    <el-select v-model="viewSettingsDataItem.selected" placeholder="Select" style="width: 100%">
+                        <el-option v-for="i in viewSettingsDataItem.options" :key="i.value" :label="i.text"
                             :value="i.value" />
                     </el-select>
                 </div>
             </div>
         </div>
-        <div v-if="unSavedSettingsItem.type === 'Input'" class="settings-item  item-Input">
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(unSavedSettingsItem.key) }" class="item-name">{{
-                unSavedSettingsItem.text }}
+        <div v-if="viewSettingsDataItem.type === 'Input'" class="settings-item  item-Input">
+            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
+                viewSettingsDataItem.text }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ unSavedSettingsItem.description }}
+                    {{ viewSettingsDataItem.description }}
                 </div>
                 <div class="item-options">
-                    <el-input v-model="unSavedSettingsItem.selected" placeholder="..." style="width: 100%" />
+                    <el-input v-model="viewSettingsDataItem.selected" placeholder="..." style="width: 100%" />
                 </div>
             </div>
         </div>
-        <div v-if="unSavedSettingsItem.type === 'PathInput'" class="settings-item item-FilePath">
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(unSavedSettingsItem.key) }" class="item-name">{{
-                unSavedSettingsItem.text
+        <div v-if="viewSettingsDataItem.type === 'PathInput'" class="settings-item item-FilePath">
+            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
+                viewSettingsDataItem.text
                 }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ unSavedSettingsItem.description }}
+                    {{ viewSettingsDataItem.description }}
                 </div>
                 <div class="item-options">
-                    <el-input class="path-item" v-model="unSavedSettingsItem.selected" placeholder="选择路径" />
+                    <el-input class="path-item" v-model="viewSettingsDataItem.selected" placeholder="选择路径" />
                     <el-button class="path-item" @click="openPathChoose" type="primary" :icon="FolderOpened" circle
                         plain />
                 </div>
             </div>
         </div>
+
     </div>
 </template>
 
@@ -72,11 +74,7 @@ import { Settings } from '@/models/Settings.model';
 import { PropType } from 'vue';
 import { useSettingsStore } from '@/store/SettingsStore';
 const props = defineProps({
-    key: {
-        type: String,
-        // required: true
-    },
-    unSavedSettingsItem: {
+    viewSettingsDataItem: {
         type: Object as PropType<Settings>,
         required: true
     }
@@ -91,7 +89,7 @@ const openPathChoose = async () => {
             directory: true,
         });
         if (file !== null && typeof file === 'string') {
-            props.unSavedSettingsItem.selected = file;
+            props.viewSettingsDataItem.selected = file;
         }
     } catch (error: any) {
         throw error;
@@ -101,13 +99,13 @@ const openPathChoose = async () => {
 
 <style scoped lang="scss">
 .container {
-    width: 60%;
+    width: 100%;
     display: flex;
     flex-direction: column;
     margin: 0 auto;
-    transition: all .5s;
+    transition: all .5s ease-in-out;
     margin: calc($globe-padding / 2) 0;
-
+    overflow: hidden;
 
     .settings-item {
         display: flex;
@@ -116,6 +114,7 @@ const openPathChoose = async () => {
         border-radius: 4px;
         border: $simple-border;
         padding: calc($globe-padding / 2);
+        transition: $simpel-transition-fast;
 
         .item-name {
             padding-top: calc($globe-padding / 4);
@@ -136,7 +135,7 @@ const openPathChoose = async () => {
             align-items: center;
             width: calc(100% - $font-size);
             margin-left: $font-size;
-
+            background: none;
             .item-options {
                 display: flex;
                 justify-content: right;
@@ -157,6 +156,12 @@ const openPathChoose = async () => {
     }
 }
 
+.settings-item:has(> .modifed) {
+
+    background-color: $warning-color-alpha-3;
+}
+
+
 .modifed::before {
     content: "●";
     display: flex;
@@ -165,14 +170,7 @@ const openPathChoose = async () => {
     width: $font-size;
     height: $font-size;
     font-weight: $font-weight-bold;
-    color: $mac-yellow;
+    color: $warning-color;
     margin-left: - $font-size;
-}
-
-@media screen and (max-width: 1024px) {
-
-    .container {
-        width: 100%;
-    }
 }
 </style>

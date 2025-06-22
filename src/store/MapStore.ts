@@ -1,35 +1,29 @@
 import MapRepository from "@/repositories/Map.Repository";
 import { defineStore } from "pinia";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import { Map } from "@/models/Map.model";
 
 
 export const useMapStore = defineStore("MapStore", () => {
-    const data = ref<Map[]>([]);
-    const modifedData = ref<Map[]>([]);
-    const isInitialized = ref(false);
-    const isDataupdated = computed(() => {
-        return JSON.stringify(data.value) !== JSON.stringify(modifedData.value);
-    })
-
+    const dbData = ref<Map[]>([]);
+    const viewData = ref<Map[]>([]);
 
     const fetchData = async () => {
-        if (!isInitialized.value) {
-            const res = await MapRepository.queryAll(); // Map[] | null
-
-            if (res) {
-                // 过滤 null 值并保持类型正确
-                data.value = res.filter((item): item is Map => item !== null);
-
-                // 深拷贝
-                modifedData.value = JSON.parse(JSON.stringify(data.value));
-            }
-
-            isInitialized.value = true;
-        }
+        console.log(`[MapStore] fetchData`)
+        const res = await MapRepository.queryAll(); // Map[] | null
+        // 过滤 null 值并保持类型正确
+        dbData.value = res.filter((item): item is Map => item !== null);
+        // 深拷贝
+        viewData.value = JSON.parse(JSON.stringify(dbData.value));
     };
 
+    const getOneByKey = async (key: string) => {
+        const res = dbData.value.find((item) => item.key === key);
+        if (res) {
+            return res;
+        }
+        return null;
+    };
 
-
-    return { data, modifedData, isDataupdated, fetchData };
-});
+    return { dbData, viewData, getOneByKey, fetchData };
+})

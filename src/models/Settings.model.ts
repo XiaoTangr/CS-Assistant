@@ -1,12 +1,13 @@
 export interface Settings {
+    index: number;
     key: string;
     text: string;
     description: string;
     type: "Input" | "Boolean" | "Select" | "PathInput" | string;
     selected: string | boolean;
     options: Array<SettingsRowOptions>;
-    index: number;
-    section: string;
+    groupName: string;
+    groupIndex: number;
 }
 export interface SettingsRowOptions {
     /**

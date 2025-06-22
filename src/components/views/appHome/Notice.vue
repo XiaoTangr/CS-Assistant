@@ -1,31 +1,21 @@
 <template>
-    <div class="container">
-        <el-card style="display:flex;flex-direction:column;flex: 1;" :body-style="{ flex: 1 }">
-            <template #header>
-                <div class="header">
-                    <Bell class="icon" />
-                    <div class="text"> 公告 </div>
-                </div>
+    <el-card class="container" style="display:flex;flex-direction:column;flex: 1;"
+        :body-style="{ flex: 1, 'overflow-y': 'auto', padding: '0' }">
 
-            </template>
-            <template #default>
-                <div class="default">
-                    <el-text v-html="data[0].publishContent" line-clamp="5" />
-                </div>
-            </template>
-            <template #footer>
-                <div class="footer">
-                    <div class="publish-data">
-                        {{ data[0].publishDate }}
-                    </div>
-                    <div class="read-more">
-                        <el-link type="warning">历史公告</el-link>
-                    </div>
-                </div>
-            </template>
-        </el-card>
-    </div>
-
+        <div class="header liquid-card">
+            <Bell class="icon" />
+            <div class="text">公告</div>
+        </div>
+        <el-timeline class="body">
+            <el-timeline-item v-for="(activity, index) in data" :key="index" :timestamp="activity.publishDate"
+                placement="top">
+                <CommSpace :size="4">
+                    <el-text v-html="activity.publishContent" truncated line-clamp="2" />
+                    <el-link type="primary">详情</el-link>
+                </CommSpace>
+            </el-timeline-item>
+        </el-timeline>
+    </el-card>
 </template>
 
 <script setup lang="ts">
@@ -35,6 +25,7 @@ import axios from 'axios';
 import { ElNotification } from 'element-plus';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { Notice } from '@/core/types/types';
+import CommSpace from '@/components/Common/CommSpace.vue';
 const SettingsStore = useSettingsStore();
 const data = ref<Array<Notice>>([
     {
@@ -61,32 +52,31 @@ onMounted(() => {
 .container {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    height: 100%;
+
+    .header,
+    .body {
+        padding: .5em 1em;
+    }
+
 
     .header {
+        z-index: 100;
+        position: sticky;
+        top: 0;
         display: flex;
         justify-content: left;
         align-items: center;
 
         .icon {
-            height: 100%;
+            height: 1em;
         }
 
         .text {
-            padding: 0 $globe-padding ;
+            padding-left: .5em;
         }
-
     }
 
-    .default {
-        width: 100%;
-        height: 100%;
-        flex: 1;
-    }
-
-    .footer {
-        display: flex;
-        justify-content: space-around;
-        align-items: center;
-    }
 }
 </style>

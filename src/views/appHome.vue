@@ -1,11 +1,15 @@
 <template>
     <div class="container">
-        <div class="item">
-            <GameCheck class="inner-item gc" />
-            <Notice class="inner-item nt" />
+        <div class="ot">
+            <div class="il">
+                <GameCheck />
+            </div>
+            <div class="ir">
+                <Notice />
+            </div>
         </div>
-        <div class="item">
-            <!-- <LoginedSteamUsers class="inner-item" /> -->
+        <div class="ob">
+            <LoginedSteamUsers />
         </div>
     </div>
 </template>
@@ -13,37 +17,38 @@
 <script setup lang="ts">
 import Notice from '@/components/views/appHome/Notice.vue';
 import GameCheck from '@/components/views/appHome/GameCheck.vue';
+import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 </script>
 <style scoped lang="scss">
 .container {
-    .item {
+    width: 100%;
+    height: 100%;
+    .ot {
         display: flex;
         width: 100%;
-        flex-direction: row;
         margin-bottom: $globe-margin;
 
-        .inner-item {
-            flex: 1;
-            position: relative;
+        .il,
+        .ir {
+            height: 20em;
+        }
+
+        .il {
+            width: 70%;
+
             margin-right: $globe-margin;
         }
 
+        .ir {
+            width: 30%;
 
-        .inner-item:last-child {
-            margin-right: 0;
-        }
-
-        .gc {
-            flex: 2;
-        }
-
-        .nt {
-            flex: 1;
         }
     }
 
-    .item:last-child {
-        margin-bottom: 0;
+    .ob {
+        width: 100%;
     }
+
+
 }
 </style>

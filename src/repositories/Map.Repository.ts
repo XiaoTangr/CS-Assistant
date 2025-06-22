@@ -19,10 +19,6 @@ export default class MapRepository {
         return (await baseCRUD.queryAll<Map>(this.TABLE_NAME)) || [];
     }
 
-    // 分页查询
-    static async queryPage(page: number = 1, pageSize: number = 20) {
-        return await baseCRUD.queryPage<Map>(this.TABLE_NAME, page, pageSize);
-    }
 
     // 插入多条数据
     static async insert(data: Map[]): Promise<number> {

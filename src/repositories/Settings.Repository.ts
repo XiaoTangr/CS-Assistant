@@ -56,9 +56,10 @@ export default class SettingsRepository {
      * @param rows - 要插入的 Settings 对象数组
      * @returns 受影响行数
      */
-    static async insertRow(rows: Settings[]): Promise<number> {
+    static async insertRows(rows: Settings[]): Promise<number> {
         return await baseCRUD.insertRows(this.TABLE_NAME, rows);
     }
+
 
     /**
      * 删除指定 key 的记录

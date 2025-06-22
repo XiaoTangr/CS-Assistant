@@ -5,10 +5,10 @@
     </div>
     <div class="window-container">
       <div class="global-command-container">
-        <GlobalCommand/>
+        <GlobalCommand />
       </div>
       <div class="content-container">
-          <RouterView />
+        <RouterView />
       </div>
     </div>
     <ViewCheck />
@@ -53,10 +53,8 @@ const openMenu = () => {
 
   .nav-container {
     height: 100vh;
-    width: 240px;
+    width: 20em;
   }
-
-
 
   .window-container {
     flex: 1;
@@ -68,18 +66,17 @@ const openMenu = () => {
       z-index: 9;
       display: flex;
       align-items: center;
-      height: 5em;
-      padding: 0 1em;
       position: sticky;
       top: 0;
-
-
-
+      padding: $globe-padding ;
+      padding-left: 0;
     }
 
     .content-container {
-      flex: 1;
-      padding: 1em;
+      padding: $globe-padding;
+      padding-left: 0;
+      padding-top: 0;
+      overflow-y: auto;
     }
   }
 

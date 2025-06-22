@@ -22,7 +22,7 @@ export const RouterConfig = [
     {
         name: 'appSettings',
         path: "/settings",
-        component: () => import('@/views/AllSettings.vue'),
+        component: () => import('@/views/allSettings.vue'),
         meta: {
             icon: TurnOff,
             text: "设置"

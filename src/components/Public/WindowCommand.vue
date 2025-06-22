@@ -1,27 +1,27 @@
 <template>
     <div class="window-command-container">
         <div class="window-command-group">
-
-            <el-space alignment="start" :size="16">
-                <div class="window-command-item liquid-button red" id="header-bar-close" @click="CloseWindow">
+            <CommSpace direction="horizontal" alignment="start">
+                <div :class="{ 'not-infocus': !isFocused }" class="window-command-item liquid-button red"
+                    id="header-bar-close" @click="CloseWindow">
                     <el-icon class="inicon" size="70%">
                         <Close />
                     </el-icon>
                 </div>
 
-                <div class="window-command-item  liquid-button yellow" id="header-bar-toggleMaximize"
-                    @click="MinimizeWindow">
+                <div :class="{ 'not-infocus': !isFocused }" class="window-command-item  liquid-button yellow"
+                    id="header-bar-toggleMaximize" @click="MinimizeWindow">
                     <el-icon class="inicon" size="70%">
                         <Minus />
                     </el-icon>
                 </div>
-                <div class="window-command-item liquid-button green " id="header-bar-minimize"
-                    @click="toggleMaximizeWindow">
+                <div :class="{ 'not-infocus': !isFocused }" class="window-command-item liquid-button green "
+                    id="header-bar-minimize" @click="toggleMaximizeWindow">
                     <el-icon class="inicon" size="70%">
-                        <FullScreen />
+                        <Plus />
                     </el-icon>
                 </div>
-            </el-space>
+            </CommSpace>
         </div>
         <div class="window-info">
             <el-image class="icon" :src="AppIcon" />
@@ -32,9 +32,36 @@
 
 <script setup lang="ts">
 import { Window } from '@tauri-apps/api/window';
-import AppIcon from '@/assets/imgs/app-icon.png';
+import AppIcon from '@/assets/icons/app/app-icon.png';
+import CommSpace from '../Common/CommSpace.vue';
+import { ref } from 'vue';
 const appWindow = new Window('main');
 
+
+
+
+const isFocused = ref(false);
+const isLoading = ref(false);
+
+// 主动刷新焦点状态
+const refreshFocus = async () => {
+    isLoading.value = true;
+
+    isFocused.value = await appWindow.isFocused();
+    console.log(`[窗口状态] 刷新成功 - 当前是否聚焦: ${isFocused.value}`);
+};
+
+// 初始化监听
+appWindow.listen('tauri://focus', () => {
+    isFocused.value = true;
+});
+
+appWindow.listen('tauri://blur', () => {
+    isFocused.value = false;
+});
+
+// 首次加载获取状态
+refreshFocus();
 const CloseWindow = () => {
     appWindow.close()
 };
@@ -52,28 +79,29 @@ const MinimizeWindow = () => appWindow.minimize()
     justify-content: center;
     align-items: center;
 
-
-
-
     .window-command-group {
         -webkit-app-region: drag;
         display: flex;
         flex-direction: row;
         width: 100%;
-        padding: 16px;
+        padding: 1em;
         justify-content: start;
         align-items: center;
 
+
+
+
         .window-command-item {
+
             display: flex;
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
             border-radius: 50%;
-            // margin: 5px;
+            box-shadow: $simple-box-shadow;
             cursor: pointer;
             text-align: center;
             justify-content: center;
-            transition: ease-in-out;
+            transition: $simpel-transition-faster;
 
             .inicon {
                 height: 100%;
@@ -91,6 +119,10 @@ const MinimizeWindow = () => appWindow.minimize()
 
         .window-command-item:hover {
             opacity: 0.75;
+        }
+
+        .not-infocus {
+            background-color: $mac-gray !important;
         }
 
         .yellow {
@@ -115,8 +147,8 @@ const MinimizeWindow = () => appWindow.minimize()
         align-items: center;
 
         .icon {
-            width: 64px;
-            height: 60px;
+            width: 6em;
+            height: 6em;
             border-radius: 50%;
             box-shadow: $simple-box-shadow;
             border: $simple-border;

@@ -43,3 +43,7 @@ export interface MigrationResult {
     }[];
     error?: Error;                   // 错误信息（如果存在）
 }
+export interface GroupOrderItem {
+    gn: string;
+    go: number;
+}

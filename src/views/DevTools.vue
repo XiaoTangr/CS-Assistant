@@ -1,128 +1,158 @@
 <template>
-    <div>
-        <el-text v-for=" in 3" type="danger" size="large">这些功能仅供开发者使用!<br></el-text>
-        <div class="container">
-            <!-- <SettingsItem chapter="testSettings" section="testSettings" /> -->
-        </div>
-
-
+    <div class="container">
+        <el-text v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
         <div>
-
             <el-card>
-                <template #header>
-                    database - SettingsDB
-                </template>
-                <template #default>
-                    <el-form :ref="dbformRef" label-position="left" label-width="auto" :model="dbsettings">
-                        <el-form-item label="key(PK)">
-                            <el-input v-model="dbsettings.key" />
-                        </el-form-item>
-                        <el-form-item label="index">
-                            <el-input v-model="dbsettings.index" />
-                        </el-form-item>
-                        <el-form-item label="Text">
-                            <el-input v-model="dbsettings.text" />
-                        </el-form-item>
-                        <el-form-item label="Description">
-                            <el-input v-model="dbsettings.description" />
-                        </el-form-item>
-                        <el-form-item label="Selected">
-                            <el-input v-model="dbsettings.selected" />
-                        </el-form-item>
-                        <el-form-item label="Type">
-                            <el-select v-model="dbsettings.type" placeholder="Select" size="large">
-                                <el-option v-for="item in dbsettingsType" :key="item" :label="item" :value="item" />
-                            </el-select>
-                        </el-form-item>
+                <template #header> database - SettingsDB </template>
+                <el-form ref="dbformRef" label-position="left" label-width="auto" :model="dbsettings">
+                    <el-form-item label="index(PK)">
+                        <el-input v-model.number="dbsettings.index" />
+                    </el-form-item>
+                    <el-form-item label="key">
+                        <el-input v-model="dbsettings.key" />
+                    </el-form-item>
+                    <el-form-item label="Text">
+                        <el-input v-model="dbsettings.text" />
+                    </el-form-item>
+                    <el-form-item label="Description">
+                        <el-input v-model="dbsettings.description" />
+                    </el-form-item>
+                    <el-form-item label="Selected">
+                        <el-input v-model="dbsettings.selected" />
+                    </el-form-item>
+                    <el-form-item label="Type">
+                        <el-select v-model="dbsettings.type" placeholder="Select" size="large">
+                            <el-option v-for="item in dbsettingsType" :key="item" :label="item" :value="item" />
+                        </el-select>
+                    </el-form-item>
 
-                        <div v-if="dbsettings.type === 'Select'">
-                            <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'e' + i"
-                                :prop="'e.' + i + '.value'">
-                                <el-form-item label="text">
-                                    <el-input v-model="e.text" />
-                                </el-form-item>
-                                <el-form-item label="value">
-                                    <el-input v-model="e.value" />
-                                </el-form-item>
-                                <el-form-item>
-                                    <el-button @click.prevent="delSettingsOption(e)" type="warning">del this</el-button>
-                                </el-form-item>
+                    <div v-if="dbsettings.type === 'Select'">
+                        <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'option ' + i">
+                            <el-form-item label="text">
+                                <el-input v-model="e.text" />
+                            </el-form-item>
+                            <el-form-item label="value">
+                                <el-input v-model="e.value" />
                             </el-form-item>
                             <el-form-item>
-                                <el-button @click="addSettingsOption" type="primary">add option item</el-button>
+                                <el-button @click.prevent="delSettingsOption(e)" type="warning">删除选项</el-button>
                             </el-form-item>
-                        </div>
-                        <!-- <el-form-item label="chapter">
-                            <el-input v-model="dbsettings.chapter" />
-                        </el-form-item> -->
-                        <el-form-item label="section">
-                            <el-input v-model="dbsettings.section" />
                         </el-form-item>
-                        <el-form-item label="操作">
+                        <el-form-item>
+                            <el-button @click="addSettingsOption" type="primary">添加选项</el-button>
+                        </el-form-item>
+                    </div>
 
-                            <el-button type="info" @click="generateSettingsdbSQL">generate Sql</el-button>
-                            <el-button type="success" @click="querySettingsRow">query</el-button>
-                            <el-button type="primary" @click="insertSettingsRowtodb">insert</el-button>
-                            <el-button type="warning" @click="updateSettingsRow">update</el-button>
-                            <el-button type="danger" @click="deleteSettingsRow">delete</el-button>
-                        </el-form-item>
-                    </el-form>
-                    <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea"
-                        placeholder="SQL Output..."></el-input>
-                </template>
+                    <el-form-item label="groupName">
+                        <el-input v-model="dbsettings.groupName" />
+                    </el-form-item>
+                    <el-form-item label="groupIndex">
+                        <el-input v-model.number="dbsettings.groupIndex" />
+                    </el-form-item>
+                    <el-form-item label="操作">
+                        <el-button type="info" @click="generateSettingsdbSQL">生成 SQL</el-button>
+                        <el-button type="success" @click="querySettingsRow">查询</el-button>
+                        <el-button type="primary" @click="insertSettingsRowtodb">插入</el-button>
+                        <el-button type="warning" @click="updateSettingsRow">更新</el-button>
+                        <el-button type="danger" @click="deleteSettingsRow">删除</el-button>
+                    </el-form-item>
+                </el-form>
+                <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea" placeholder="SQL Output..."></el-input>
             </el-card>
         </div>
     </div>
-
-
 </template>
 
 <script setup lang="ts">
-import { Settings, SettingsRowOptions } from '@/models/Settings.model';
-import SettingsDAO from '@/repositories/Settings.Repository';
-
+import { ref, reactive } from 'vue';
 import { ElNotification, FormInstance } from 'element-plus';
-import { reactive, ref } from 'vue';
 
-const dbformRef = ref<FormInstance>()
+import { Settings, SettingsRowOptions } from '@/models/Settings.model';
+import SettingsRepository from '@/repositories/Settings.Repository';
+import SettingsService from '@/services/Settings.services';
 
-const dbsettingsType = ["Input", "Boolean", "Select", "PathInput"]
+const dbformRef = ref<FormInstance>();
 
-const dbsettings = reactive<Settings>(
-    {
-        key: "",
-        text: "",
-        description: "",
-        type: "",
-        selected: "",
-        options: [],
+const dbsettingsType = ['Input', 'Boolean', 'Select', 'PathInput'];
+
+const dbsettings = reactive<Settings & { options: SettingsRowOptions[] }>({
+    index: 0,
+    key: '',
+    text: '',
+    description: '',
+    selected: '',
+    type: '',
+    options: [],
+    groupIndex: 0,
+    groupName: ''
+});
+
+const dbsettingsSQLout = ref('');
+// 错误处理函数
+const handleDBError = (error: any, action: string) => {
+    console.error(`[DevTools] Database operation failed: ${action}`, {
+        error,
+        dbsettings: JSON.parse(JSON.stringify(dbsettings)), // 模拟 cloneDeep
+        timestamp: new Date().toISOString()
+    });
+    ElNotification.error(`操作失败：${error}`);
+};
+
+// 表单验证
+const validateForm = async () => {
+    try {
+        await dbformRef.value?.validate();
+        return true;
+    } catch (error) {
+        ElNotification.warning('请填写完整信息');
+        return false;
+    }
+};
+
+// 清除表单数据
+const resetForm = () => {
+    Object.assign(dbsettings, {
         index: 0,
-        section: ""
-    }
-);
-const dbsettingsSQLout = ref('')
+        key: '',
+        text: '',
+        description: '',
+        selected: '',
+        type: '',
+        options: [],
+        groupName: '',
+        groupIndex: 0
+    });
+};
 
-
-const delSettingsOption = (item: SettingsRowOptions) => {
-    const index = dbsettings.options.indexOf(item)
-    if (index !== -1) {
-        dbsettings.options.splice(index, 1)
-    }
-}
+// 添加选项
 const addSettingsOption = () => {
-    dbsettings.options.push({
-        text: "",
-        value: '',
-    })
-}
-const generateSettingsdbSQL = () => {
-    const fields = ["key", "text", "description", "selected", "type", "index", "section"];
-    for (const field of fields) {
-        if (!dbsettings[field as keyof typeof dbsettings]) {
-            ElNotification.error(`${field} cannot be empty.`);
-            return;
-        }
+    dbsettings.options.push({ text: '', value: '' });
+};
+
+// 删除选项
+const delSettingsOption = (item: SettingsRowOptions) => {
+    const index = dbsettings.options.indexOf(item);
+    if (index !== -1) {
+        dbsettings.options.splice(index, 1);
     }
+};
+
+// 转义字符串以防止 SQL 注入
+const escapeSQLString = (str: string) => str.replace(/'/g, "''");
+
+// 格式化 SQL 输出
+const formatSQL = (sql: string) => {
+    return sql
+        .replace(/\s+/g, ' ')
+        .replace(/,/g, ', ')
+        .replace(/\s*VALUES\s*/i, '\nVALUES\n  ')
+        .replace(/\s*INSERT INTO\s+/i, 'INSERT INTO ');
+};
+
+// 生成 SQL
+const generateSettingsdbSQL = async () => {
+    if (!(await validateForm())) return;
+
     let optionsValue = '[]';
     if (dbsettings.type === 'Boolean') {
         optionsValue = JSON.stringify([
@@ -132,86 +162,102 @@ const generateSettingsdbSQL = () => {
     } else if (dbsettings.type === 'Select') {
         optionsValue = JSON.stringify(dbsettings.options);
     }
-    const sql = `INSERT INTO Settings (
-      key, text, description, type, selected, options, chapter, section
-    ) VALUES (
-      '${dbsettings.key}',
-      '${dbsettings.text.replace(/'/g, "''")}',
-      '${dbsettings.description.replace(/'/g, "''")}',
-      '${dbsettings.type}',
-      '${dbsettings.selected}',
-      '${optionsValue.replace(/'/g, "''")}',
-      '${dbsettings.index}',
-      '${dbsettings.section}'
-    );`;
-    dbsettingsSQLout.value = sql;
+
+    const sql = `
+INSERT INTO Settings (
+    key, text, description, type, selected, options, groupName, groupIndex
+) VALUES (
+    '${escapeSQLString(dbsettings.key)}',
+    '${escapeSQLString(dbsettings.text)}',
+    '${escapeSQLString(dbsettings.description)}',
+    '${dbsettings.type}',
+    '${dbsettings.selected}',
+    '${escapeSQLString(optionsValue)}',
+    '${dbsettings.groupName}',
+    ${dbsettings.groupIndex}
+);`;
+
+    dbsettingsSQLout.value = formatSQL(sql);
 };
-const insertSettingsRowtodb = () => {
-    const fields = ["key", "text", "description", "selected", "type", "index", "section"];
-    for (const field of fields) {
-        if (!dbsettings[field as keyof typeof dbsettings]) {
-            ElNotification.error(`${field} cannot be empty.`);
-            return;
-        }
-    }
-    let rows: Settings[] = []
-    rows.push(dbsettings)
-    SettingsDAO.insertRow(rows).then((res) => {
+
+// 插入配置项
+const insertSettingsRowtodb = async () => {
+    if (!(await validateForm())) return;
+
+    const payload = JSON.parse(JSON.stringify(dbsettings)); // 替代 cloneDeep
+    try {
+        const res = await SettingsService.addSettingsItem(payload);
         if (res > 0) {
-            ElNotification.success(`Insert Success : ${res}`)
+            ElNotification.success(`插入成功`);
+            resetForm();
         }
-    }).catch(e => ElNotification.error(e))
-}
-const updateSettingsRow = () => {
-    const fields = ["key", "text", "description", "selected", "type", "index", "section"];
-    for (const field of fields) {
-        if (!dbsettings[field as keyof typeof dbsettings]) {
-            ElNotification.error(`${field} cannot be empty.`);
-            return;
-        }
+    } catch (e) {
+        console.error(e);
     }
-    SettingsDAO.updateRow(dbsettings).then((res) => {
-        res > 0 ?
-            ElNotification.success(`Update success with key = ${dbsettings.key}`) :
-            ElNotification.warning("No data fetched!")
-    }).catch(e => ElNotification.error(e))
+};
 
-}
+// 更新配置项
+const updateSettingsRow = async () => {
+    if (!(await validateForm())) return;
+
+    const payload = JSON.parse(JSON.stringify(dbsettings));
+    try {
+        const res = await SettingsRepository.updateRow(payload);
+        if (res > 0) {
+            ElNotification.success(`更新成功`);
+            resetForm();
+        } else {
+            ElNotification.warning('未找到匹配的记录');
+        }
+    } catch (e) {
+        handleDBError(e, '更新配置');
+    }
+};
+
+// 查询配置项
+const querySettingsRow = async () => {
+    if (!dbsettings.key.trim()) {
+        ElNotification.error('key 不能为空');
+        return;
+    }
+
+    try {
+        const res = await SettingsRepository.queryOneByKey(dbsettings.key);
+        if (res) {
+            Object.assign(dbsettings, res);
+            ElNotification.success(`查询成功`);
+        } else {
+            ElNotification.warning('未找到记录');
+        }
+    } catch (e) {
+        handleDBError(e, '查询配置');
+    }
+};
+
+// 删除配置项
 const deleteSettingsRow = async () => {
-    if (!dbsettings.key) {
-        ElNotification.error("key cannot be empty.")
+    if (!dbsettings.key.trim()) {
+        ElNotification.error('key 不能为空');
         return;
     }
-    let v = []
-    v.push(dbsettings.key)
-    // console.log(await dbCRUDUtil.executeSQL("delete from Settings where key = $1;", ["111"]))
-    SettingsDAO.deleteRow(dbsettings.key).then((res) => {
-        res > 0 ?
-            ElNotification.success(`delete success with key = ${dbsettings.key}`) :
-            ElNotification.warning("No data fetched!")
-    }).catch(e => ElNotification.error(e))
-}
-const querySettingsRow = () => {
-    if (!dbsettings.key) {
-        ElNotification.error("key cannot be empty.")
-        return;
-    }
-    SettingsDAO.queryOneByKey(dbsettings.key).then((res) => {
-        res ?
-            ElNotification.success(`query success with key = ${dbsettings.key}`) :
-            ElNotification.warning("No data fetched!");
 
-        dbsettings.key = res?.key || '';
-        dbsettings.description = res?.description || "";
-        // dbsettings.options = JSON.parse(res?.options.toString() || "[]") || [];
-        dbsettings.options = res?.options || [];
-        dbsettings.type = res?.type || "";
-        dbsettings.text = res?.text || '';
-        dbsettings.selected = res?.selected.toString() || '';
-        dbsettings.index = res?.index || -1;
-        dbsettings.section = res?.section || '';
-    }).catch(e => ElNotification.error(e))
-}
+    try {
+        const res = await SettingsRepository.deleteRow(dbsettings.key);
+        if (res > 0) {
+            ElNotification.success(`删除成功`);
+            resetForm();
+        } else {
+            ElNotification.warning('未找到记录');
+        }
+    } catch (e) {
+        handleDBError(e, '删除配置');
+    }
+};
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.container {
+    width: 100%;
+    // background-color: red;
+}
+</style>

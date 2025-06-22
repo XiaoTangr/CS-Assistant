@@ -10,7 +10,6 @@ export default class SettingsService {
     static async getAllSettings(): Promise<Settings[]> {
         return await SettingsRepository.queryAll();
     }
-
     /**
      * 根据 key 获取单个设置
      * @param key - 设置项的键名
@@ -43,8 +42,8 @@ export default class SettingsService {
      * @param settings - Settings 对象数组
      * @returns 受影响行数
      */
-    static async addSettings(settings: Settings[]): Promise<number> {
-        return await SettingsRepository.insertRow(settings);
+    static async addSettingsItem(settings: Settings): Promise<number> {
+        return await SettingsRepository.insertRows([settings]);
     }
 
     /**

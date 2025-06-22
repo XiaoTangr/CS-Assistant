@@ -1,5 +1,4 @@
 import connecter from "./connector";
-import Database from "@tauri-apps/plugin-sql";
 
 class DBBaseCRUD {
     private static instance: DBBaseCRUD;
@@ -29,18 +28,12 @@ class DBBaseCRUD {
         }
     }
 
-    // 封装 SELECT 查询
-    private async _select<T>(sql: string, params: any[] = []): Promise<T[]> {
-        const db = await connecter.getConnection();
-        this.log(`Executing query: ${sql}`);
-        try {
-            return await db.select(sql, params);
-        } catch (error: any) {
-            throw new Error(`Query failed: ${error.message}, SQL: ${sql}`);
-        }
-    }
-
-    // 封装 EXECUTE 操作
+    /**
+     * 执行sql
+     * @param sql sql语句
+     * @param params sql占位符对应值
+     * @returns 
+     */
     private async _execute(sql: string, params: any[] = []): Promise<number> {
         const db = await connecter.getConnection();
         this.log(`Executing execute: ${sql}`);
@@ -48,10 +41,104 @@ class DBBaseCRUD {
             const result = await db.execute(sql, params);
             return result.rowsAffected;
         } catch (error: any) {
-            throw new Error(`Execute failed: ${error.message}, SQL: ${sql}`);
+            const errorMessage = `Execute failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
+            console.error(errorMessage, {
+                error,
+                sql,
+                params,
+                timestamp: new Date().toISOString(),
+                stack: error.stack
+            });
+            throw error; // 仅抛出原始错误，不包装
         }
     }
-    // 使用 queryAll 并加上 WHERE 条件（修改 baseCRUD）
+
+    /**
+     * 插入多条记录
+     * @param tableName 表名
+     * @param data 数据数组，每项为一个数据库对象
+     * @returns 受影响行数
+     */
+    public async insertRows<T extends Record<string, any>>(
+        tableName: string,
+        data: T[]
+    ): Promise<number> {
+        this.validateTableName(tableName);
+
+        if (data.length === 0) {
+            this.log("No data to insert");
+            return 0;
+        }
+
+        if (typeof data[0] !== 'object' || data[0] === null) {
+            const errMessage = `[DBBaseCRUD.insertRows] 第一个元素无效，必须为对象。当前值: ${JSON.stringify(data[0])}`;
+            console.error(errMessage, {
+                error: new Error().stack,
+                data,
+                timestamp: new Date().toISOString()
+            });
+            throw new TypeError(errMessage);
+        }
+
+        const columns = Object.keys(data[0]).map(col => `\`${col}\``);
+        const placeholders = columns.map((_, i) => `$${i + 1}`).join(", ");
+        const columnList = columns.join(", ");
+        const sql = `INSERT INTO ${tableName} (${columnList}) VALUES (${placeholders})`;
+
+        let rowsAffected = 0;
+        for (const item of data) {
+            if (typeof item !== 'object' || item === null) {
+                console.warn(`[DBBaseCRUD.insertRows] 跳过非法记录`, { item, data });
+                continue;
+            }
+
+            const values = columns.map(col => item[col.replace(/"/g, '')]); // 去除引号获取原始键
+
+            try {
+                rowsAffected += await this._execute(sql, values);
+            } catch (e: any) {
+                throw e;
+            }
+        }
+
+        return rowsAffected;
+    }
+
+
+
+
+    /**
+     * 封装 SELECT 查询
+     * @param sql sql语句
+     * @param params sql占位符对应值
+     * @returns 
+     */
+    private async _select<T>(sql: string, params: any[] = []): Promise<T[]> {
+        const db = await connecter.getConnection();
+        this.log(`Executing query: ${sql}`);
+        try {
+            return await db.select(sql, params);
+        } catch (error: any) {
+            const errorMessage = `Query failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
+            console.error(errorMessage, {
+                error,
+                sql,
+                params,
+                timestamp: new Date().toISOString(),
+                stack: error.stack
+            });
+            throw error; // 保留原始错误对象
+        }
+    }
+
+
+    /**
+     * 使用 WHERE 条件查询数据
+     * @param tableName 表名
+     * @param whereClause WHERE 条件（如 "id = $1"）
+     * @param params 参数数组（如 [1]）
+     * @returns 查询结果数组
+     */
     public async queryWhere<T>(
         tableName: string,
         whereClause: string,
@@ -61,56 +148,26 @@ class DBBaseCRUD {
         const sql = `SELECT * FROM ${tableName} WHERE ${whereClause}`;
         return await this._select<T>(sql, params);
     }
-    // 查询所有数据
+
+    /**
+     * 查询所有数据
+     * @param tableName 表名
+     * @returns 查询结果数组
+     */
     public async queryAll<T>(tableName: string): Promise<T[] | null> {
         this.validateTableName(tableName);
         const sql = `SELECT * FROM ${tableName};`;
         return await this._select<T>(sql);
     }
 
-    // 分页查询
-    public async queryPage<T>(
-        tableName: string,
-        page: number = 1,
-        pageSize: number = 20
-    ): Promise<{ data: T[]; total: number }> {
-        this.validateTableName(tableName);
-        const offset = (page - 1) * pageSize;
-        const sql = `SELECT * FROM ${tableName} LIMIT $1 OFFSET $2`;
-        const countSql = `SELECT COUNT(*) as count FROM ${tableName}`;
 
-        try {
-            const data = await this._select<T>(sql, [pageSize, offset]);
-            const [{ count }] = await this._select<{ count: number }>(countSql);
-            return { data, total: count };
-        } catch (error: any) {
-            throw new Error(`Query page failed: ${error.message}`);
-        }
-    }
-
-    // 插入多条记录
-    public async insertRows<T extends Record<string, any>>(
-        tableName: string,
-        data: T[]
-    ): Promise<number> {
-        this.validateTableName(tableName);
-        if (data.length === 0) return 0;
-
-        const columns = Object.keys(data[0]);
-        const placeholders = columns.map((_, i) => `$${i + 1}`).join(", ");
-        const columnList = columns.join(", ");
-        const sql = `INSERT INTO ${tableName} (${columnList}) VALUES (${placeholders})`;
-
-        let rowsAffected = 0;
-        for (const item of data) {
-            const values = columns.map((col) => item[col]);
-            rowsAffected += await this._execute(sql, values);
-        }
-
-        return rowsAffected;
-    }
-
-    // 条件更新
+    /**
+     * 条件更新
+     * @param tableName 表名
+     * @param data 更新的数据对象，键为字段名，值为字段值
+     * @param where WHERE 条件对象，格式为 { column: value }
+     * @returns 受影响行数
+     */
     public async updateWhere<T extends Record<string, any>>(
         tableName: string,
         data: T,
@@ -118,24 +175,32 @@ class DBBaseCRUD {
     ): Promise<number> {
         this.validateTableName(tableName);
 
-        const setClause = Object.keys(data)
-            .map((key, index) => {
-                this.validateColumnName(key);
-                return `${key} = $${index + 1}`;
-            })
-            .join(", ");
+        if (typeof data !== 'object' || data === null) {
+            throw new TypeError(`Invalid data provided for update`);
+        }
 
-        const whereClauses = Object.keys(where).map(
-            (key, i) => `${key} = $${Object.keys(data).length + i + 1}`
-        );
+        if (Object.keys(where).length === 0) {
+            throw new Error(`WHERE clause is required for update operation`);
+        }
 
-        const params = [...Object.values(data), ...Object.values(where)];
-        const sql = `UPDATE ${tableName} SET ${setClause} WHERE ${whereClauses.join(" AND ")}`;
+
+        const setClauses = Object.keys(data).map((col, i) => `\`${col}\` = $${i + 1}`).join(', ');
+        const whereKey = Object.keys(where)[0];
+        const whereValue = Object.values(where)[0];
+
+        const sql = `UPDATE ${tableName} SET ${setClauses} WHERE ${whereKey} = $${Object.keys(data).length + 1} `;
+        const params = [...Object.values(data), whereValue];
 
         return await this._execute(sql, params);
     }
 
-    // 根据字段删除
+    /**
+     * 根据字段删除
+     * @param tableName 表名
+     * @param columnName 删除条件字段名
+     * @param columnValue 删除条件字段值
+     * @returns 受影响行数
+     */
     public async deleteRow(
         tableName: string,
         columnName: string,
@@ -147,30 +212,26 @@ class DBBaseCRUD {
         return await this._execute(sql, [columnValue]);
     }
 
-    // 获取总数
+    /**
+     * 获取总数
+     * @param tableName 表名
+     * @returns 总记录数
+     */
     public async count(tableName: string): Promise<number> {
         this.validateTableName(tableName);
-        const sql = `SELECT COUNT(*) as count FROM ${tableName}`;
+        const sql = `SELECT COUNT(*) as count FROM ${tableName} `;
         const result = await this._select<{ count: number }>(sql);
         return result[0]?.count || 0;
     }
 
-    // 事务支持
-    public async transaction<T>(callback: (db: Database) => Promise<T>): Promise<T> {
-        const db = await connecter.getConnection();
-        try {
-            await db.execute("BEGIN TRANSACTION");
-            const result = await callback(db);
-            await db.execute("COMMIT");
-            return result;
-        } catch (error: any) {
-            await db.execute("ROLLBACK");
-            throw new Error(`Transaction failed: ${error.message}`);
-        }
-    }
-
-    public async executeRaw(sql: string): Promise<number> {
-        return await this._execute(sql);
+    /**
+     * 执行原始 SQL 查询
+     * @param sql 原始 SQL 语句
+     * @param params SQL 占位符参数
+     * @returns 受影响行数
+     */
+    public async executeRaw(sql: string, ...params: any[]): Promise<number> {
+        return await this._execute(sql, params);
     }
 }
 

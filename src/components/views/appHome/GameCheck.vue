@@ -1,31 +1,31 @@
 <template>
-    <div class="container" v-loading="isloading">
-        <el-card style=" display:flex;flex-direction:column;flex: 1;" :body-style="{ flex: 1 }">
-            <template #default>
-                <div class="default">
-                    <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.appPath !== '' }">
-                        <div class="inner-item">
-                            {{ steamData.pathCheck.appPath !== '' ? "Steam已安装! " : "未检测到Steam" }}
-                        </div>
-                        <CopyText :text="steamData.pathCheck.appPath" v-if="steamData.pathCheck.appPath !== ''">
-                            <el-text class="inner-item " type="primary" v-html="steamData.pathCheck.appPath" />
-                        </CopyText>
-                        <el-button style="justify-content: center;" class="inner-item " v-else @click="selectSteamPath"
-                            round plain type="warning">指定Steam安装位置</el-button>
-                    </el-card>
-                    <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.cs2Path !== '' }">
-                        <div class="inner-item">
-                            {{ steamData.pathCheck.cs2Path !== '' ? "CS2已安装! " : "未检测到CS2,未安装或者指定Steam安装位置以自动检测" }}
-                        </div>
-                        <CopyText :text="steamData.pathCheck.cs2Path" v-if="steamData.pathCheck.cs2Path !== ''">
-                            <el-text class="inner-item" type="primary" v-html="steamData.pathCheck.cs2Path" />
-                        </CopyText>
 
-                    </el-card>
-                </div>
-            </template>
-        </el-card>
-    </div>
+    <el-card class="container" v-loading="isloading" style=" display:flex;flex-direction:column;flex: 1;"
+        :body-style="{ flex: 1 }">
+        <template #default>
+            <div class="default">
+                <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.appPath !== '' }">
+                    <div class="inner-item">
+                        {{ steamData.pathCheck.appPath !== '' ? "Steam已安装! " : "未检测到Steam" }}
+                    </div>
+                    <CopyText :text="steamData.pathCheck.appPath" v-if="steamData.pathCheck.appPath !== ''">
+                        <el-text class="inner-item " type="primary" v-html="steamData.pathCheck.appPath" />
+                    </CopyText>
+                    <el-button style="justify-content: center;" class="inner-item " v-else @click="selectSteamPath"
+                        round plain type="warning">指定Steam安装位置</el-button>
+                </el-card>
+                <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.cs2Path !== '' }">
+                    <div class="inner-item">
+                        {{ steamData.pathCheck.cs2Path !== '' ? "CS2已安装! " : "未检测到CS2,未安装或者指定Steam安装位置以自动检测" }}
+                    </div>
+                    <CopyText :text="steamData.pathCheck.cs2Path" v-if="steamData.pathCheck.cs2Path !== ''">
+                        <el-text class="inner-item" type="primary" v-html="steamData.pathCheck.cs2Path" />
+                    </CopyText>
+
+                </el-card>
+            </div>
+        </template>
+    </el-card>
 
 </template>
 
@@ -96,11 +96,11 @@ const pathCheck = async () => {
                         steamData.value.pathCheck.cs2Path = path;
                         let row = SettingsStore.qetSettingsByKey("cs2InstallPath") as Settings;
                         row.selected = path;
-                        // SettingsStore.saveRow(row).then(() => {
-                        //     ElNotification.success("CS2路径已自动检测到并保存")
-                        // }).catch((e: any) => {
-                        //     ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
-                        // })
+                        SettingsStore.saveChangedViewData().then(() => {
+                            ElNotification.success("CS2路径已自动检测到并保存")
+                        }).catch((e: any) => {
+                            ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
+                        })
                     }
                 }
             }
@@ -142,6 +142,8 @@ onMounted(async () => {
 .container {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    height: 100%;
 
     .default {
         width: 100%;

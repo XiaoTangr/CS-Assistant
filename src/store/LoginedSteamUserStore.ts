@@ -22,7 +22,6 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     })
 
     const getLoginedSteamUsers = async () => {
-        console.log(SettingsStore.qetSettingsByKey("steamInstallPath"));
         steamPath.value = SettingsStore.qetSettingsByKey("steamInstallPath")?.selected;
         const vdfpath = `${steamPath.value}\\config\\loginusers.vdf`;
         // @ts-ignore

@@ -95,17 +95,23 @@ body {
     user-select: none;
 }
 
+.window-container {
+    ::-webkit-scrollbar {
+        width: $scrollbar-width-thiner ;
+    }
 
-// 美化滚动条
+    ::-webkit-scrollbar-track {
+        width: $scrollbar-width-thiner;
+    }
+
+}
+
 ::-webkit-scrollbar {
-
-    width: 12px;
-    height: .5em;
+    width: $scrollbar-width;
 }
 
 ::-webkit-scrollbar-track {
-    width: 12px;
-
+    width: $scrollbar-width;
     background: rgba($scrollbar-track-background, 0.1);
     -webkit-border-radius: .25em;
     -moz-border-radius: 25em;
