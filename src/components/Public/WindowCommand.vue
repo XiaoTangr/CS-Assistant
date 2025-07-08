@@ -3,7 +3,7 @@
         <div class="window-command-group">
             <CommSpace direction="horizontal" alignment="start">
                 <div :class="{ 'not-infocus': !isFocused }" class="window-command-item liquid-button red"
-                    id="header-bar-close" @click="CloseWindow">
+                    id="header-bar-close" @click="centerDialogVisible = true">
                     <el-icon class="inicon" size="70%">
                         <Close />
                     </el-icon>
@@ -27,6 +27,27 @@
             <el-image class="icon" :src="AppIcon" />
             <h2 class="text">CS Assistant</h2>
         </div>
+        <el-dialog :close-on-click-modal="false" append-to="#app" width="400" v-model="centerDialogVisible"
+            align-center>
+            <template #title>
+
+                <span class="dg-title">
+                    <el-icon class="dg-icon">
+                        <WarningFilled />
+                    </el-icon>
+                    注意
+                </span>
+
+            </template>
+            <template #default> 所有未保存的更改都会消失! </template>
+            <template #footer>
+                <LiquidButton round size="large" @click="CloseWindow()">
+                    确定
+                </LiquidButton>
+                <LiquidButton round size="large" type="success" @click="centerDialogVisible = false">取消</LiquidButton>
+
+            </template>
+        </el-dialog>
     </div>
 </template>
 
@@ -35,9 +56,10 @@ import { Window } from '@tauri-apps/api/window';
 import AppIcon from '@/assets/icons/app/app-icon.png';
 import CommSpace from '../Common/CommSpace.vue';
 import { ref } from 'vue';
+import LiquidButton from '../Common/LiquidButton.vue';
 const appWindow = new Window('main');
 
-
+const centerDialogVisible = ref(false)
 
 
 const isFocused = ref(false);
@@ -46,9 +68,7 @@ const isLoading = ref(false);
 // 主动刷新焦点状态
 const refreshFocus = async () => {
     isLoading.value = true;
-
     isFocused.value = await appWindow.isFocused();
-    console.log(`[窗口状态] 刷新成功 - 当前是否聚焦: ${isFocused.value}`);
 };
 
 // 初始化监听
@@ -159,5 +179,18 @@ const MinimizeWindow = () => appWindow.minimize()
             margin-top: .5em;
         }
     }
+
+
+}
+</style>
+<style lang="scss">
+.dg-title {
+    display: flex;
+    align-items: center;
+}
+
+.dg-icon {
+    margin-right: 4px;
+    color: $danger-color;
 }
 </style>

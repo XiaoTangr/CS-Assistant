@@ -1,13 +1,14 @@
 <template>
-    <div class="all-settings-container">
-        <div class="group-container" v-for="(g, i) in groupedViewData" :key="i">
-            <div class="item-container">
-                <el-divider content-position="left">{{ i }}</el-divider>
-                <SettingsItemRender class="settings-item" v-for="(item) in g" :item="item"
-                    :viewSettingsDataItem="item" />
+    <div class="container">
+        <div class="groups">
+            <div class="group" v-for="(g, i) in groupedViewData" :key="i">
+                <div class="item">
+                    <el-divider content-position="left">{{ i }}</el-divider>
+                    <SettingsItemRender class="item-render" v-for="(item) in g" :item="item" />
+                </div>
             </div>
         </div>
-        <el-space class="operate-container" :size="24">
+        <el-space class="operate">
             <LiquidButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" text round> 保存更改
             </LiquidButton>
             <LiquidButton size="large" @click="SettingsStore.discardChanges" round> 放弃更改 </LiquidButton>
@@ -26,58 +27,73 @@ const { groupedViewData } = storeToRefs(SettingsStore);
 </script>
 
 <style scoped lang="scss">
-.all-settings-container {
+.container {
+    width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 70%;
-    transition: $simpel-transition;
+    justify-content: center;
+    width: 100%;
 
-    .operate-container {
-        position: sticky;
-        bottom: 24px;
-        right: 24px;
-        margin-top: 24px;
-        align-self: flex-end; // 如果父容器是 flex 布局，可进一步确保右对齐
-        margin-left: auto; // 可选：如果希望元素本身右对齐
-    }
-
-    .group-container {
-        margin-top: calc($globe-margin / 2);
-        width: 100%;
+    .groups {
         display: flex;
         flex-direction: column;
         align-items: center;
+        transition: $simpel-transition;
+        margin-bottom: calc(4em);
+        width: 768px;
 
-        .item-container {
+        .group {
+            margin-top: calc($globe-margin / 2);
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+
+            .item {
+                width: 100%;
+            }
+
+            .item-render {
+                margin: calc($globe-margin / 4);
+            }
+
+            .item-render:first-child {
+                margin-top: 0;
+                // background-color: red;
+            }
+        }
+
+        .group:first-child {
+            margin-top: 0;
+            // background-color: red;
+        }
+
+        .group:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .operate {
+        transition: $simpel-transition;
+        position: absolute;
+        bottom: calc(24px - 14px);
+        right: 0;
+        padding-right: 24px;
+        height: 4em;
+        display: flex;
+        justify-content: center;
+    }
+
+}
+
+@media screen and (max-width: calc(20em + 768px)) {
+    .container {
+        .groups {
             width: 100%;
         }
 
 
-
-        .settings-item {
-            margin: calc($globe-margin / 4);
-        }
-
-        .settings-item:first-child {
-            margin-top: 0;
-            // background-color: red;
-        }
-    }
-
-    .group-container:first-child {
-        margin-top: 0;
-        // background-color: red;
-    }
-
-    .group-container:last-child {
-        margin-bottom: 0;
-    }
-}
-
-@media screen and (max-width: 1024px) {
-    .all-settings-container {
-        width: 100%;
     }
 }
 </style>

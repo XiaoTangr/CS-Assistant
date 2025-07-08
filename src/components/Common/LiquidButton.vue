@@ -40,7 +40,6 @@ defineEmits<{
     box-shadow:
         0 2px 8px rgba(0, 0, 0, 0.06),
         inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
     color: rgba(48, 49, 51, .88) !important;
 }
 

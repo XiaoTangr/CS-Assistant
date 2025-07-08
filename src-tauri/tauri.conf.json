@@ -1,21 +1,22 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "cs2h",
+  "productName": "CS Assistant",
   "version": "25.6.1",
-  "identifier": "site.icefox.cs2h",
+  "identifier": "cn.javat.csassistant",
   "build": {
     "beforeDevCommand": "vite",
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "vue-tsc --noEmit && vite build",
     "frontendDist": "../dist"
   },
+  "plugins": {},
   "app": {
     "withGlobalTauri": true,
     "windows": [
       {
         "transparent": true,
         "decorations": false,
-        "title": "CS2 Helper",
+        "title": "CS Assistant",
         "center": true,
         "resizable": true,
         "width": 1280,
@@ -23,6 +24,11 @@
       }
     ],
     "security": {
+      "capabilities": [
+        "default",
+        "fs",
+        "sql"
+      ],
       "assetProtocol": {
         "enable": true,
         "scope": []

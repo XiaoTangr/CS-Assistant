@@ -91,7 +91,7 @@ pub fn write_file(path: std::path::PathBuf, data: Vec<u8>) {
 }
 
 #[tauri::command]
-pub fn cp_dir_deep(origin_path: &str, target_path: &str) -> i32 {
+pub fn cp_dir_recursive(origin_path: &str, target_path: &str) -> i32 {
     let origin = Path::new(origin_path);
     let target = Path::new(target_path);
 

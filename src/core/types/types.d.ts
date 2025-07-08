@@ -15,7 +15,7 @@ interface SteamLoginUser {
 /**
  * Steam 用户基础信息
  */
-interface SteamUserBasicInfo {
+interface BasicSteamLoginUser {
     AccountName: string;
     PersonaName: string;
     steamId: string;

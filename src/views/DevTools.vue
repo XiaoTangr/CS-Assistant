@@ -60,13 +60,13 @@
                 <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea" placeholder="SQL Output..."></el-input>
             </el-card>
         </div>
+
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { ElNotification, FormInstance } from 'element-plus';
-
 import { Settings, SettingsRowOptions } from '@/models/Settings.model';
 import SettingsRepository from '@/repositories/Settings.Repository';
 import SettingsService from '@/services/Settings.services';
@@ -138,7 +138,10 @@ const delSettingsOption = (item: SettingsRowOptions) => {
 };
 
 // 转义字符串以防止 SQL 注入
-const escapeSQLString = (str: string) => str.replace(/'/g, "''");
+const escapeSQLString = (str: string | null) => {
+
+    return str !== null ? str.replace(/'/g, "''") : '';
+}
 
 // 格式化 SQL 输出
 const formatSQL = (sql: string) => {
@@ -167,9 +170,9 @@ const generateSettingsdbSQL = async () => {
 INSERT INTO Settings (
     key, text, description, type, selected, options, groupName, groupIndex
 ) VALUES (
-    '${escapeSQLString(dbsettings.key)}',
-    '${escapeSQLString(dbsettings.text)}',
-    '${escapeSQLString(dbsettings.description)}',
+    '${escapeSQLString(dbsettings.key ?? '')}',
+    '${escapeSQLString(dbsettings.text ?? '')}',
+    '${escapeSQLString(dbsettings.description ?? '')}',
     '${dbsettings.type}',
     '${dbsettings.selected}',
     '${escapeSQLString(optionsValue)}',
@@ -216,7 +219,7 @@ const updateSettingsRow = async () => {
 
 // 查询配置项
 const querySettingsRow = async () => {
-    if (!dbsettings.key.trim()) {
+    if (!dbsettings.key?.trim()) {
         ElNotification.error('key 不能为空');
         return;
     }
@@ -236,7 +239,7 @@ const querySettingsRow = async () => {
 
 // 删除配置项
 const deleteSettingsRow = async () => {
-    if (!dbsettings.key.trim()) {
+    if (!dbsettings.key?.trim()) {
         ElNotification.error('key 不能为空');
         return;
     }

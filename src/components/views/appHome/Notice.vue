@@ -35,7 +35,7 @@ const data = ref<Array<Notice>>([
 ])
 
 onMounted(() => {
-    const baseUrl = SettingsStore.qetSettingsByKey('remoteUrlPrefix')?.selected;
+    const baseUrl = SettingsStore.getDbDataItemByKey('remoteUrlPrefix')?.selected;
     axios.get(
         `${baseUrl}/Notice.json`
     ).then((res) => {

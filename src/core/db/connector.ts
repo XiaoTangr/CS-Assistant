@@ -1,7 +1,6 @@
 import Database from "@tauri-apps/plugin-sql";
 import { appDataDir, join } from '@tauri-apps/api/path';
 import { create, exists } from '@tauri-apps/plugin-fs';
-
 export class connecter {
     private static instance: connecter;
     private db: Database | null = null;
@@ -31,9 +30,11 @@ export class connecter {
 
         this.initPromise = (async () => {
             try {
-                const dataDir = await appDataDir();
-                const dbPath = await join(dataDir, 'cs2h.db');
-                if (!(await exists(dataDir))) await create(dataDir);
+                const appDataDirPath = await appDataDir();
+                const dbPath = await join(appDataDirPath, '/csa.db')
+                if (!(await exists(appDataDirPath))) {
+                    await create(appDataDirPath).catch(e => { throw e; });
+                }
 
                 this.db = await Database.load(`sqlite:${dbPath}`);
                 this.isInitialized = true;

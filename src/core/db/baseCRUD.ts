@@ -54,9 +54,9 @@ class DBBaseCRUD {
     }
 
     /**
-     * 插入多条记录
+     * 插入多条记录 (SQLite 版本 - 数组参数兼容版)
      * @param tableName 表名
-     * @param data 数据数组，每项为一个数据库对象
+     * @param data 数据数组
      * @returns 受影响行数
      */
     public async insertRows<T extends Record<string, any>>(
@@ -65,45 +65,41 @@ class DBBaseCRUD {
     ): Promise<number> {
         this.validateTableName(tableName);
 
-        if (data.length === 0) {
-            this.log("No data to insert");
-            return 0;
-        }
+        if (data.length === 0) return 0;
 
-        if (typeof data[0] !== 'object' || data[0] === null) {
-            const errMessage = `[DBBaseCRUD.insertRows] 第一个元素无效，必须为对象。当前值: ${JSON.stringify(data[0])}`;
-            console.error(errMessage, {
-                error: new Error().stack,
-                data,
-                timestamp: new Date().toISOString()
-            });
-            throw new TypeError(errMessage);
-        }
+        const columns = Object.keys(data[0]).filter(Boolean);
+        if (columns.length === 0) return 0;
 
-        const columns = Object.keys(data[0]).map(col => `\`${col}\``);
-        const placeholders = columns.map((_, i) => `$${i + 1}`).join(", ");
-        const columnList = columns.join(", ");
-        const sql = `INSERT INTO ${tableName} (${columnList}) VALUES (${placeholders})`;
+        // SQLite 占位符格式 (使用数组参数时可以用 ? 或 $n)
+        const placeholders = columns.map((_) => `?`).join(", ");
+        const columnList = columns.map(col => `"${col}"`).join(", ");
+        const sql = `INSERT INTO "${tableName}" (${columnList}) VALUES (${placeholders})`;
 
         let rowsAffected = 0;
-        for (const item of data) {
-            if (typeof item !== 'object' || item === null) {
-                console.warn(`[DBBaseCRUD.insertRows] 跳过非法记录`, { item, data });
-                continue;
+
+        try {
+            // 使用事务提升批量插入性能
+            await this._execute("BEGIN TRANSACTION");
+
+            for (const item of data) {
+                // 将对象值按列顺序转换为数组
+                const values = columns.map(col => item[col] ?? null);
+                rowsAffected += await this._execute(sql, values); // 传入数组
             }
 
-            const values = columns.map(col => item[col.replace(/"/g, '')]); // 去除引号获取原始键
-
-            try {
-                rowsAffected += await this._execute(sql, values);
-            } catch (e: any) {
-                throw e;
-            }
+            await this._execute("COMMIT");
+        } catch (e: any) {
+            await this._execute("ROLLBACK");
+            console.error(`[SQLite insertRows] 失败`, {
+                error: e.message,
+                sql,
+                lastParams: data[data.length - 1]
+            });
+            throw e;
         }
 
         return rowsAffected;
     }
-
 
 
 

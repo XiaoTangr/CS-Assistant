@@ -1,7 +1,7 @@
 <template>
   <div class="App-Container" @contextmenu.prevent="openMenu()">
-    <div class="nav-container">
-      <NavBar />
+    <div >
+      <NavBar class="nav-container" />
     </div>
     <div class="window-container">
       <div class="global-command-container">
@@ -77,6 +77,7 @@ const openMenu = () => {
       padding-left: 0;
       padding-top: 0;
       overflow-y: auto;
+      width: 100%;
     }
   }
 

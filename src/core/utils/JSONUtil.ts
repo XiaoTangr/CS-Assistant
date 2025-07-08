@@ -53,7 +53,7 @@ export const deepParseJSON = <T = any>(input: string | T): T => {
 
     // 基本类型直接返回
     return input;
-}
+};
 
 /**
  * 深度序列化对象中的所有值，将其转换为 JSON 字符串。
@@ -62,7 +62,7 @@ export const deepParseJSON = <T = any>(input: string | T): T => {
  * @param input - 要序列化的对象
  * @returns 序列化后的对象，其中所有可序列化的值都被转为 JSON 字符串
  */
-export const deepStringifyJSON = <T = any>(input: T): Record<keyof T, string> => {
+export const deepStringifyJSON = <T extends Record<string, any>>(input: T): { [K in keyof T]: string } => {
     // 如果是数组，单独处理
     if (Array.isArray(input)) {
         return input.map(item => JSON.stringify(item)) as any;
@@ -73,13 +73,13 @@ export const deepStringifyJSON = <T = any>(input: T): Record<keyof T, string> =>
         const result: Record<string, string> = {};
         for (const key in input) {
             if (Object.prototype.hasOwnProperty.call(input, key)) {
-                const value = input[key as keyof T];
-                result[key] = JSON.stringify(value);
+                const value = input[key];
+                result[key] = typeof value === 'string' ? value : JSON.stringify(value);
             }
         }
-        return result as Record<keyof T, string>;
+        return result as { [K in keyof T]: string };
     }
 
-    // 基本类型直接字符串化
-    return { value: JSON.stringify(input) } as Record<keyof T, string>;
-}
+    // 基本类型处理
+    return { value: JSON.stringify(input) } as any;
+};

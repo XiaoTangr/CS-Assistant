@@ -1,195 +1,217 @@
 <template>
 
-    <el-card class="container" v-loading="isloading" style=" display:flex;flex-direction:column;flex: 1;"
-        :body-style="{ flex: 1 }">
-        <template #default>
-            <div class="default">
-                <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.appPath !== '' }">
-                    <div class="inner-item">
-                        {{ steamData.pathCheck.appPath !== '' ? "Steam已安装! " : "未检测到Steam" }}
-                    </div>
-                    <CopyText :text="steamData.pathCheck.appPath" v-if="steamData.pathCheck.appPath !== ''">
-                        <el-text class="inner-item " type="primary" v-html="steamData.pathCheck.appPath" />
-                    </CopyText>
-                    <el-button style="justify-content: center;" class="inner-item " v-else @click="selectSteamPath"
-                        round plain type="warning">指定Steam安装位置</el-button>
-                </el-card>
-                <el-card class="item notFound" :class="{ 'Found': steamData.pathCheck.cs2Path !== '' }">
-                    <div class="inner-item">
-                        {{ steamData.pathCheck.cs2Path !== '' ? "CS2已安装! " : "未检测到CS2,未安装或者指定Steam安装位置以自动检测" }}
-                    </div>
-                    <CopyText :text="steamData.pathCheck.cs2Path" v-if="steamData.pathCheck.cs2Path !== ''">
-                        <el-text class="inner-item" type="primary" v-html="steamData.pathCheck.cs2Path" />
-                    </CopyText>
+    <el-card class="container" style="overflow: hidden; display:flex;flex-direction:column;flex: 1;"
+        :body-style="{ flex: 1, padding: '0px' }">
+        <el-space fill wrap alignment="stretch" class="inner-container">
+            <div :class="[{ 'not-install': !hasSteam }, `liquid-card`, `card`]">
+                <div class="title">Steam</div>
+                <div v-if="hasSteam" class="content">
+                    位于:<br>
+                    <CopyText :text="steamInstallPathStr as string" />
 
-                </el-card>
+                </div>
+                <div v-else class="content">
+                    <LiquidButton size="large" round @click="setPath">选择Steam目录</LiquidButton>
+                </div>
             </div>
-        </template>
+            <div :class="[{ 'not-install': !hasCS }, `liquid-card`, `card`]">
+                <div class="title">Counter Strike</div>
+                <div v-if="hasCS" class="content">
+                    位于:<br>
+                    <CopyText :text="cs2InstallPathStr as string">
+                        {{ cs2InstallPathStr }}
+                    </CopyText>
+                </div>
+                <div v-else class="content">
+                    指定Steam路径后自动识别!
+                </div>
+            </div>
+
+        </el-space>
+
+
+
     </el-card>
 
 </template>
 
 <script setup lang="ts">
-
-
+import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { useSettingsStore } from '@/store/SettingsStore';
-import { getVdfObjectByFilePath } from '@/core/utils/VdfUtil';
-import { invoke } from '@tauri-apps/api/core';
+import { computed, onMounted } from 'vue';
+import { selectFilePath, isFileExists } from '@/core/utils/FsUtils';
+import { getVdfObjectByFilePath } from '@/core/utils/VdfUtils';
 import { ElNotification } from 'element-plus';
-import { onMounted, ref } from 'vue';
-import { open } from '@tauri-apps/plugin-dialog';
+import { storeToRefs } from 'pinia';
+import LiquidButton from '@/components/Common/LiquidButton.vue';
 import CopyText from '@/components/Common/CopyText.vue';
-import { Settings } from '@/models/Settings.model';
-const SettingsStore = useSettingsStore();
+const STEAM_EXE_PATH_WINDOWS = "\\steam.exe"
+const STEAM_LIBRARY_GAME_SAVE_PATH = "\\steamapps\\common"
+const STEAM_LIBRARY_VDFNAME = "libraryfolders.vdf"
+const MAIN_STEAMLIBRARY_VDF = `\\steamapps\\${STEAM_LIBRARY_VDFNAME}`
 
-const steamData = ref({
+const CS_HOME = `${STEAM_LIBRARY_GAME_SAVE_PATH}\\Counter-Strike Global Offensive`
+const CS_ID = 730
+const CS_EXE_PATH_WINDOWS = `${CS_HOME}\\game\\bin\\win64\\cs2.exe`
 
-    pathFromdb: "",
-    pathCheck: {
-        appPath: "",
-        cs2Path: ""
-    }
+
+const settingStore = useSettingsStore();
+const LoginedSteamUserStore = useLoginedSteamUserStore();
+
+const { steamInstallPath, cs2InstallPath, steamInstallPathStr, cs2InstallPathStr } = storeToRefs(LoginedSteamUserStore)
+
+const hasSteam = computed(() => {
+    return steamInstallPath.value?.selected !== null
 })
-const isloading = ref(true);
-const rowsFromDb = ref<Settings[]>([]);
 
-const pathCheck = async () => {
-
-    let steamInstallPathRow = SettingsStore.qetSettingsByKey("steamInstallPath") as Settings;
-    let cs2InstallPathRow = SettingsStore.qetSettingsByKey("cs2InstallPath") as Settings;
-    rowsFromDb.value = [steamInstallPathRow, cs2InstallPathRow];
+const hasCS = computed(() => {
+    return cs2InstallPath.value?.selected !== null
+})
 
 
-
-    let steamPath;
-    let cs2Path;
-    let steamExePath;
-    let cs2Exepath;
-    steamPath = rowsFromDb.value[0].selected as string;
-    cs2Path = rowsFromDb.value[1].selected as string;
-    steamExePath = steamPath + "\\steam.exe";
-    cs2Exepath = cs2Path + "\\game\\bin\\win64\\cs2.exe";
-    isloading.value = false
-
-    if (!steamPath) {
-        ElNotification.error("请先指定Steam和CS2安装位置:设置->路径设置->Steam安装位置和CS2安装位置")
-        return;
+/**
+ * 检测并自动更新数据
+ * @returns void
+ */
+const autoCheck = async (): Promise<void> => {
+    const _isSteamExists = async () => {
+        return await isFileExists(`${steamInstallPathStr.value}${STEAM_EXE_PATH_WINDOWS}`);
     }
-
-    if (!await invoke("is_file_exists", { filepath: steamExePath })) {
-        ElNotification.error(`File not found:${steamExePath}`)
-    } else {
-        steamData.value.pathCheck.appPath = steamPath;
-        if (await invoke("is_file_exists", { filepath: cs2Exepath })) {
-            steamData.value.pathCheck.cs2Path = cs2Path;
-        } else {
-            // 尝试通过vdf获取
-            let libraryfoldersPath = steamPath + "\\steamapps\\libraryfolders.vdf";
-            let libfVdfObj = await getVdfObjectByFilePath(libraryfoldersPath);
-            // @ts-ignore
-            let libs = libfVdfObj.libraryfolders;
-            for (const libraryId in libs) {
-                const library = libs[libraryId];
-                for (const appId in library.apps) {
-                    if (appId === "730") {
-                        let path = library.path.replace(/\\\\/g, `\\`) + "\\steamapps\\common\\Counter-Strike Global Offensive"
-                        steamData.value.pathCheck.cs2Path = path;
-                        let row = SettingsStore.qetSettingsByKey("cs2InstallPath") as Settings;
-                        row.selected = path;
-                        SettingsStore.saveChangedViewData().then(() => {
-                            ElNotification.success("CS2路径已自动检测到并保存")
-                        }).catch((e: any) => {
-                            ElNotification.error(`CS2路径已自动检测到,但保存失败:${e}`)
-                        })
-                    }
+    const _isCSExists = async () => {
+        return await isFileExists(cs2InstallPathStr.value as string);
+    }
+    if (await _isSteamExists()) {
+        if (!(await _isCSExists())) {
+            let csExePath = await getCSInstallPathByVdf();
+            if (csExePath) {
+                if (cs2InstallPath.value) {
+                    cs2InstallPath.value.selected = csExePath;
                 }
+                await settingStore.saveChangedViewData();
+            } else {
+                ElNotification.error({
+                    title: '错误',
+                    message: '未找到cs2.exe!',
+                });
+                return;
             }
         }
-    }
-}
-
-const selectSteamPath = async () => {
-    const path = await open({
-        multiple: false,
-        directory: true,
-    });
-    if (path) {
-
-        let steamExePath = path + "\\steam.exe";
-
-        if (!await invoke("is_file_exists", { filepath: steamExePath })) {
-            ElNotification.error(`文件不存在,请重试:${steamExePath}`)
-        } else {
-            rowsFromDb.value[0].selected = path as string;
-            // SettingsStore.saveRow(rowsFromDb.value[0]).then(() => {
-            //     ElNotification.success("Steam路径已保存")
-            //     pathCheck();
-            // })
+    } else {
+        if (steamInstallPath.value) {
+            steamInstallPath.value.selected = null;
         }
+        if (cs2InstallPath.value) {
+            cs2InstallPath.value.selected = null;
+        }
+        // await settingStore.saveChangedViewData()
     }
+}
 
+/**
+ * 选择Steam安装路径
+ * @returns Steam安装路径 | null
+ */
+const selectSteamInstallPath = async (): Promise<string | null> => {
+    const { directoryPath: steamExePath, filePath } = await selectFilePath('steam.exe', ["exe"]);
+    if (!await isFileExists(filePath as string)) {
+        return null;
+    }
+    return steamExePath;
+}
+
+/**
+ * 设置Steam安装路径
+ */
+const setPath = async (): Promise<void> => {
+    let steamExePath = await selectSteamInstallPath();
+    if (!steamExePath) {
+        ElNotification.error({
+            title: '错误',
+            message: '选择的路径不存在steam.exe!',
+        });
+        return;
+    }
+    if (steamInstallPath.value) {
+        steamInstallPath.value.selected = steamExePath;
+    }
+    let csExePath = await getCSInstallPathByVdf();
+    if (!csExePath) {
+        ElNotification.error({
+            title: '错误',
+            message: '未找到cs2.exe!',
+        });
+        return;
+    }
+    if (cs2InstallPath.value) {
+        cs2InstallPath.value.selected = csExePath;
+    }
+    await settingStore.saveChangedViewData();
 }
 
 
+
+
+
+/**
+ * 通过vdf获取 CS2 安装路径
+ * @returns CS2 安装路径 | null
+ */
+const getCSInstallPathByVdf = async (): Promise<string | null> => {
+    if (!steamInstallPathStr.value) return null;
+    const steamLibraryVdfPath = `${steamInstallPathStr.value}${MAIN_STEAMLIBRARY_VDF}`;
+    const vdfObj = await getVdfObjectByFilePath(steamLibraryVdfPath);
+    if (!vdfObj?.libraryfolders) return null;
+    const libraries = Object.values(vdfObj.libraryfolders) as Array<{
+        path: string;
+        apps: Record<string, any>;
+    }>;
+    const libraryWithCS = libraries.find(library =>
+        library.apps && (CS_ID.toString() in library.apps)
+    );
+    if (!libraryWithCS) return null;
+    const csPath = `${libraryWithCS.path}${CS_EXE_PATH_WINDOWS}`;
+    return await isFileExists(csPath) ? `${libraryWithCS.path}${CS_HOME}` : null;
+}
 onMounted(async () => {
-    pathCheck();
-})
+    steamInstallPath.value = settingStore.getViewDataItemByKey("steamInstallPath");
+    cs2InstallPath.value = settingStore.getViewDataItemByKey("cs2InstallPath");
+    await autoCheck();
+});
+
 </script>
 
 <style scoped lang="scss">
 @use "sass:color";
 
 .container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
+    padding: 1em;
 
-    .default {
-        width: 100%;
+    .inner-container {
         height: 100%;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
+        width: 100%;
 
-
-        .item {
-            margin-bottom: calc($globe-margin / 2);
-
-
-            .inner-item {
-                margin-bottom: calc($globe-margin / 2);
-                width: 100%;
-                display: flex;
-                flex-direction: row;
-                justify-content: start;
-                align-items: center;
-            }
-
-            .inner-item:last-child {
-                margin-bottom: 0;
-            }
-        }
-
-        .item:last-child {
-            margin-bottom: 0;
-        }
-
-        .notFound {
-            flex: 1;
+        .card {
+            background-color: $success-color-alpha-3;
+            width: 100%;
             display: flex;
             flex-direction: column;
+            align-items: stretch;
             justify-content: center;
-            width: 100%;
-            background-color: color.scale($mac-red, $lightness: 40%);
+            border: $simple-border;
+            padding: $globe-padding;
+            border-radius: $globe-border-radius;
+
+            .title {
+                font-size: 1.25rem;
+                font-weight: bold;
+                margin-bottom: 10px;
+            }
         }
 
-        .Found {
-            width: 100%;
-            background-color: color.scale($mac-green, $lightness: 40%);
+        .not-install {
+            background-color: $danger-color-alpha-3 !important;
         }
     }
+
 }
 </style>

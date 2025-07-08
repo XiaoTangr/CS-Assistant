@@ -22,7 +22,7 @@ export async function runMigrations(): Promise<MigrationResult> {
 
             // 构建 CREATE TABLE SQL
             const columnDefs = columns.map((col, index) => {
-                let def = `${col.name} ${mapType(col.type)}`;
+                let def = ` "${col.name}" ${mapType(col.type)}`;
                 if (index === 0) {
                     def += ' PRIMARY KEY'; // 第一个字段为主键
                 }
@@ -32,7 +32,7 @@ export async function runMigrations(): Promise<MigrationResult> {
                 return def;
             });
 
-            const createTableSql = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefs.join(', ')});`;
+            const createTableSql = `CREATE TABLE IF NOT EXISTS "${tableName}" (${columnDefs.join(', ')});`;
 
             console.log(`[DB] Creating table: ${tableName}`);
             await baseCRUD.executeRaw(createTableSql);
@@ -90,7 +90,17 @@ async function insertDefaultData(tableName: string, defaultData: any[]): Promise
 
         if (count === 0) {
             console.log(`[DB] Inserting default data into ${tableName}`);
-            const rowsAffected = await baseCRUD.insertRows(tableName, defaultData);
+
+            // 确保传入的是真实的数据数组
+            const dataToInsert = defaultData;
+
+            // 增加校验：确保数组非空且第一个元素是对象
+            if (!Array.isArray(dataToInsert) || dataToInsert.length === 0 || typeof dataToInsert[0] !== 'object') {
+                console.error(`[DB] Invalid default data for table ${tableName}:`, dataToInsert);
+                return false;
+            }
+
+            const rowsAffected = await baseCRUD.insertRows(tableName, dataToInsert);
             console.log(`[DB] Inserted ${rowsAffected} rows into ${tableName}`);
             return rowsAffected > 0;
         }

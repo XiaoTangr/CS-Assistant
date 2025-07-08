@@ -86,7 +86,7 @@ const asOrigintSelerterChangeHandler = (value: string) => {
 }
 const getBackupFolderPath = (): Promise<string> => {
     return new Promise((resolve, reject) => {
-        let r = SettingsStore.qetSettingsByKey("backupFolderPath") as Settings;
+        let r = SettingsStore.getViewDataItemByKey("backupFolderPath") as Settings;
         if (!r || !r.selected || r.selected === '') {
             reject("The value of backupFolderPath is empty or illegal! ");
         }
@@ -119,7 +119,7 @@ const copyHandler = async () => {
                 // 执行备份操作（具体实现暂不提供）
             } catch (e: any) {
                 ElNotification.error({ message: `错误：${e.message}，请前往设置页设置备份文件夹路径。` });
-                router.push({ path: '/appSettings/PathSettings' });
+                router.push({ path: '/settings' });
                 return;
             }
         }

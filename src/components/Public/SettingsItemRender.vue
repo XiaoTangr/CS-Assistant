@@ -1,63 +1,61 @@
 <template>
     <div class="container ">
-        <div v-if="viewSettingsDataItem.type === 'Boolean'" class="settings-item   item-Boolean">
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
-                viewSettingsDataItem.text }}
+        <div v-if="props.item.type === 'Boolean'" class="settings-item   item-Boolean">
+            <p :class="{ modifed: isDataConsistent }" class="item-name">{{
+                props.item.text }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ viewSettingsDataItem.description }}
+                    {{ props.item.description }}
                 </div>
 
                 <div class="item-options">
-                    <el-switch v-model="viewSettingsDataItem.selected"
-                        :active-text="viewSettingsDataItem.options[0].text"
-                        :inactive-text="viewSettingsDataItem.options[1].text" />
+                    <el-switch v-model="props.item.selected" :active-text="props.item.options?.[0].text"
+                        :inactive-text="props.item.options?.[1].text" />
                 </div>
             </div>
         </div>
-        <div v-if="viewSettingsDataItem.type === 'Select'" class="settings-item item-Select">
+        <div v-if="props.item.type === 'Select'" class="settings-item item-Select">
 
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
-                viewSettingsDataItem.text }}
+            <p :class="{ modifed: isDataConsistent }" class="item-name">{{
+                props.item.text }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ viewSettingsDataItem.description }}
+                    {{ props.item.description }}
                 </div>
 
                 <div class="item-options">
-                    <el-select v-model="viewSettingsDataItem.selected" placeholder="Select" style="width: 100%">
-                        <el-option v-for="i in viewSettingsDataItem.options" :key="i.value" :label="i.text"
-                            :value="i.value" />
+                    <el-select v-model="props.item.selected" placeholder="Select" style="width: 100%">
+                        <el-option v-for="i in props.item.options" :key="i.value" :label="i.text" :value="i.value" />
                     </el-select>
                 </div>
             </div>
         </div>
-        <div v-if="viewSettingsDataItem.type === 'Input'" class="settings-item  item-Input">
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
-                viewSettingsDataItem.text }}
+        <div v-if="props.item.type === 'Input'" class="settings-item  item-Input">
+            <p :class="{ modifed: isDataConsistent }" class="item-name">{{
+                props.item.text }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ viewSettingsDataItem.description }}
+                    {{ props.item.description }}
                 </div>
                 <div class="item-options">
-                    <el-input v-model="viewSettingsDataItem.selected" placeholder="..." style="width: 100%" />
+                    <el-input v-model="props.item.selected" placeholder="..." style="width: 100%" />
                 </div>
             </div>
         </div>
-        <div v-if="viewSettingsDataItem.type === 'PathInput'" class="settings-item item-FilePath">
-            <p :class="{ modifed: !SettingsStore.isDataConsistent(viewSettingsDataItem.key) }" class="item-name">{{
-                viewSettingsDataItem.text
-                }}
+        <div v-if="props.item.type === 'PathInput'" class="settings-item item-FilePath">
+            <p :class="{ modifed: isDataConsistent }" class="item-name">{{
+                props.item.text
+            }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
-                    {{ viewSettingsDataItem.description }}
+                    {{ props.item.description }}
                 </div>
                 <div class="item-options">
-                    <el-input class="path-item" v-model="viewSettingsDataItem.selected" placeholder="选择路径" />
+                    <el-input class="path-item" v-model="props.item.selected" placeholder="选择路径" />
                     <el-button class="path-item" @click="openPathChoose" type="primary" :icon="FolderOpened" circle
                         plain />
                 </div>
@@ -71,10 +69,10 @@
 import { FolderOpened } from '@element-plus/icons-vue';
 import { open } from '@tauri-apps/plugin-dialog';
 import { Settings } from '@/models/Settings.model';
-import { PropType } from 'vue';
+import { computed, PropType } from 'vue';
 import { useSettingsStore } from '@/store/SettingsStore';
 const props = defineProps({
-    viewSettingsDataItem: {
+    item: {
         type: Object as PropType<Settings>,
         required: true
     }
@@ -82,17 +80,26 @@ const props = defineProps({
 
 const SettingsStore = useSettingsStore();
 
+const isDataConsistent = computed(() => {
+    const dbValue = SettingsStore.getDbDataItemByKey(props.item.key as string)?.selected as string;
+    return props.item.selected !== dbValue;
+})
+
 const openPathChoose = async () => {
     try {
-        const file = open({
+        const file = await open({
             multiple: false,
             directory: true,
         });
-        if (file !== null && typeof file === 'string') {
-            props.viewSettingsDataItem.selected = file;
+
+        if (file && typeof file === 'string') {
+            props.item.selected = file;
+        } else {
+            // 用户取消选择或未选择有效路径
+            console.warn('未选择有效的路径');
         }
     } catch (error: any) {
-        throw error;
+        console.error('打开路径选择器时发生错误:', error);
     }
 };
 </script>
@@ -115,6 +122,7 @@ const openPathChoose = async () => {
         border: $simple-border;
         padding: calc($globe-padding / 2);
         transition: $simpel-transition-fast;
+        background: none;
 
         .item-name {
             padding-top: calc($globe-padding / 4);
@@ -136,6 +144,7 @@ const openPathChoose = async () => {
             width: calc(100% - $font-size);
             margin-left: $font-size;
             background: none;
+
             .item-options {
                 display: flex;
                 justify-content: right;
@@ -157,7 +166,6 @@ const openPathChoose = async () => {
 }
 
 .settings-item:has(> .modifed) {
-
     background-color: $warning-color-alpha-3;
 }
 
