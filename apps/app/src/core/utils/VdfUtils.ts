@@ -1,4 +1,3 @@
-// e:\Projects\Node\Tauri\CS2H\src\utils\VdfUtil.ts
 
 import { invoke } from '@tauri-apps/api/core';
 import { deepParseJSON } from '@/core/utils/JSONUtil';

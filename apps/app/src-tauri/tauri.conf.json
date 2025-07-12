@@ -9,7 +9,11 @@
     "beforeBuildCommand": "vue-tsc --noEmit && vite build",
     "frontendDist": "../dist"
   },
-  "plugins": {},
+  "plugins": {
+    "allowlist": {
+      "all": true
+    }
+  },
   "app": {
     "withGlobalTauri": true,
     "windows": [
