@@ -8,10 +8,9 @@
                 <div v-if="hasSteam" class="content">
                     位于:<br>
                     <CopyText :text="steamInstallPathStr as string" />
-
                 </div>
                 <div v-else class="content">
-                    <LiquidButton size="large" round @click="setPath">选择Steam目录</LiquidButton>
+                    <LiquidButton size="large" round @click="setPath">查找Steam</LiquidButton>
                 </div>
             </div>
             <div :class="[{ 'not-install': !hasCS }, `liquid-card`, `card`]">
@@ -26,11 +25,7 @@
                     指定Steam路径后自动识别!
                 </div>
             </div>
-
         </el-space>
-
-
-
     </el-card>
 
 </template>
@@ -48,7 +43,7 @@ import CopyText from '@/components/Common/CopyText.vue';
 const STEAM_EXE_PATH_WINDOWS = "\\steam.exe"
 const STEAM_LIBRARY_GAME_SAVE_PATH = "\\steamapps\\common"
 const STEAM_LIBRARY_VDFNAME = "libraryfolders.vdf"
-const MAIN_STEAMLIBRARY_VDF = `\\steamapps\\${STEAM_LIBRARY_VDFNAME}`
+const MAIN_STEAMLIBRARY_VDF = `\\config\\${STEAM_LIBRARY_VDFNAME}`
 
 const CS_HOME = `${STEAM_LIBRARY_GAME_SAVE_PATH}\\Counter-Strike Global Offensive`
 const CS_ID = 730
@@ -191,6 +186,7 @@ onMounted(async () => {
         width: 100%;
 
         .card {
+            overflow: hidden;
             background-color: $success-color-alpha-3;
             width: 100%;
             display: flex;

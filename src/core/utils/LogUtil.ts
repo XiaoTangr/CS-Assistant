@@ -1,18 +1,4 @@
-export const printLog = (msg: any, ...args: any[]) => {
-    console.log(msg, ...args);
-}
-export const printError = (msg: any, ...args: any[]) => {
-    console.error(msg, ...args)
-}
-export const printWarn = (msg: any, ...args: any[]) => {
-    console.warn(msg, ...args)
-}
-export const printInfo = (msg: any, ...args: any[]) => {
-    console.info(msg, ...args)
-}
-export const printDebug = (msg: any, ...args: any[]) => {
-    console.trace(msg, ...args)
-}
+
 
 
 class LogUtil {
@@ -27,6 +13,21 @@ class LogUtil {
         return LogUtil.instance;
     }
 
+    log = (msg: any, ...args: any[]) => {
+        console.log(msg, ...args);
+    }
+    error = (msg: any, ...args: any[]) => {
+        console.error(msg, ...args)
+    }
+    warning = (msg: any, ...args: any[]) => {
+        console.warn(msg, ...args)
+    }
+    info = (msg: any, ...args: any[]) => {
+        console.info(msg, ...args)
+    }
+    debug = (msg: any, ...args: any[]) => {
+        console.trace(msg, ...args)
+    }
 
 }
 

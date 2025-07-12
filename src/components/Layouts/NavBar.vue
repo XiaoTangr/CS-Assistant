@@ -100,7 +100,7 @@ const navHandler = (routeName: string) => {
                         flex-direction: column;
                         align-items: center;
                         justify-content: center;
-                        font-size: calc(1.5 * $font-size);
+                        font-size: calc(1 * $font-size);
                         margin: calc(0.25 * $font-size);
                     }
 

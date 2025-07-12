@@ -6,7 +6,7 @@
                 <el-space class="selecter" direction="vertical" fill>
                     <div class="l">
                         <p>复制源</p>
-                        <el-select v-model="CopyOriginSelected" placeholder="选择复制源" style="flex: 1;"
+                        <el-select clearable v-model="CopyOriginSelected" placeholder="选择复制源" style="flex: 1;"
                             @change="asOrigintSelerterChangeHandler">
                             <el-option v-for="item in userSettingsArr" :disabled="!item.asOrigin" :key="item.folderName"
                                 :label="item.userName" :value="item.folderName" />
@@ -15,7 +15,7 @@
                     <div class="r">
                         <p>目标(可多选)</p>
 
-                        <el-select v-model="CopyTargetSelected" multiple placeholder="选择复制目标" style="flex: 1;">
+                        <el-select clearable v-model="CopyTargetSelected" multiple placeholder="选择复制目标" style="flex: 1;">
                             <el-option v-for="item in userSettingsArr" :disabled="!item.asTarget" :key="item.folderName"
                                 :label="item.userName" :value="item.folderName" />
                         </el-select>
@@ -61,16 +61,19 @@ const backupFolderPath = ref<string>();
 const { data } = storeToRefs(LoginedSteamUserStore);
 const userSettingsArr = ref<Array<SettingsArrItem>>();
 
+onMounted(() => {
+    if (data.value) {
+        userSettingsArr.value = data.value.map((item) => ({
+            userName: item.PersonaName ?? "Unknown",
+            folderName: item.FriendId ?? "",
+            asOrigin: true,
+            asTarget: true
+        }));
+    }
+})
 
 const CopyOriginSelected = ref<string | undefined>();
 const CopyTargetSelected = ref<string[]>([]);
-
-onMounted(() => {
-
-    userSettingsArr.value = data.value?.map((item) => {
-        return { userName: item.PersonaName, folderName: item.FriendId, asOrigin: true, asTarget: true }
-    })
-})
 
 const asOrigintSelerterChangeHandler = (value: string) => {
     if (CopyTargetSelected.value.includes(value)) {

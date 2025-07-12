@@ -61,7 +61,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </template>
 
@@ -103,8 +102,7 @@ const openPathChoose = async () => {
     }
 };
 </script>
-
-<style scoped lang="scss">
+<style lang="scss" scoped>
 .container {
     width: 100%;
     display: flex;
@@ -127,35 +125,42 @@ const openPathChoose = async () => {
         .item-name {
             padding-top: calc($globe-padding / 4);
             font-weight: $font-weight-bold;
-            width: 100%;
+            flex: 1;
             display: flex;
             margin-left: $font-size;
             justify-content: left;
             align-items: center;
         }
 
-
-
         .item-container {
+            margin-top: calc($globe-padding / 4);
             display: flex;
             justify-content: space-between;
             flex-direction: row;
-            align-items: center;
+            align-items: stretch;
             width: calc(100% - $font-size);
             margin-left: $font-size;
             background: none;
 
-            .item-options {
+            .item-desc {
+                flex: 0.55;
                 display: flex;
-                justify-content: right;
                 align-items: center;
+            }
+
+            .item-options {
+                flex: 0.45;
+                display: flex;
+                justify-content: flex-end;
+                align-items: start;
+                padding: calc($globe-padding / 4) 0;
+                padding-left: calc($globe-padding / 8) !important;
 
                 .path-item:first-child {
                     margin-right: calc($globe-margin / 4);
                 }
             }
         }
-
 
         .item-text,
         .item-options {
@@ -168,7 +173,6 @@ const openPathChoose = async () => {
 .settings-item:has(> .modifed) {
     background-color: $warning-color-alpha-3;
 }
-
 
 .modifed::before {
     content: "●";

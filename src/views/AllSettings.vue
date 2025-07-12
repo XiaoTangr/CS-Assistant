@@ -3,7 +3,7 @@
         <div class="groups">
             <div class="group" v-for="(g, i) in groupedViewData" :key="i">
                 <div class="item">
-                    <el-divider content-position="left">{{ i }}</el-divider>
+                    <el-divider border-style="dashed" class="group-title" content-position="left">{{ i }}</el-divider>
                     <SettingsItemRender class="item-render" v-for="(item) in g" :item="item" />
                 </div>
             </div>
@@ -52,6 +52,23 @@ const { groupedViewData } = storeToRefs(SettingsStore);
 
             .item {
                 width: 100%;
+
+                .group-title {
+                    margin-bottom: $globe-margin;
+                }
+
+                // .group-title {
+                //     margin-top: calc($globe-margin / 2);
+                //     // padding-left: calc($globe-margin / 4) ;
+
+                //     * {
+                //         bottom: calc(($globe-margin * -2)  - ($globe-margin / 4));
+                //         padding: 0;
+                //         left: calc($globe-margin / 4);
+                //         left: calc($globe-margin + ($globe-margin / 4) + ($globe-padding / 2));
+                //         background: none;
+                //     }
+                // }
             }
 
             .item-render {

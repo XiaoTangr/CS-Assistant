@@ -3,11 +3,16 @@ import App from "./App.vue";
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import "@/css/import.scss"
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import { MainRouter } from "./router/Router";
 import { createPinia } from 'pinia'
 import StartUpUtil from "./core/utils/StartUpUtil";
+
+
+
+
 const app = createApp(App)
 const store = createPinia();
 

@@ -1,13 +1,29 @@
-import { Compass, CopyDocument, Stamp, TurnOff, } from '@element-plus/icons-vue';
+import { Aim, Coin, Compass, CopyDocument, EditPen, Setting, SetUp } from '@element-plus/icons-vue';
 
 export const RouterConfig = [
     {
         name: 'appHome',
         path: '/',
-        component: () => import('@/views/appHome.vue'),
+        component: () => import('@/views/AppHome.vue'),
         meta: {
             icon: Compass,
             text: "主页"
+        }
+    }, {
+        name: 'CrosshairGallery',
+        path: "/CrosshairGallery",
+        component: () => import('@/views/CrosshairGallery.vue'),
+        meta: {
+            icon: Aim,
+            text: "准星"
+        }
+    }, {
+        name: 'AdvancedKeyBinding',
+        path: "/AdvancedKeyBinding",
+        component: () => import('@/views/AdvancedKeyBinding.vue'),
+        meta: {
+            icon: EditPen,
+            text: "自定义按键绑定"
         }
     }, {
         name: 'ConfigCloner',
@@ -15,16 +31,23 @@ export const RouterConfig = [
         component: () => import('@/views/ConfigCloner.vue'),
         meta: {
             icon: CopyDocument,
-            text: "CS配置克隆器"
+            text: "配置克隆器"
         }
-    },
+    }, {
+        name: 'BackupAndRecovery',
+        path: "/BackupAndRecovery",
+        component: () => import('@/views/BackupAndRecovery.vue'),
+        meta: {
+            icon: Coin,
+            text: "备份与恢复"
+        }
 
-    {
+    }, {
         name: 'appSettings',
         path: "/settings",
-        component: () => import('@/views/allSettings.vue'),
+        component: () => import('@/views/AllSettings.vue'),
         meta: {
-            icon: TurnOff,
+            icon: Setting,
             text: "设置"
         }
     }, {
@@ -32,8 +55,8 @@ export const RouterConfig = [
         path: "/devTools",
         component: () => import('@/views/DevTools.vue'),
         meta: {
-            icon: Stamp,
-            text: "开发者测试"
+            icon: SetUp,
+            text: "开发者工具"
         }
     }
 

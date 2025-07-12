@@ -3,9 +3,12 @@ use std::fs;
 use std::fs::File;
 use std::io;
 use std::io::prelude::*;
-use std::io::BufReader;
 use std::io::Error;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+
+// 引入 base64 crate
+use base64::engine::general_purpose::STANDARD;
+use base64::Engine;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct FileOrDir {
@@ -16,37 +19,34 @@ pub struct FileOrDir {
 }
 
 #[tauri::command]
-pub fn is_file_exists(filepath: &str) -> bool {
-    return Path::new(&filepath).exists();
+pub fn is_file_exists(file_path: &str) -> bool {
+    Path::new(file_path).exists()
 }
 
 #[tauri::command]
-// 定义一个函数，用于读取文本文件
-pub fn read_text_file(filepath: &str) -> Result<String, String> {
-    // 调用内部函数read_text_file_internal，传入文件路径
-    read_text_file_internal(filepath).map_err(|e| e.to_string())
-    // 如果读取文件成功，则返回文件内容
-    // 如果读取文件失败，则返回错误信息
-}
-#[tauri::command]
-// 定义一个函数，用于读取文本文件，返回一个Result类型，包含String或Error
-pub fn read_text_file_internal(filepath: &str) -> Result<String, Error> {
-    // 打开文件，如果失败则返回Error
-    let f = File::open(filepath)?;
-    // 创建一个BufReader对象，用于读取文件
-    let mut reader = BufReader::new(f);
-    // 创建一个String对象，用于存储读取的文件内容
-    let mut buffer = String::new();
-
-    // Read the entire file into buffer
-    reader.read_to_string(&mut buffer)?;
-
-    Ok(buffer)
+pub fn read_file_as_base64(file_path: &str) -> Result<String, String> {
+    let bytes = fs::read(file_path).map_err(|e| e.to_string())?;
+    Ok(STANDARD.encode(bytes))
 }
 
-/// 递归地列出目录下的所有文件和子目录，并返回一个包含文件和目录信息的向量
 #[tauri::command]
-pub fn list_files_and_directories_internal<P: AsRef<Path>>(dir: P) -> io::Result<FileOrDir> {
+pub fn read_text_file(file_path: &str) -> Result<String, String> {
+    read_text_file_internal(file_path).map_err(|e| e.to_string())
+}
+
+fn read_text_file_internal(file_path: &str) -> Result<String, Error> {
+    let mut file = File::open(file_path)?;
+    let mut contents = String::new();
+    file.read_to_string(&mut contents)?;
+    Ok(contents)
+}
+
+#[tauri::command]
+pub fn list_files_and_directories(dir_path: &str) -> Result<FileOrDir, String> {
+    list_files_and_directories_internal(dir_path).map_err(|e| e.to_string())
+}
+
+fn list_files_and_directories_internal<P: AsRef<Path>>(dir: P) -> io::Result<FileOrDir> {
     let path = dir.as_ref();
     let name = path
         .file_name()
@@ -59,8 +59,7 @@ pub fn list_files_and_directories_internal<P: AsRef<Path>>(dir: P) -> io::Result
     if is_directory {
         for entry in fs::read_dir(path)? {
             let entry = entry?;
-            let entry_path = entry.path();
-            children.push(list_files_and_directories_internal(entry_path)?);
+            children.push(list_files_and_directories_internal(entry.path())?);
         }
     }
 
@@ -72,60 +71,43 @@ pub fn list_files_and_directories_internal<P: AsRef<Path>>(dir: P) -> io::Result
     })
 }
 
-// 定义一个函数，用于列出指定路径下的文件和目录
-#[tauri::command]
-pub fn list_files_and_directories(dir_path: &str) -> Result<FileOrDir, String> {
-    // 调用内部函数list_files_and_directories_internal，传入路径参数
-    list_files_and_directories_internal(dir_path).map_err(|e| e.to_string())
-    // 将内部函数的返回值转换为Result类型，如果内部函数返回错误，则将错误信息转换为字符串
-}
-
 #[tauri::command]
 pub fn read_file(path: &str) -> Vec<u8> {
-    std::fs::read(path).unwrap()
+    fs::read(path).unwrap_or_default()
 }
 
 #[tauri::command]
-pub fn write_file(path: std::path::PathBuf, data: Vec<u8>) {
-    std::fs::write(path, data).unwrap()
+pub fn write_file(path: PathBuf, data: Vec<u8>) -> Result<(), String> {
+    fs::write(&path, data).map_err(|e| e.to_string())
 }
 
 #[tauri::command]
-pub fn cp_dir_recursive(origin_path: &str, target_path: &str) -> i32 {
-    let origin = Path::new(origin_path);
+pub fn copy_directory(source_path: &str, target_path: &str) -> Result<(), String> {
+    let source = Path::new(source_path);
     let target = Path::new(target_path);
 
-    if !origin.exists() {
-        eprintln!("Origin path does not exist: {}", origin_path);
-        return -1; // 返回 -1 表示源路径不存在
+    if !source.exists() {
+        return Err(format!("Source path does not exist: {}", source_path));
     }
 
-    // 递归复制函数
-    fn copy_dir_recursive(origin: &Path, target: &Path) -> Result<(), std::io::Error> {
+    fn copy_dir_recursive(source: &Path, target: &Path) -> io::Result<()> {
         if !target.exists() {
             fs::create_dir(target)?;
         }
 
-        for entry in fs::read_dir(origin)? {
+        for entry in fs::read_dir(source)? {
             let entry = entry?;
-            let path = entry.path();
+            let entry_path = entry.path();
             let dest_path = target.join(entry.file_name());
 
-            if path.is_dir() {
-                copy_dir_recursive(&path, &dest_path)?;
+            if entry_path.is_dir() {
+                copy_dir_recursive(&entry_path, &dest_path)?;
             } else {
-                fs::copy(&path, &dest_path)?;
+                fs::copy(&entry_path, &dest_path)?;
             }
         }
-
         Ok(())
     }
 
-    match copy_dir_recursive(origin, target) {
-        Ok(_) => 0,   // 成功返回 0
-        Err(e) => {
-            eprintln!("Failed to copy directory: {}", e);
-            -1  // 失败返回 -1
-        }
-    }
+    copy_dir_recursive(source, target).map_err(|e| e.to_string())
 }

@@ -29,7 +29,7 @@
         </div>
         <el-dialog :close-on-click-modal="false" append-to="#app" width="400" v-model="centerDialogVisible"
             align-center>
-            <template #title>
+            <template #header>
 
                 <span class="dg-title">
                     <el-icon class="dg-icon">

@@ -1,4 +1,4 @@
-import { printDebug, printError } from "@/core/utils/LogUtil";
+import LogUtil from "@/core/utils/LogUtil";
 import { Settings } from "@/models/Settings.model";
 import SettingsService from "@/services/Settings.services";
 import { ElNotification } from "element-plus";
@@ -55,7 +55,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         const viewItem = (viewData.value ?? []).find((item: Settings) => item.key === key);
 
         if (!dbItem || !viewItem) {
-            printError(`找不到 key 为 ${key} 的设置项`, { dbItem, viewItem });
+            LogUtil.error(`找不到 key 为 ${key} 的设置项`, { dbItem, viewItem });
             return false;
         }
 
@@ -114,7 +114,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             // 并行保存所有变更项
             await Promise.all(
                 changedItems.map(async (item: Settings) => {
-                    printDebug(`正在保存配置项：${item.key ?? ''}`, item);
+                    LogUtil.debug(`正在保存配置项：${item.key ?? ''}`, item);
                     await saveOneData(item);
                     ElNotification.success({
                         title: "成功",
@@ -126,7 +126,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             // 所有数据保存完成后刷新视图数据
             await fetchData();
         } catch (error) {
-            printError("保存或刷新过程中发生错误：", error);
+            LogUtil.error("保存或刷新过程中发生错误：", error);
             ElNotification.error({
                 title: "错误",
                 message: "保存过程中发生错误，请查看控制台日志。",

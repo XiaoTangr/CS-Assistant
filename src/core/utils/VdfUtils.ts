@@ -10,7 +10,7 @@ import { deepParseJSON } from '@/core/utils/JSONUtil';
  */
 export const getVdfObjectByFilePath = async (filePath: string): Promise<Record<string, any>> => {
     try {
-        const fileContent: string = await invoke("read_text_file", { filepath: filePath });
+        const fileContent: string = await invoke("read_text_file", { filePath: filePath });
         const parsed = parseVDF(fileContent);
         return <Record<string, any>>deepParseJSON(parsed);
     } catch (error: any) {

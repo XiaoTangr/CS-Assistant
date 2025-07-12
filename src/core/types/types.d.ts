@@ -16,11 +16,11 @@ interface SteamLoginUser {
  * Steam 用户基础信息
  */
 interface BasicSteamLoginUser {
-    AccountName: string;
-    PersonaName: string;
-    steamId: string;
-    FriendId: string;
-    avatarBase64: string;
+    AccountName: string | null;
+    PersonaName: string | null;
+    steamId: string | null;
+    FriendId: string | null;
+    avatarBase64: string | null;
 }
 
 /**
@@ -46,4 +46,13 @@ export interface MigrationResult {
 export interface GroupOrderItem {
     gn: string;
     go: number;
+}
+
+
+// FileOrDir 类型定义
+interface FileOrDir {
+    name: string;
+    path: string;
+    is_directory: boolean;
+    children: FileOrDir[];
 }

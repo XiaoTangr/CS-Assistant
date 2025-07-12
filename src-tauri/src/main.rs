@@ -17,7 +17,8 @@ fn main() {
             fs::is_file_exists,
             fs::write_file,
             fs::read_file,
-            fs::cp_dir_recursive
+            fs::copy_directory,
+            fs::read_file_as_base64
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
