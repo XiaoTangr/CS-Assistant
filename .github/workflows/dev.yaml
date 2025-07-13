@@ -53,21 +53,21 @@ jobs:
           run_install: false
 
       # ┌──────────────────────┐
-      # │   🚚 安装依赖包      │
+      # │   🚚 安装依赖包       │
       # └──────────────────────┘
       - name: Install dependencies if package.json changed
         if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
         run: pnpm install
 
       # ┌──────────────────────┐
-      # │   🛠️ 构建 Tauri 应用 │
+      # │   🛠️ 构建应用         │
       # └──────────────────────┘
-      - name: Build Tauri application
-        run: pnpm tauri build
+      - name: Build all application
+        run: pnpm turbo run build
         working-directory: .
 
       # ┌──────────────────────┐
-      # │   📤 上传构建产物    │
+      # │   📤 上传构建产物      │
       # └──────────────────────┘
       # 上传 MSI 安装包
       - name: Upload MSI Installer
