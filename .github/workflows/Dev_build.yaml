@@ -16,16 +16,9 @@ jobs:
           fetch-depth: 0
 
       # 🔍 检查 package.json 是否变更
-      - name: Check if package.json changed
-        id: check-package-json
-        shell: pwsh
-        run: |
-          $changedFiles = git diff --name-only HEAD^ HEAD
-          if ($changedFiles -match "package.json") {
-            echo "::set-output name=changed::true"
-          } else {
-            echo "::set-output name=changed::false"
-          }
+      - name: Install dependencies if package.json changed
+        if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
+        run: pnpm install --no-frozen-lockfile
 
       # 🧠 恢复缓存
       - name: Restore pnpm cache
@@ -78,16 +71,10 @@ jobs:
           fetch-depth: 0
 
       # 🔍 检查 package.json 是否变更
-      - name: Check if package.json changed
-        id: check-package-json
-        shell: pwsh
-        run: |
-          $changedFiles = git diff --name-only HEAD^ HEAD
-          if ($changedFiles -match "package.json") {
-            echo "::set-output name=changed::true"
-          } else {
-            echo "::set-output name=changed::false"
-          }
+      - name: Install dependencies if package.json changed
+        if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
+        run: pnpm install --no-frozen-lockfile
+
 
       # 🧠 恢复缓存
       - name: Restore pnpm cache
