@@ -1,4 +1,4 @@
-name: Build All Apps in Dev Branch DS version
+name: Build All Apps in Dev Branch
 
 on:
   push:
@@ -6,9 +6,9 @@ on:
   workflow_dispatch:
 
 env:
-  PNPM_VERSION: "8"
-  PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+  PNPM_STORE_PATH: ~/.pnpm-store
   TAURI_TARGET: "release"
+  CI: "true"
 
 jobs:
   setup:
@@ -24,26 +24,39 @@ jobs:
           fetch-depth: 0
           submodules: recursive
 
+      - name: Detect package manager
+        id: detect-pm
+        shell: bash
+        run: |
+          if [ -f pnpm-lock.yaml ]; then
+            echo "PM=pnpm" >> $GITHUB_OUTPUT
+            echo "STORE_PATH=~/.pnpm-store" >> $GITHUB_OUTPUT
+          elif [ -f yarn.lock ]; then
+            echo "PM=yarn" >> $GITHUB_OUTPUT
+          else
+            echo "PM=npm" >> $GITHUB_OUTPUT
+          fi
+
       - name: Check for changes
         id: check-changes
         shell: pwsh
         run: |
-          $changed = git diff --name-only HEAD^ HEAD | Select-String -Pattern "package\.json|pnpm-lock\.yaml"
-          echo "::set-output name=changed::$($changed -ne $null)"
+          $changed = git diff --name-only HEAD^ HEAD | Select-String -Pattern "package\.json|pnpm-lock\.yaml|yarn\.lock"
+          echo "changed=$($changed -ne $null)" >> $env:GITHUB_OUTPUT
 
-      - name: Cache pnpm store
+      - name: Cache package manager
         id: pnpm-cache
         uses: actions/cache@v3
         with:
-          path: ${{ env.PNPM_STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.detect-pm.outputs.STORE_PATH || '~/.cache' }}
+          key: ${{ runner.os }}-${{ steps.detect-pm.outputs.PM }}-${{ hashFiles('**/lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            ${{ runner.os }}-${{ steps.detect-pm.outputs.PM }}-
 
-      - name: Install pnpm
+      - name: Install package manager
+        if: steps.detect-pm.outputs.PM == 'pnpm'
         uses: pnpm/action-setup@v4
         with:
-          # version: ${{ env.PNPM_VERSION }}
           run_install: false
 
   build:
@@ -54,29 +67,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Restore pnpm cache
+      - name: Restore cache
         uses: actions/cache@v3
         with:
-          path: ${{ env.PNPM_STORE_PATH }}
+          path: ${{ needs.setup.outputs.STORE_PATH || '~/.cache' }}
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: Install pnpm
+        if: needs.setup.outputs.PM == 'pnpm'
         uses: pnpm/action-setup@v4
         with:
-          version: ${{ env.PNPM_VERSION }}
           run_install: false
 
       - name: Install dependencies
         if: needs.setup.outputs.needs-install == 'true'
-        run: pnpm install --frozen-lockfile --prefer-offline
+        shell: bash
+        run: |
+          case "${{ needs.setup.outputs.PM }}" in
+            pnpm) pnpm install --frozen-lockfile --prefer-offline ;;
+            yarn) yarn install --frozen-lockfile --prefer-offline ;;
+            npm)  npm ci ;;
+          esac
 
       - name: Build with Turbo
+        if: needs.setup.outputs.PM == 'pnpm'
         run: pnpm turbo run build --output-logs=errors-only
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Build Tauri (Windows)
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && needs.setup.outputs.PM == 'pnpm'
         run: pnpm tauri build --target ${{ env.TAURI_TARGET }}
         working-directory: ./apps/app
         env:
@@ -91,10 +111,17 @@ jobs:
       - name: Create release archive
         shell: pwsh
         run: |
-          $date = Get-Date -Format "yyyyMMdd"
           $version = (Get-Content ./apps/app/src-tauri/tauri.conf.json | ConvertFrom-Json).package.version
-          Compress-Archive -Path ./apps/doc/dist/* -DestinationPath "./doc-dist-$version-$date.zip"
-          Compress-Archive -Path ./apps/app/src-tauri/target/release/bundle/msi/*.msi -DestinationPath "./app-msi-$version-$date.zip"
+          $date = (Get-Date).ToString("yyyyMMdd")
+          
+          if (Test-Path ./apps/doc/dist) {
+            Compress-Archive -Path ./apps/doc/dist/* -DestinationPath "./doc-dist-$version-$date.zip"
+          }
+          
+          if (Test-Path ./apps/app/src-tauri/target/release/bundle/msi/*.msi) {
+            Get-ChildItem ./apps/app/src-tauri/target/release/bundle/msi/*.msi | 
+              Compress-Archive -DestinationPath "./app-msi-$version-$date.zip"
+          }
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -115,16 +142,15 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-packages
+          path: ./artifacts
 
-      - name: Deploy to Azure Blob Storage
+      - name: Deploy to Azure
         uses: azure/CLI@v1
         with:
-          azcliversion: "2.40.0"
           inlineScript: |
             az storage blob upload-batch \
               --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
               --destination ${{ secrets.AZURE_CONTAINER }} \
-              --source ./ \
+              --source ./artifacts \
               --pattern "*.zip" \
-              --auth-mode key \
-              --account-key ${{ secrets.AZURE_STORAGE_KEY }}
+              --auth-mode key
