@@ -22,9 +22,9 @@ jobs:
         run: |
           $changedFiles = git diff --name-only HEAD^ HEAD
           if ($changedFiles -match "package.json") {
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> $GITHUB_OUTPUT
           } else {
-            echo "::set-output name=changed::false"
+            echo "changed=false" >> $GITHUB_OUTPUT
           }
 
       # 🧠 恢复缓存
@@ -84,9 +84,9 @@ jobs:
         run: |
           $changedFiles = git diff --name-only HEAD^ HEAD
           if ($changedFiles -match "package.json") {
-            echo "::set-output name=changed::true"
+            echo "changed=true" >> $GITHUB_OUTPUT
           } else {
-            echo "::set-output name=changed::false"
+            echo "changed=false" >> $GITHUB_OUTPUT
           }
 
       # 🧠 恢复缓存
