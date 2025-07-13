@@ -1,0 +1,131 @@
+name: build all app in Dev branch
+
+on:
+  push:
+    branches: [Dev]
+
+jobs:
+  buildApp:
+    name: Build apps/app only
+    runs-on: windows-latest
+    steps:
+      # 🧾 获取源码
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 🔍 检查 package.json 是否变更
+      - name: Check if package.json changed
+        id: check-package-json
+        shell: pwsh
+        run: |
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            echo "::set-output name=changed::true"
+          } else {
+            echo "::set-output name=changed::false"
+          }
+
+      # 🧠 恢复缓存
+      - name: Restore pnpm cache
+        uses: actions/cache@v3
+        id: restore-pnpm-cache
+        with:
+          path: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # 📦 安装工具链
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      # # 🚚 安装依赖包
+      # - name: Install dependencies if package.json changed
+      #   if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
+      #   run: pnpm install
+
+      # 🛠️ 构建 Tauri 应用
+      - name: Build apps/app
+        run: pnpm turbo run build --filter=app
+        working-directory: .
+
+      # 📤 上传 MSI 安装包
+      - name: Upload MSI Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: msi-installer
+          path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
+
+      # 📤 上传 NSIS 安装包
+      - name: Upload NSIS Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: NSIS-installer
+          path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
+
+  buildDoc:
+    name: Build apps/doc only
+    runs-on: windows-latest
+    steps:
+      # 🧾 获取源码
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 🔍 检查 package.json 是否变更
+      - name: Check if package.json changed
+        id: check-package-json
+        shell: pwsh
+        run: |
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            echo "::set-output name=changed::true"
+          } else {
+            echo "::set-output name=changed::false"
+          }
+
+      # 🧠 恢复缓存
+      - name: Restore pnpm cache
+        uses: actions/cache@v3
+        id: restore-pnpm-cache
+        with:
+          path: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # 📦 安装工具链
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      # # 🚚 安装依赖包
+      # - name: Install dependencies if package.json changed
+      #   if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
+      #   run: pnpm install
+
+      # 🛠️ 构建 Doc 应用
+      - name: Build apps/doc
+        run: pnpm turbo run build --filter=doc
+        working-directory: .
+
+      # 📤 上传 doc 产物
+      - name: Upload apps/doc dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: Doc-dist
+          path: ./apps/doc/dist/*
+
+  buildAll:
+    name: Build All Apps
+    needs: [buildApp, buildDoc]
+    runs-on: windows-latest
+    steps:
+      - name: This job ensures both buildApp and buildDoc are triggered
+        run: echo "All builds completed successfully."
