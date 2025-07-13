@@ -1,4 +1,4 @@
-name: Build All Apps in Dev Branch
+name: Build All Apps in Dev Branch DS version
 
 on:
   push:
@@ -7,8 +7,8 @@ on:
 
 env:
   PNPM_STORE_PATH: ~/.pnpm-store
-  TAURI_TARGET: "release"
-  CI: "true"
+  TAURI_TARGET: release
+  CI: true
 
 jobs:
   setup:
@@ -17,6 +17,7 @@ jobs:
     outputs:
       cache-hit: ${{ steps.pnpm-cache.outputs.cache-hit }}
       needs-install: ${{ steps.check-changes.outputs.changed || steps.pnpm-cache.outputs.cache-hit != 'true' }}
+      pm-type: ${{ steps.detect-pm.outputs.PM }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,7 +31,7 @@ jobs:
         run: |
           if [ -f pnpm-lock.yaml ]; then
             echo "PM=pnpm" >> $GITHUB_OUTPUT
-            echo "STORE_PATH=~/.pnpm-store" >> $GITHUB_OUTPUT
+            echo "STORE_PATH=${{ env.PNPM_STORE_PATH }}" >> $GITHUB_OUTPUT
           elif [ -f yarn.lock ]; then
             echo "PM=yarn" >> $GITHUB_OUTPUT
           else
@@ -44,7 +45,7 @@ jobs:
           $changed = git diff --name-only HEAD^ HEAD | Select-String -Pattern "package\.json|pnpm-lock\.yaml|yarn\.lock"
           echo "changed=$($changed -ne $null)" >> $env:GITHUB_OUTPUT
 
-      - name: Cache package manager
+      - name: Cache dependencies
         id: pnpm-cache
         uses: actions/cache@v3
         with:
@@ -52,12 +53,7 @@ jobs:
           key: ${{ runner.os }}-${{ steps.detect-pm.outputs.PM }}-${{ hashFiles('**/lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-${{ steps.detect-pm.outputs.PM }}-
-
-      - name: Install package manager
-        if: steps.detect-pm.outputs.PM == 'pnpm'
-        uses: pnpm/action-setup@v4
-        with:
-          run_install: false
+          enableCrossOsArchive: false
 
   build:
     needs: setup
@@ -71,10 +67,13 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ needs.setup.outputs.STORE_PATH || '~/.cache' }}
-          key: ${{ needs.setup.outputs.cache-key }}
+          key: ${{ runner.os }}-${{ needs.setup.outputs.pm-type }}-${{ hashFiles('**/lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ needs.setup.outputs.pm-type }}-
+          enableCrossOsArchive: false
 
       - name: Install pnpm
-        if: needs.setup.outputs.PM == 'pnpm'
+        if: needs.setup.outputs.pm-type == 'pnpm'
         uses: pnpm/action-setup@v4
         with:
           run_install: false
@@ -83,20 +82,20 @@ jobs:
         if: needs.setup.outputs.needs-install == 'true'
         shell: bash
         run: |
-          case "${{ needs.setup.outputs.PM }}" in
+          case "${{ needs.setup.outputs.pm-type }}" in
             pnpm) pnpm install --frozen-lockfile --prefer-offline ;;
             yarn) yarn install --frozen-lockfile --prefer-offline ;;
             npm)  npm ci ;;
           esac
 
       - name: Build with Turbo
-        if: needs.setup.outputs.PM == 'pnpm'
+        if: needs.setup.outputs.pm-type == 'pnpm'
         run: pnpm turbo run build --output-logs=errors-only
         env:
           NODE_OPTIONS: "--max-old-space-size=4096"
 
       - name: Build Tauri (Windows)
-        if: runner.os == 'Windows' && needs.setup.outputs.PM == 'pnpm'
+        if: runner.os == 'Windows' && needs.setup.outputs.pm-type == 'pnpm'
         run: pnpm tauri build --target ${{ env.TAURI_TARGET }}
         working-directory: ./apps/app
         env:
@@ -131,26 +130,3 @@ jobs:
             ./doc-dist-*.zip
             ./app-msi-*.zip
           retention-days: 7
-
-  deploy:
-    needs: artifacts
-    name: Deploy to Staging
-    if: github.ref == 'refs/heads/Dev'
-    runs-on: windows-latest
-    steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: release-packages
-          path: ./artifacts
-
-      - name: Deploy to Azure
-        uses: azure/CLI@v1
-        with:
-          inlineScript: |
-            az storage blob upload-batch \
-              --account-name ${{ secrets.AZURE_STORAGE_ACCOUNT }} \
-              --destination ${{ secrets.AZURE_CONTAINER }} \
-              --source ./artifacts \
-              --pattern "*.zip" \
-              --auth-mode key
