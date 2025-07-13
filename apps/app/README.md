@@ -20,3 +20,19 @@
 
 </center>
 
+### 截图
+
+![sc](https://raw.staticdn.net/XiaoTangr/CS-Assistant/Dev/DesignSrc/screenshots/home.png)
+
+![sc](https://raw.staticdn.net/XiaoTangr/CS-Assistant/Dev/DesignSrc/screenshots/cc.png)
+
+![sc](https://raw.staticdn.net/XiaoTangr/CS-Assistant/Dev/DesignSrc/screenshots/settings.png)
+
+### 自行构建
+
+``` bash
+pnpm turbo run build --filter = app
+```
+构建产物：
+ - vue：`./apps/app/dist`
+ - bin：`./src-tauri/target/release/bundle/`
