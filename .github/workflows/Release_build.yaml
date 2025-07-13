@@ -1,12 +1,12 @@
-name: build all app in Dev branch
+name: build all app in Release branch
 
 on:
   push:
-    branches: [Dev]
+    branches: [Release]
 
 jobs:
-  init:
-    name: Release DevVersion
+  buildAll:
+    name: Release Release Version
     runs-on: windows-latest
     steps:
       # 🧾 获取源码

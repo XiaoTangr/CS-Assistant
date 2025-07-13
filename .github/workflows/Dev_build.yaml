@@ -1,132 +1,131 @@
-name: Build All Apps in Dev Branch DS version
+name: build all app in Dev branch
 
 on:
   push:
     branches: [Dev]
-  workflow_dispatch:
-
-env:
-  PNPM_STORE_PATH: ~/.pnpm-store
-  TAURI_TARGET: release
-  CI: true
 
 jobs:
-  setup:
-    name: Setup Environment
+  buildApp:
+    name: Build apps/app only
     runs-on: windows-latest
-    outputs:
-      cache-hit: ${{ steps.pnpm-cache.outputs.cache-hit }}
-      needs-install: ${{ steps.check-changes.outputs.changed || steps.pnpm-cache.outputs.cache-hit != 'true' }}
-      pm-type: ${{ steps.detect-pm.outputs.PM }}
     steps:
+      # 🧾 获取源码
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          submodules: recursive
 
-      - name: Detect package manager
-        id: detect-pm
-        shell: bash
-        run: |
-          if [ -f pnpm-lock.yaml ]; then
-            echo "PM=pnpm" >> $GITHUB_OUTPUT
-            echo "STORE_PATH=${{ env.PNPM_STORE_PATH }}" >> $GITHUB_OUTPUT
-          elif [ -f yarn.lock ]; then
-            echo "PM=yarn" >> $GITHUB_OUTPUT
-          else
-            echo "PM=npm" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Check for changes
-        id: check-changes
+      # 🔍 检查 package.json 是否变更
+      - name: Check if package.json changed
+        id: check-package-json
         shell: pwsh
         run: |
-          $changed = git diff --name-only HEAD^ HEAD | Select-String -Pattern "package\.json|pnpm-lock\.yaml|yarn\.lock"
-          echo "changed=$($changed -ne $null)" >> $env:GITHUB_OUTPUT
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            echo "::set-output name=changed::true"
+          } else {
+            echo "::set-output name=changed::false"
+          }
 
-      - name: Cache dependencies
-        id: pnpm-cache
+      # 🧠 恢复缓存
+      - name: Restore pnpm cache
         uses: actions/cache@v3
+        id: restore-pnpm-cache
         with:
-          path: ${{ steps.detect-pm.outputs.STORE_PATH || '~/.cache' }}
-          key: ${{ runner.os }}-${{ steps.detect-pm.outputs.PM }}-${{ hashFiles('**/lock.yaml') }}
+          path: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('package.json') }}
           restore-keys: |
-            ${{ runner.os }}-${{ steps.detect-pm.outputs.PM }}-
-          enableCrossOsArchive: false
+            ${{ runner.os }}-pnpm-
 
-  build:
-    needs: setup
-    name: Build Applications
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Restore cache
-        uses: actions/cache@v3
-        with:
-          path: ${{ needs.setup.outputs.STORE_PATH || '~/.cache' }}
-          key: ${{ runner.os }}-${{ needs.setup.outputs.pm-type }}-${{ hashFiles('**/lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ needs.setup.outputs.pm-type }}-
-          enableCrossOsArchive: false
-
+      # 📦 安装工具链
       - name: Install pnpm
-        if: needs.setup.outputs.pm-type == 'pnpm'
         uses: pnpm/action-setup@v4
         with:
-          run_install: false
+          run_install: true
 
-      - name: Install dependencies
-        if: needs.setup.outputs.needs-install == 'true'
-        shell: bash
-        run: |
-          case "${{ needs.setup.outputs.pm-type }}" in
-            pnpm) pnpm install --frozen-lockfile --prefer-offline ;;
-            yarn) yarn install --frozen-lockfile --prefer-offline ;;
-            npm)  npm ci ;;
-          esac
+      # # 🚚 安装依赖包
+      # - name: Install dependencies if package.json changed
+      #   if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
+      #   run: pnpm install
 
-      - name: Build with Turbo
-        if: needs.setup.outputs.pm-type == 'pnpm'
-        run: pnpm turbo run build --output-logs=errors-only
-        env:
-          NODE_OPTIONS: "--max-old-space-size=4096"
+      # 🛠️ 构建 Tauri 应用
+      - name: Build apps/app
+        run: pnpm turbo run build --filter=app
+        working-directory: .
 
-      - name: Build Tauri (Windows)
-        if: runner.os == 'Windows' && needs.setup.outputs.pm-type == 'pnpm'
-        run: pnpm tauri build --target ${{ env.TAURI_TARGET }}
-        working-directory: ./apps/app
-        env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-
-  artifacts:
-    needs: build
-    name: Package Artifacts
-    runs-on: windows-latest
-    steps:
-      - name: Create release archive
-        shell: pwsh
-        run: |
-          $version = (Get-Content ./apps/app/src-tauri/tauri.conf.json | ConvertFrom-Json).package.version
-          $date = (Get-Date).ToString("yyyyMMdd")
-          
-          if (Test-Path ./apps/doc/dist) {
-            Compress-Archive -Path ./apps/doc/dist/* -DestinationPath "./doc-dist-$version-$date.zip"
-          }
-          
-          if (Test-Path ./apps/app/src-tauri/target/release/bundle/msi/*.msi) {
-            Get-ChildItem ./apps/app/src-tauri/target/release/bundle/msi/*.msi | 
-              Compress-Archive -DestinationPath "./app-msi-$version-$date.zip"
-          }
-
-      - name: Upload artifacts
+      # 📤 上传 MSI 安装包
+      - name: Upload MSI Installer
         uses: actions/upload-artifact@v4
         with:
-          name: release-packages
-          path: |
-            ./doc-dist-*.zip
-            ./app-msi-*.zip
-          retention-days: 7
+          name: msi-installer
+          path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
+
+      # 📤 上传 NSIS 安装包
+      - name: Upload NSIS Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: NSIS-installer
+          path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
+
+  buildDoc:
+    name: Build apps/doc only
+    runs-on: windows-latest
+    steps:
+      # 🧾 获取源码
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      # 🔍 检查 package.json 是否变更
+      - name: Check if package.json changed
+        id: check-package-json
+        shell: pwsh
+        run: |
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            echo "::set-output name=changed::true"
+          } else {
+            echo "::set-output name=changed::false"
+          }
+
+      # 🧠 恢复缓存
+      - name: Restore pnpm cache
+        uses: actions/cache@v3
+        id: restore-pnpm-cache
+        with:
+          path: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      # 📦 安装工具链
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          run_install: true
+
+      # # 🚚 安装依赖包
+      # - name: Install dependencies if package.json changed
+      #   if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
+      #   run: pnpm install
+
+      # 🛠️ 构建 Doc 应用
+      - name: Build apps/doc
+        run: pnpm turbo run build --filter=doc
+        working-directory: .
+
+      # 📤 上传 doc 产物
+      - name: Upload apps/doc dist
+        uses: actions/upload-artifact@v4
+        with:
+          name: Doc-dist
+          path: ./apps/doc/dist/*
+
+  buildAll:
+    name: Build All Apps
+    needs: [buildApp, buildDoc]
+    runs-on: windows-latest
+    steps:
+      - name: This job ensures both buildApp and buildDoc are triggered
+        run: echo "All builds completed successfully."
