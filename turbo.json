@@ -3,8 +3,13 @@
   "ui": "tui",
   "tasks": {
     "build": {
-      "dependsOn": ["^build"],
-      "env": ["RUSTUP_HOME", "CARGO_HOME"],
+      "dependsOn": [
+        "^build"
+      ],
+      "env": [
+        "RUSTUP_HOME",
+        "CARGO_HOME"
+      ],
       "outputs": [
         "dist/apps/app/**",
         "src-tauri/target/**"
@@ -12,22 +17,34 @@
       "cache": true
     },
     "lint": {
-      "dependsOn": ["^lint"],
+      "dependsOn": [
+        "^lint"
+      ],
       "outputs": [],
       "cache": true
     },
     "check-types": {
-      "dependsOn": ["^check-types"],
+      "dependsOn": [
+        "^check-types"
+      ],
       "outputs": [],
       "cache": true
     },
     "dev": {
       "cache": false,
+      "env": [
+        "RUSTUP_HOME",
+        "CARGO_HOME"
+      ],
       "persistent": true,
-      "dependsOn": ["^dev"]
+      "dependsOn": [
+        "^dev"
+      ]
     },
     "test": {
-      "dependsOn": ["^test"],
+      "dependsOn": [
+        "^test"
+      ],
       "outputs": [],
       "cache": true
     }
