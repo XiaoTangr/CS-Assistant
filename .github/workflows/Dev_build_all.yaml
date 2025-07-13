@@ -9,14 +9,13 @@ jobs:
     name: Release DevVersion
     runs-on: windows-latest
     steps:
-
-      # 🧾 获取源码   
+      # 🧾 获取源码
       - name: Checkout code
         uses: actions/checkout@v3
         with:
           fetch-depth: 0 # 获取完整历史用于 diff 判断
 
-      # 🔍 检查变更内容 
+      # 🔍 检查变更内容
       - name: Check if package.json changed
         id: check-package-json
         shell: pwsh
@@ -28,7 +27,7 @@ jobs:
             echo "::set-output name=changed::false"
           }
 
-      # 🧠 恢复缓存   
+      # 🧠 恢复缓存
       - name: Restore pnpm cache
         uses: actions/cache@v3
         id: restore-pnpm-cache
@@ -38,48 +37,43 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
-      # 📦 安装工具链   
+      # 📦 安装工具链
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           # version: 10.0.0
           run_install: true
 
-
-      # 🚚 安装依赖包    
+      # 🚚 安装依赖包
       - name: Install dependencies if package.json changed
         if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
         run: pnpm install
 
-      # 🛠️ 构建应用      
+      # 🛠️ 构建应用
       - name: Build all application
         run: pnpm turbo run build
         working-directory: .
 
-      # 📤 上传构建产物   
-      # 上传 MSI 安装包
-      - name: Upload MSI Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: msi-installer
-          path: apps/app/src-tauri/target/release/bundle/msi/*.msi
-          working-directory: ./apps/app/
-
-
-      # 📤 上传构建产物   
-      # 上传 NSIS 安装包
-      - name: Upload MSI Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: NSIS-installer
-          path: apps/app/src-tauri/target/release/bundle/nsis/*.exe
-          working-directory: ./apps/app/
-
-      # 📤 上传构建产物   
+      # 📤 上传构建产物
       # 上传 doc 产物
       - name: Upload apps/doc dist
         uses: actions/upload-artifact@v4
         with:
           name: Doc-dist
-          path: dist/*
-          working-directory: ./apps/doc/
+          path: ./apps/doc/dist/*
+
+      # 📤 上传构建产物
+      # 上传 MSI 安装包
+      - name: Upload MSI Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: msi-installer
+          path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
+
+      # 📤 上传构建产物
+      # 上传 NSIS 安装包
+      - name: Upload MSI Installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: NSIS-installer
+          path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
