@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="main-layout ">
-            <div class="main-container liquid-card  ">
+            <LiquidCard class="main-container">
                 <WindowCommand />
                 <el-space :size="4" class="nav-container" direction="vertical" alignment="stretch">
                     <div v-for="(item) in RouterConfig" @click="navHandler(item.path)"
@@ -14,7 +14,7 @@
                         </div>
                     </div>
                 </el-space>
-            </div>
+            </LiquidCard>
         </div>
     </div>
 
@@ -26,6 +26,7 @@ import WindowCommand from '@/components/Public/WindowCommand.vue'
 import { RouterConfig } from '@/router/RoutesCfg';
 import DynamicIcon from '../Common/DynamicIcon.vue';
 import { useRoute, useRouter } from 'vue-router';
+import LiquidCard from '../Common/LiquidCard.vue';
 const route = useRoute();
 const router = useRouter();
 

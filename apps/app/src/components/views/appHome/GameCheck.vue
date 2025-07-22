@@ -3,7 +3,7 @@
     <el-card class="container" style="overflow: hidden; display:flex;flex-direction:column;flex: 1;"
         :body-style="{ flex: 1, padding: '0px' }">
         <el-space fill wrap alignment="stretch" class="inner-container">
-            <div :class="[{ 'not-install': !hasSteam }, `liquid-card`, `card`]">
+            <LiquidCard :class="[{ 'not-install': !hasSteam }, `card`]">
                 <div class="title">Steam</div>
                 <div v-if="hasSteam" class="content">
                     位于:<br>
@@ -12,8 +12,8 @@
                 <div v-else class="content">
                     <LiquidButton size="large" round @click="setPath">查找Steam</LiquidButton>
                 </div>
-            </div>
-            <div :class="[{ 'not-install': !hasCS }, `liquid-card`, `card`]">
+            </LiquidCard>
+            <LiquidCard :class="[{ 'not-install': !hasCS }, `card`]">
                 <div class="title">Counter Strike</div>
                 <div v-if="hasCS" class="content">
                     位于:<br>
@@ -24,7 +24,7 @@
                 <div v-else class="content">
                     指定Steam路径后自动识别!
                 </div>
-            </div>
+            </LiquidCard>
         </el-space>
     </el-card>
 
@@ -40,6 +40,7 @@ import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import LiquidButton from '@/components/Common/LiquidButton.vue';
 import CopyText from '@/components/Common/CopyText.vue';
+import LiquidCard from '@/components/Common/LiquidCard.vue';
 const STEAM_EXE_PATH_WINDOWS = "\\steam.exe"
 const STEAM_LIBRARY_GAME_SAVE_PATH = "\\steamapps\\common"
 const STEAM_LIBRARY_VDFNAME = "libraryfolders.vdf"

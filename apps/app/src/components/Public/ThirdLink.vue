@@ -1,0 +1,64 @@
+<template>
+    <el-tooltip :content="props.url">
+        <LiquidButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
+            {{ props.title }}
+        </LiquidButton>
+        <el-text v-else class="underline" @click="showDialog" round type="primary">
+            {{ props.title }}
+        </el-text>
+    </el-tooltip>
+
+    <!-- ✅ 使用 v-model 正确绑定 dialogVisible -->
+    <LiquidDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
+        <template #header>
+            <h4>即将前往:{{ props.title }}</h4>
+        </template>
+        <template #default>
+            <p>即将打开第三方链接{{ props.url }} </p>
+            <p> 请注意保护个人隐私! </p>
+
+        </template>
+        <template #footer>
+            <LiquidButton round @click="handleConfirm">访问该链接</LiquidButton>
+            <LiquidButton round type="primary" @click="handleCancel">复制该链接</LiquidButton>
+        </template>
+    </LiquidDialog>
+</template>
+
+<script setup lang="ts">
+import { ref } from 'vue'
+import LiquidButton from '../Common/LiquidButton.vue'
+import LiquidDialog from '../Common/LiquidDialog.vue'
+
+const props = withDefaults(
+    defineProps<{
+        url: string
+        title?: string
+        type?: 'button' | 'link'
+    }>(),
+    {
+        title: '默认标题',
+        type: 'link'
+    }
+)
+
+const dialogVisible = ref(false)
+const showDialog = () => {
+    dialogVisible.value = true
+}
+
+const handleConfirm = () => {
+    window.open(props.url)
+}
+
+const handleCancel = () => {
+    navigator.clipboard.writeText(props.url)
+}
+</script>
+
+<style scoped>
+.underline:hover {
+    transition: all cubic-bezier(0.075, 0.82, 0.165, 1);
+    text-decoration: underline
+}
+</style>

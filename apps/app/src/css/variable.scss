@@ -88,9 +88,8 @@ $globe-backdrop-filter: blur(1em);
 
 
 // blur
-$simpe-blur: blur(1em);
-
-
+$simpe-blur-value: 1em;
+$simpe-blur: blur($simpe-blur-value);
 // shadow
 $simple-box-shadow: rgba(152, 152, 152, 0.6) .25em .25em 2em 2px;
 

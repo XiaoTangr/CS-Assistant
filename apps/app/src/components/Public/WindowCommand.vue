@@ -27,7 +27,7 @@
             <el-image class="icon" :src="AppIcon" />
             <h2 class="text">CS Assistant</h2>
         </div>
-        <el-dialog :close-on-click-modal="false" append-to="#app" width="400" v-model="centerDialogVisible"
+        <LiquidDialog :close-on-click-modal="false" append-to="#app" width="400" v-model="centerDialogVisible"
             align-center>
             <template #header>
 
@@ -41,13 +41,13 @@
             </template>
             <template #default> 所有未保存的更改都会消失! </template>
             <template #footer>
-                <LiquidButton round size="large" @click="CloseWindow()">
+                <LiquidButton round @click="CloseWindow()">
                     确定
                 </LiquidButton>
-                <LiquidButton round size="large" type="success" @click="centerDialogVisible = false">取消</LiquidButton>
+                <LiquidButton round type="success" @click="centerDialogVisible = false">取消</LiquidButton>
 
             </template>
-        </el-dialog>
+        </LiquidDialog>
     </div>
 </template>
 
@@ -57,6 +57,7 @@ import AppIcon from '@/assets/icons/app/app-icon.png';
 import CommSpace from '../Common/CommSpace.vue';
 import { ref } from 'vue';
 import LiquidButton from '../Common/LiquidButton.vue';
+import LiquidDialog from '../Common/LiquidDialog.vue';
 const appWindow = new Window('main');
 
 const centerDialogVisible = ref(false)

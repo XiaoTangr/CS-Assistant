@@ -5,7 +5,7 @@
             (部分账号再次登录可能需要授权)
         </template>
         <template #default>
-            <el-space wrap :fill-ratio="1" class="users-container">
+            <el-space wrap alignment="stretch" :fill-ratio="0"  class="users-container">
                 <el-card class="user-container" v-for="(v) in data as any">
                     <div class="user-container-inner">
                         <div class="l">

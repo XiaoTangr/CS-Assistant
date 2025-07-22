@@ -31,7 +31,8 @@
       "capabilities": [
         "default",
         "fs",
-        "sql"
+        "sql",
+        "url"
       ],
       "assetProtocol": {
         "enable": true,
