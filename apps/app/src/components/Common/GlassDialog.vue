@@ -123,4 +123,17 @@ defineEmits<{
     backdrop-filter: blur(10px) saturate(180%);
     -webkit-backdrop-filter: blur(10px) saturate(180%);
 }
+
+
+/* 全局 el-dialog 组件 */
+// .el-dialog {
+//     background: rgba(250, 250, 250, 0.7) !important;
+//     backdrop-filter: blur(20px) saturate(180%);
+//     -webkit-backdrop-filter: blur(20px) saturate(180%);
+//     box-shadow:
+//         0 8px 32px rgba(31, 38, 135, 0.08),
+//         inset 0 1px 2px rgba(255, 255, 255, 0.6);
+//     border-radius: 1em !important;
+// }
+
 </style>

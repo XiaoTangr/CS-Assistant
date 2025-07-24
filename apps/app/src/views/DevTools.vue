@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+
         <el-text v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
         <div>
             <el-card>

@@ -18,10 +18,8 @@
                     <ThirdLink class="item" v-for="item in group" :key="item.title" type="button" :url="item.url"
                         :title="item.title" />
                 </div>
-
             </div>
         </div>
-
     </div>
 </template>
 

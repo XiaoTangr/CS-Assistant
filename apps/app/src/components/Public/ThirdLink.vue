@@ -1,15 +1,15 @@
 <template>
     <el-tooltip :content="props.url">
-        <LiquidButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
+        <GlassButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
             {{ props.title }}
-        </LiquidButton>
+        </GlassButton>
         <el-text v-else class="underline" @click="showDialog" round type="primary">
             {{ props.title }}
         </el-text>
     </el-tooltip>
 
     <!-- ✅ 使用 v-model 正确绑定 dialogVisible -->
-    <LiquidDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
+    <GlassDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
         <template #header>
             <h4>即将前往:{{ props.title }}</h4>
         </template>
@@ -19,16 +19,16 @@
 
         </template>
         <template #footer>
-            <LiquidButton round @click="handleConfirm">访问该链接</LiquidButton>
-            <LiquidButton round type="primary" @click="handleCancel">复制该链接</LiquidButton>
+            <GlassButton round @click="handleConfirm">访问该链接</GlassButton>
+            <GlassButton round type="primary" @click="handleCancel">复制该链接</GlassButton>
         </template>
-    </LiquidDialog>
+    </GlassDialog>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import LiquidButton from '../Common/LiquidButton.vue'
-import LiquidDialog from '../Common/LiquidDialog.vue'
+import GlassButton from '../Common/GlassButton.vue'
+import GlassDialog from '../Common/GlassDialog.vue'
 
 const props = withDefaults(
     defineProps<{

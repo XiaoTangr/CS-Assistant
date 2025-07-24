@@ -23,6 +23,7 @@ import LoginedSteamUsers from '@/components/Public/LoginedSteamUsers.vue';
 .container {
     width: 100%;
     height: 100%;
+
     .ot {
         display: flex;
         width: 100%;

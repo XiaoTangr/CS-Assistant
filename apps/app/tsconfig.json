@@ -40,8 +40,9 @@
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
-    "src/**/*.vue"
-, "src/views/appSettings/AboutSettings.vue.back"  ],
+    "src/**/*.vue",
+    "src/views/appSettings/AboutSettings.vue.back"
+  ],
   "references": [
     {
       "path": "./tsconfig.node.json"

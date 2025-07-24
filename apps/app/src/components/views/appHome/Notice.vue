@@ -2,10 +2,10 @@
     <el-card class="container" style="display:flex;flex-direction:column;flex: 1;"
         :body-style="{ flex: 1, 'overflow-y': 'auto', padding: '0' }">
 
-        <LiquidCard class="header">
+        <GlassCard class="header">
             <Bell class="icon" />
             <div class="text">公告</div>
-        </LiquidCard>
+        </GlassCard>
         <el-timeline class="body">
             <el-timeline-item v-for="(activity, index) in data" :key="index" :timestamp="activity.publishDate"
                 placement="top">
@@ -26,7 +26,7 @@ import { ElNotification } from 'element-plus';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { Notice } from '@/core/types/types';
 import CommSpace from '@/components/Common/CommSpace.vue';
-import LiquidCard from '@/components/Common/LiquidCard.vue';
+import GlassCard from '@/components/Common/GlassCard.vue';
 const SettingsStore = useSettingsStore();
 const data = ref<Array<Notice>>([
     {
@@ -63,7 +63,7 @@ onMounted(() => {
 
 
     .header {
-        z-index: 100;
+        z-index: 1;
         position: sticky;
         top: 0;
         display: flex;

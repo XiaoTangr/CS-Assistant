@@ -9,14 +9,14 @@
             </div>
         </div>
         <el-space class="operate">
-            <LiquidButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" text round> 保存更改
-            </LiquidButton>
-            <LiquidButton size="large" @click="SettingsStore.discardChanges" round> 放弃更改 </LiquidButton>
+            <GlassButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" text round> 保存更改
+            </GlassButton>
+            <GlassButton size="large" @click="SettingsStore.discardChanges" round> 放弃更改 </GlassButton>
         </el-space>
     </div>
 </template>
 <script setup lang="ts">
-import LiquidButton from '@/components/Common/LiquidButton.vue';
+import GlassButton from '@/components/Common/GlassButton.vue';
 import SettingsItemRender from '@/components/Public/SettingsItemRender.vue';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { storeToRefs } from 'pinia';

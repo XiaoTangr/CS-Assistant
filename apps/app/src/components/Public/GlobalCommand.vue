@@ -1,24 +1,24 @@
 <template>
     <CommSpace direction="horizontal">
-        <LiquidButtonGroup size="large">
+        <GlassButtonGroup size="large">
             <el-tooltip content="后退">
-                <LiquidButton @click="back" round :icon="ArrowLeftBold" />
+                <GlassButton @click="back" round :icon="ArrowLeftBold" />
             </el-tooltip>
             <el-tooltip content="前进">
-                <LiquidButton @click="next" round :icon="ArrowRightBold" />
+                <GlassButton @click="next" round :icon="ArrowRightBold" />
             </el-tooltip>
-        </LiquidButtonGroup>
-        <LiquidButtonGroup size="large" style="-webkit-app-region: drag">
+        </GlassButtonGroup>
+        <GlassButtonGroup size="large" style="-webkit-app-region: drag">
             <el-tooltip content="移动窗口">
-                <LiquidButton round :icon="Rank" />
+                <GlassButton round :icon="Rank" />
             </el-tooltip>
-        </LiquidButtonGroup>
+        </GlassButtonGroup>
         <CommSpace class="right" direction="horizontal">
-            <LiquidButtonGroup size="large">
+            <GlassButtonGroup size="large">
                 <el-tooltip content="回到顶部">
-                    <LiquidButton round @click="backUp" :icon="Top" />
+                    <GlassButton round @click="backUp" :icon="Top" />
                 </el-tooltip>
-            </LiquidButtonGroup>
+            </GlassButtonGroup>
         </CommSpace>
     </CommSpace>
 
@@ -27,8 +27,8 @@
 <script setup lang="ts">
 import { ArrowLeftBold, ArrowRightBold, Rank, Top } from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
-import LiquidButtonGroup from '../Common/LiquidButtonGroup.vue';
-import LiquidButton from '../Common/LiquidButton.vue';
+import GlassButtonGroup from '../Common/GlassButtonGroup.vue';
+import GlassButton from '../Common/GlassButton.vue';
 import CommSpace from '../Common/CommSpace.vue';
 
 const router = useRouter();

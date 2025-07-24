@@ -10,9 +10,9 @@
             <div class="operate">
                 <CommSpace alignment="center" :fill="false" direction="horizontal">
                     <el-checkbox v-model="isChecked" size="small">不再提示</el-checkbox>
-                    <LiquidButton round type="warning" size="small" @click="closeMask">
+                    <GlassButton round type="warning" size="small" @click="closeMask">
                         {{ isChecked ? "确认关闭" : "忽略本次" }}
-                    </LiquidButton>
+                    </GlassButton>
                 </CommSpace>
             </div>
         </CommSpace>
@@ -26,7 +26,7 @@ import { useSettingsStore } from "@/store/SettingsStore";
 import { WarningFilled } from "@element-plus/icons-vue"
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import CommSpace from "../Common/CommSpace.vue";
-import LiquidButton from "../Common/LiquidButton.vue";
+import GlassButton from "../Common/GlassButton.vue";
 
 const SettingsStore = useSettingsStore();
 const viewportHeight = ref(0);

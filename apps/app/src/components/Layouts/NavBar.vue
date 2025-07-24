@@ -1,7 +1,7 @@
 <template>
     <div class="container">
         <div class="main-layout ">
-            <LiquidCard class="main-container">
+            <GlassCard :content-style="style" class="main-container">
                 <WindowCommand />
                 <el-space :size="4" class="nav-container" direction="vertical" alignment="stretch">
                     <div v-for="(item) in RouterConfig" @click="navHandler(item.path)"
@@ -14,7 +14,7 @@
                         </div>
                     </div>
                 </el-space>
-            </LiquidCard>
+            </GlassCard>
         </div>
     </div>
 
@@ -26,7 +26,8 @@ import WindowCommand from '@/components/Public/WindowCommand.vue'
 import { RouterConfig } from '@/router/RoutesCfg';
 import DynamicIcon from '../Common/DynamicIcon.vue';
 import { useRoute, useRouter } from 'vue-router';
-import LiquidCard from '../Common/LiquidCard.vue';
+import GlassCard from '../Common/GlassCard.vue';
+
 const route = useRoute();
 const router = useRouter();
 
@@ -35,6 +36,13 @@ const navHandler = (routeName: string) => {
         console.error('Navigation failed:', err)
     })
 }
+
+const style = {
+    'height': '100%',
+    'display': 'flex',
+    'flex-direction': 'column',
+}
+
 </script>
 
 <style lang="scss" scoped>

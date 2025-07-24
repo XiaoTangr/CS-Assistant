@@ -3,17 +3,17 @@
     <el-card class="container" style="overflow: hidden; display:flex;flex-direction:column;flex: 1;"
         :body-style="{ flex: 1, padding: '0px' }">
         <el-space fill wrap alignment="stretch" class="inner-container">
-            <LiquidCard :class="[{ 'not-install': !hasSteam }, `card`]">
+            <GlassCard :class="[{ 'not-install': !hasSteam }, `card`]">
                 <div class="title">Steam</div>
                 <div v-if="hasSteam" class="content">
                     位于:<br>
                     <CopyText :text="steamInstallPathStr as string" />
                 </div>
                 <div v-else class="content">
-                    <LiquidButton size="large" round @click="setPath">查找Steam</LiquidButton>
+                    <GlassButton size="large" round @click="setPath">查找Steam</GlassButton>
                 </div>
-            </LiquidCard>
-            <LiquidCard :class="[{ 'not-install': !hasCS }, `card`]">
+            </GlassCard>
+            <GlassCard :class="[{ 'not-install': !hasCS }, `card`]">
                 <div class="title">Counter Strike</div>
                 <div v-if="hasCS" class="content">
                     位于:<br>
@@ -24,7 +24,7 @@
                 <div v-else class="content">
                     指定Steam路径后自动识别!
                 </div>
-            </LiquidCard>
+            </GlassCard>
         </el-space>
     </el-card>
 
@@ -38,9 +38,9 @@ import { selectFilePath, isFileExists } from '@/core/utils/FsUtils';
 import { getVdfObjectByFilePath } from '@/core/utils/VdfUtils';
 import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
-import LiquidButton from '@/components/Common/LiquidButton.vue';
+import GlassButton from '@/components/Common/GlassButton.vue';
 import CopyText from '@/components/Common/CopyText.vue';
-import LiquidCard from '@/components/Common/LiquidCard.vue';
+import GlassCard from '@/components/Common/GlassCard.vue';
 const STEAM_EXE_PATH_WINDOWS = "\\steam.exe"
 const STEAM_LIBRARY_GAME_SAVE_PATH = "\\steamapps\\common"
 const STEAM_LIBRARY_VDFNAME = "libraryfolders.vdf"
