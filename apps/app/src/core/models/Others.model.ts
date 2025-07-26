@@ -1,7 +1,7 @@
 /**
  * Steam 登录用户信息
  */
-interface SteamLoginUser {
+export interface SteamLoginUser {
     AccountName: string;
     PersonaName: string;
     RememberPassword: number; // 布尔值用 0/1 表示
@@ -15,7 +15,7 @@ interface SteamLoginUser {
 /**
  * Steam 用户基础信息
  */
-interface BasicSteamLoginUser {
+export interface BasicSteamLoginUser {
     AccountName: string | null;
     PersonaName: string | null;
     steamId: string | null;
@@ -26,7 +26,7 @@ interface BasicSteamLoginUser {
 /**
  * 公告信息结构
  */
-interface Notice {
+export interface Notice {
     publishDate: string;
     publishContent: string;
 }
@@ -50,7 +50,7 @@ export interface GroupOrderItem {
 
 
 // FileOrDir 类型定义
-interface FileOrDir {
+export interface FileOrDir {
     name: string;
     path: string;
     is_directory: boolean;

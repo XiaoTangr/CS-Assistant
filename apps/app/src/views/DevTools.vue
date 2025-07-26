@@ -1,8 +1,25 @@
 <template>
     <div class="container">
+        <el-space class="container-inner" wrap direction="vertical" fill>
+            <el-text v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
+            <el-card>
+                <template #header>
+                    SQL ExecuteRaw
+                </template>
+                <template #default>
+                    <el-button type="primary" @click="executeSQL">执行 SQL</el-button>
 
-        <el-text v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
-        <div>
+                    <el-space style="width: 100%;" fill>
+                        <!-- sql输入框  -->
+                        <el-input v-model="sqlInput" type="textarea" :rows="10" placeholder="输入 SQL 语句"></el-input>
+                        <!-- 输出结果 -->
+                        <el-input v-model="sqlOutput" type="textarea" :rows="10" placeholder="输出结果..."
+                            readonly></el-input>
+                    </el-space>
+
+
+                </template>
+            </el-card>
             <el-card>
                 <template #header> database - SettingsDB </template>
                 <el-form ref="dbformRef" label-position="left" label-width="auto" :model="dbsettings">
@@ -60,17 +77,21 @@
                 </el-form>
                 <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea" placeholder="SQL Output..."></el-input>
             </el-card>
-        </div>
 
+
+        </el-space>
     </div>
+
 </template>
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue';
 import { ElNotification, FormInstance } from 'element-plus';
-import { Settings, SettingsRowOptions } from '@/models/Settings.model';
-import SettingsRepository from '@/repositories/Settings.Repository';
-import SettingsService from '@/services/Settings.services';
+import { Settings, SettingsRowOptions } from '@/core/models';
+import SettingsRepository from '@/core/repositories/Settings.Repository';
+import SettingsService from '@/core/services/Settings.services';
+import { baseCRUD } from "@/core/database";
+import LogUtil from '@/core/utils/LogUtil';
 
 const dbformRef = ref<FormInstance>();
 
@@ -257,11 +278,33 @@ const deleteSettingsRow = async () => {
         handleDBError(e, '删除配置');
     }
 };
+
+
+
+
+const sqlInput = ref('');
+const sqlOutput = ref('');
+const executeSQL = async () => {
+
+    try {
+        const res = await baseCRUD.executeRaw(sqlInput.value);
+        LogUtil.debug(res)
+        sqlOutput.value = JSON.stringify(res, null, 2);
+    } catch (e) {
+        handleDBError(e, '执行SQL');
+    }
+
+
+}
 </script>
 
 <style scoped lang="scss">
 .container {
     width: 100%;
     // background-color: red;
+
+    .container-inner {
+        width: 100%;
+    }
 }
 </style>

@@ -67,7 +67,7 @@
 <script setup lang="ts">
 import { FolderOpened } from '@element-plus/icons-vue';
 import { open } from '@tauri-apps/plugin-dialog';
-import { Settings } from '@/models/Settings.model';
+import { Settings } from '@/core/models';
 import { computed, PropType } from 'vue';
 import { useSettingsStore } from '@/store/SettingsStore';
 const props = defineProps({

@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useSettingsStore } from "./SettingsStore";
-import { Settings } from "@/models/Settings.model";
-import { BasicSteamLoginUser } from "@/core/types/types";
+import { Settings, BasicSteamLoginUser } from "@/core/models";
 import { getVdfObjectByFilePath } from "@/core/utils/VdfUtils";
 import LogUtil from "@/core/utils/LogUtil";
 import { readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";

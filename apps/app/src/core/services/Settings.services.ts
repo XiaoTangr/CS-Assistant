@@ -1,6 +1,6 @@
 // Settings.services.ts
-import SettingsRepository from "@/repositories/Settings.Repository";
-import { Settings } from "@/models/Settings.model";
+import SettingsRepository from "@/core/repositories/Settings.Repository";
+import { Settings } from "@/core/models";
 
 export default class SettingsService {
     /**

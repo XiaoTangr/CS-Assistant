@@ -1,7 +1,7 @@
-import MapRepository from "@/repositories/Map.Repository";
+import MapRepository from "@/core/repositories/Map.Repository";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { Map } from "@/models/Map.model";
+import { Map } from "@/core/models";
 
 
 export const useMapStore = defineStore("MapStore", () => {

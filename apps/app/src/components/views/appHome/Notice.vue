@@ -24,7 +24,7 @@ import { onMounted, ref } from 'vue';
 import axios from 'axios';
 import { ElNotification } from 'element-plus';
 import { useSettingsStore } from '@/store/SettingsStore';
-import { Notice } from '@/core/types/types';
+import { Notice } from '@/core/models';
 import CommSpace from '@/components/Common/CommSpace.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
 const SettingsStore = useSettingsStore();

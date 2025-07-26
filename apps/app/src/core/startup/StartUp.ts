@@ -1,12 +1,12 @@
 import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
 import { useMapStore } from "@/store/MapStore";
 import { useSettingsStore } from "@/store/SettingsStore";
-import { connecter } from "../db/connector";
-import { runMigrations } from "../db/migrations";
-export default class StartUpUtil {
+import { connecter } from "../database/connector";
+import { runMigrations } from "@/core/database";
+export default class StartUp {
 
     static async initDB(): Promise<boolean> {
-        if (!await connecter.getInstance()) {
+        if (!connecter.getInstance()) {
             throw new Error("Database Connect ini faild!")
         }
         return true;

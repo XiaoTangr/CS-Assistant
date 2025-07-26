@@ -19,8 +19,8 @@
 
         </template>
         <template #footer>
-            <GlassButton round @click="handleConfirm">访问该链接</GlassButton>
             <GlassButton round type="primary" @click="handleCancel">复制该链接</GlassButton>
+            <GlassButton round @click="handleConfirm">访问该链接</GlassButton>
         </template>
     </GlassDialog>
 </template>
@@ -29,6 +29,7 @@
 import { ref } from 'vue'
 import GlassButton from '../Common/GlassButton.vue'
 import GlassDialog from '../Common/GlassDialog.vue'
+import { ElNotification } from 'element-plus';
 
 const props = withDefaults(
     defineProps<{
@@ -49,10 +50,17 @@ const showDialog = () => {
 
 const handleConfirm = () => {
     window.open(props.url)
+    dialogVisible.value = false
 }
 
 const handleCancel = () => {
     navigator.clipboard.writeText(props.url)
+    ElNotification.success({
+        title: '复制成功',
+        message: '已复制该链接到剪贴板',
+        duration: 2000
+    })
+    dialogVisible.value = false
 }
 </script>
 

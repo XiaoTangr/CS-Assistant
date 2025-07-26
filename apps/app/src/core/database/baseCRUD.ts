@@ -1,4 +1,4 @@
-import connecter from "./connector";
+import { connecter } from "./";
 
 class DBBaseCRUD {
     private static instance: DBBaseCRUD;
@@ -27,19 +27,50 @@ class DBBaseCRUD {
             throw new Error(`Invalid column name: ${columnName}`);
         }
     }
-
     /**
-     * 执行sql
+     * 封装 SELECT 查询
      * @param sql sql语句
      * @param params sql占位符对应值
      * @returns 
      */
-    private async _execute(sql: string, params: any[] = []): Promise<number> {
+    private async _select<T>(sql: string, params: any[] = []): Promise<T[]> {
+        const db = await connecter.getConnection();
+        this.log(`Executing query: ${sql}`);
+        try {
+            return await db.select(sql, params);
+        } catch (error: any) {
+            const errorMessage = `Query failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
+            console.error(errorMessage, {
+                error,
+                sql,
+                params,
+                timestamp: new Date().toISOString(),
+                stack: error.stack
+            });
+            throw error; // 保留原始错误对象
+        }
+    }
+    /**
+     * 执行sql
+     * @param sql sql语句
+     * @param params sql占位符对应值
+     * @returns 执行结果对象，包含受影响行数和其他执行信息
+     */
+    private async _execute(sql: string, params: any[] = []): Promise<{
+        rowsAffected: number;
+        lastInsertId?: number;
+        success: boolean;
+        data?: any;
+    }> {
         const db = await connecter.getConnection();
         this.log(`Executing execute: ${sql}`);
         try {
             const result = await db.execute(sql, params);
-            return result.rowsAffected;
+            return {
+                rowsAffected: result.rowsAffected,
+                lastInsertId: result.lastInsertId,
+                success: true
+            };
         } catch (error: any) {
             const errorMessage = `Execute failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
             console.error(errorMessage, {
@@ -84,7 +115,7 @@ class DBBaseCRUD {
             for (const item of data) {
                 // 将对象值按列顺序转换为数组
                 const values = columns.map(col => item[col] ?? null);
-                rowsAffected += await this._execute(sql, values); // 传入数组
+                rowsAffected += (await this._execute(sql, values)).rowsAffected; // 传入数组
             }
 
             await this._execute("COMMIT");
@@ -103,29 +134,7 @@ class DBBaseCRUD {
 
 
 
-    /**
-     * 封装 SELECT 查询
-     * @param sql sql语句
-     * @param params sql占位符对应值
-     * @returns 
-     */
-    private async _select<T>(sql: string, params: any[] = []): Promise<T[]> {
-        const db = await connecter.getConnection();
-        this.log(`Executing query: ${sql}`);
-        try {
-            return await db.select(sql, params);
-        } catch (error: any) {
-            const errorMessage = `Query failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
-            console.error(errorMessage, {
-                error,
-                sql,
-                params,
-                timestamp: new Date().toISOString(),
-                stack: error.stack
-            });
-            throw error; // 保留原始错误对象
-        }
-    }
+
 
 
     /**
@@ -187,7 +196,7 @@ class DBBaseCRUD {
         const sql = `UPDATE ${tableName} SET ${setClauses} WHERE ${whereKey} = $${Object.keys(data).length + 1} `;
         const params = [...Object.values(data), whereValue];
 
-        return await this._execute(sql, params);
+        return (await this._execute(sql, params)).rowsAffected;
     }
 
     /**
@@ -200,12 +209,12 @@ class DBBaseCRUD {
     public async deleteRow(
         tableName: string,
         columnName: string,
-        columnValue: string
+        columnValue: any
     ): Promise<number> {
         this.validateTableName(tableName);
         this.validateColumnName(columnName);
         const sql = `DELETE FROM ${tableName} WHERE ${columnName} = $1`;
-        return await this._execute(sql, [columnValue]);
+        return (await this._execute(sql, [columnValue])).rowsAffected;
     }
 
     /**
@@ -226,7 +235,11 @@ class DBBaseCRUD {
      * @param params SQL 占位符参数
      * @returns 受影响行数
      */
-    public async executeRaw(sql: string, ...params: any[]): Promise<number> {
+    public async executeRaw(sql: string, ...params: any[]): Promise<any> {
+        // 需要判断使用Execute还是select
+        if (sql.toLowerCase().startsWith('select')) {
+            return await this._select(sql, params);
+        }
         return await this._execute(sql, params);
     }
 }

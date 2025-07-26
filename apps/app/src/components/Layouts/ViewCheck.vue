@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { Settings } from "@/models/Settings.model";
+import { Settings } from "@/core/models";
 import { useSettingsStore } from "@/store/SettingsStore";
 import { WarningFilled } from "@element-plus/icons-vue"
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';

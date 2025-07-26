@@ -1,6 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { open } from '@tauri-apps/plugin-dialog';
-import { FileOrDir } from "../types/types";
+import { FileOrDir } from "../models/Others.model";
 
 
 

@@ -41,10 +41,8 @@
             </template>
             <template #default> 所有未保存的更改都会消失! </template>
             <template #footer>
-                <GlassButton round @click="CloseWindow()">
-                    确定
-                </GlassButton>
-                <GlassButton round type="success" @click="centerDialogVisible = false">取消</GlassButton>
+                <GlassButton round type="primary" @click="centerDialogVisible = false">取消</GlassButton>
+                <GlassButton round @click="CloseWindow()"> 确定 </GlassButton>
 
             </template>
         </GlassDialog>

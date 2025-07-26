@@ -47,15 +47,15 @@ const style = {
 
 <style lang="scss" scoped>
 .container {
-    z-index: 1;
+    z-index: 11;
     width: 100%;
     height: 100%;
     padding: 1em;
     background: linear-gradient(to right,
             rgba(250, 250, 250, 0.7),
-            rgb(250, 250, 250));
-
-    overflow: hidden;
+            rgba(250, 250, 250, 0.85),
+            rgba(250, 250, 250, 0.9),
+            rgba(250, 250, 250, 0.95));
 
     .main-layout {
         height: 100%;

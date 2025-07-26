@@ -1,5 +1,6 @@
-import baseCRUD from "@/core/db/baseCRUD";
-import { Map } from "@/models/Map.model";
+import { baseCRUD } from "@/core/database";
+
+import { Map } from "@/core/models";
 
 export default class MapRepository {
     private static TABLE_NAME = "Map";

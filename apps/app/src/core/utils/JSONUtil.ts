@@ -7,6 +7,8 @@ const PARSE_CACHE = new LRUCache<string, any>({ max: 100 });
 /**
  * 深度解析 JSON 字符串，支持嵌套对象和数组。
  * 如果输入已经是对象，则递归解析其字段中的 JSON 字符串。
+ * 
+ * @deprecated 请使用 '@/core/utils/serialization' 中的 deepParseJSON 替代
  *
  * @param input - 要解析的内容，可以是 JSON 字符串或对象/数组
  * @returns 解析后的 JavaScript 对象或数组
@@ -57,6 +59,8 @@ export const deepParseJSON = <T = any>(input: string | T): T => {
 /**
  * 深度序列化对象中的所有值，将其转换为 JSON 字符串。
  * 支持嵌套对象、数组等结构。
+ * 
+ * @deprecated 请使用 '@/core/utils/serialization' 中的 deepStringifyJSON 替代
  *
  * @param input - 要序列化的对象
  * @returns 序列化后的对象，其中所有可序列化的值都被转为 JSON 字符串

@@ -33,7 +33,7 @@
 
 <script setup lang="ts">
 
-import { Settings } from '@/models/Settings.model';
+import { Settings } from '@/core/models';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { ElNotification } from 'element-plus';

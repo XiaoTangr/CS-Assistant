@@ -1,6 +1,5 @@
-import { Map } from "@/models/Map.model";
-import { Settings } from "@/models/Settings.model";
-export const DbData = [
+import { Map, Settings } from "@/core/models";
+export const defaultDatabaseData = [
     {
         tableName: "Settings",
         Structure: [

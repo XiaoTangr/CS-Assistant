@@ -1,6 +1,6 @@
 <template>
   <div class="App-Container" @contextmenu.prevent="openMenu()">
-    <div >
+    <div>
       <NavBar class="nav-container" />
     </div>
     <div class="window-container">
@@ -60,7 +60,7 @@ const openMenu = () => {
     flex: 1;
     height: 100%;
     overflow-y: auto;
-    background: rgb(250, 250, 250);
+    background: rgba(250, 250, 250, 0.95);
 
     .global-command-container {
       z-index: 9;

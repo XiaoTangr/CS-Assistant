@@ -1,6 +1,6 @@
 import LogUtil from "@/core/utils/LogUtil";
-import { Settings } from "@/models/Settings.model";
-import SettingsService from "@/services/Settings.services";
+import { Settings } from "@/core/models";
+import SettingsService from "@/core/services/Settings.services";
 import { ElNotification } from "element-plus";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";

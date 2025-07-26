@@ -1,8 +1,8 @@
-// src/core/db/migrations.ts
+// src/core/database/migrations.ts
 
-import baseCRUD from '@/core/db/baseCRUD';
-import { DbData } from '@/core/db/dbData';
-import { MigrationResult } from '@/core/types/types';
+import {baseCRUD} from '@/core/database';
+import { defaultDatabaseData } from '@/core/defaultData';
+import { MigrationResult } from '@/core/models';
 
 /**
  * 初始化数据库表结构和默认数据
@@ -16,7 +16,7 @@ export async function runMigrations(): Promise<MigrationResult> {
     };
 
     try {
-        for (const table of DbData) {
+        for (const table of defaultDatabaseData) {
             const tableName = table.tableName;
             const columns = table.Structure;
 

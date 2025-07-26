@@ -1,6 +1,6 @@
-import { deepParseJSON } from "@/core/utils/JSONUtil";
-import baseCRUD from "@/core/db/baseCRUD";
-import { Settings } from "@/models/Settings.model";
+import { parse } from "@/core/utils/serialization";
+import { baseCRUD } from "@/core/database";
+import { Settings } from "@/core/models";
 
 export default class SettingsRepository {
     private static TABLE_NAME = "Settings";
@@ -16,7 +16,7 @@ export default class SettingsRepository {
             "key = $1",
             [key]
         );
-        return result.length > 0 ? deepParseJSON(result[0]) : null;
+        return result.length > 0 ? parse(result[0]) : null;
     }
 
     /**
@@ -25,7 +25,7 @@ export default class SettingsRepository {
      */
     static async queryAll(): Promise<Settings[]> {
         const result = await baseCRUD.queryWhere<Settings>(this.TABLE_NAME, "1=1");
-        return result.map((item) => deepParseJSON(item));
+        return result.map((item) => parse(item));
     }
 
     /**
