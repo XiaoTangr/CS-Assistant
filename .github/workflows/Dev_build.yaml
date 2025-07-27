@@ -73,15 +73,40 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
+      - name: Install Tauri dependencies
+        shell: pwsh
+        run: |
+          # 确保 Rust 工具链已安装
+          rustup update
+          rustup default stable
+
+          # 安装 Tauri CLI 全局依赖
+          pnpm add -g @tauri-apps/cli
+
+          # 安装应用特定依赖
+          pnpm install --filter app...
+
       - name: Configure PATH
         shell: pwsh
         run: |
+          # 添加必要的路径到系统 PATH
           $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
           $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
+          $env:PATH = "$env:APPDATA\npm;$env:PATH"
+
+          # 验证路径设置
+          Write-Output "Current PATH: $env:PATH"
+          Get-Command tauri -ErrorAction SilentlyContinue
 
       - name: Build Tauri application
         shell: pwsh
-        run: pnpm exec turbo run build --filter=app
+        run: |
+          # 明确使用 pnpm 运行构建
+          pnpm exec turbo run build --filter=app
+
+          # 备用构建方法：直接进入目录构建
+          cd apps/app
+          pnpm run build
 
       - name: Upload MSI Installer
         uses: actions/upload-artifact@v4
@@ -117,11 +142,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
+      - name: Install doc dependencies
+        shell: pwsh
+        run: pnpm install --filter doc...
+
       - name: Configure PATH
         shell: pwsh
         run: |
           $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
           $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
+          $env:PATH = "$env:APPDATA\npm;$env:PATH"
 
       - name: Build Documentation
         shell: pwsh
