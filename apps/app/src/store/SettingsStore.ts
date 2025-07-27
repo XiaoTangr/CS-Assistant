@@ -142,6 +142,6 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
     };
 
 
-    return { fetchData, groupedViewData, discardChanges, saveChangedViewData, saveOneData, isDataConsistent, getViewDataItemByKey, getDbDataItemByKey, viewData, dbData };
+    return { viewData, dbData, groupedViewData, fetchData, discardChanges, saveChangedViewData, saveOneData, isDataConsistent, getViewDataItemByKey, getDbDataItemByKey };
 
 });
