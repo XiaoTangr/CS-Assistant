@@ -1,5 +1,4 @@
-import { BackupAndRecoveryRepository } from "@/core/repositories";
-import { BackupAndRecovery } from "../models";
+import BackupAndRecoveryRepository from "@/core/repositories/BAR.Repository";
 
 export default class BackupAndRecoveryService {
 
