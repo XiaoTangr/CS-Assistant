@@ -22,18 +22,17 @@ jobs:
 
       - name: Detect package.json changes
         id: check-package-json
+        shell: pwsh
         run: |
-          changed=$(git diff --name-only HEAD^ HEAD | grep -c "package.json" || true)
-          if [ $changed -gt 0 ]; then
-            echo "changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "changed=false" >> $GITHUB_OUTPUT
-          fi
+          $changedFiles = git diff --name-only HEAD^ HEAD
+          if ($changedFiles -match "package.json") {
+            Write-Output "changed=true" >> $env:GITHUB_OUTPUT
+          } else {
+            Write-Output "changed=false" >> $env:GITHUB_OUTPUT
+          }
 
       - name: Configure pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 8
 
       - name: Restore pnpm cache
         uses: actions/cache@v4
@@ -49,6 +48,7 @@ jobs:
 
       - name: Install dependencies (if needed)
         if: steps.check-package-json.outputs.changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
+        shell: pwsh
         run: |
           pnpm fetch
           pnpm install -r
@@ -61,12 +61,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure PATH
+      - name: Configure pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        id: pnpm-cache
+        with:
+          path: |
+            ${{ env.PNPM_STORE_PATH }}
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies (if needed)
+        if: needs.setup.outputs.pkg_changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
+        shell: pwsh
         run: |
-          echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
-          echo "${{ env.PNPM_STORE_PATH }}" >> $GITHUB_PATH
+          pnpm fetch
+          pnpm install -r
+
+      - name: Configure PATH
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
+          $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
 
       - name: Build Tauri application
+        shell: pwsh
         run: pnpm exec turbo run build --filter=app
 
       - name: Upload MSI Installer
@@ -89,12 +113,36 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Configure PATH
+      - name: Configure pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Restore pnpm cache
+        uses: actions/cache@v4
+        id: pnpm-cache
+        with:
+          path: |
+            ${{ env.PNPM_STORE_PATH }}
+            node_modules
+            **/node_modules
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: Install dependencies (if needed)
+        if: needs.setup.outputs.pkg_changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
+        shell: pwsh
         run: |
-          echo "$GITHUB_WORKSPACE/node_modules/.bin" >> $GITHUB_PATH
-          echo "${{ env.PNPM_STORE_PATH }}" >> $GITHUB_PATH
+          pnpm fetch
+          pnpm install -r
+
+      - name: Configure PATH
+        shell: pwsh
+        run: |
+          $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
+          $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
 
       - name: Build Documentation
+        shell: pwsh
         run: pnpm exec turbo run build --filter=doc
 
       - name: Upload Documentation
