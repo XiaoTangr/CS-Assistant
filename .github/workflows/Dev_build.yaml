@@ -6,7 +6,6 @@ on:
 
 env:
   PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
-  PNPM_CACHE_DIR: ~\.pnpm-store
 
 jobs:
   setup:
@@ -41,8 +40,7 @@ jobs:
           path: |
             ${{ env.PNPM_STORE_PATH }}
             node_modules
-            **/node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
@@ -71,17 +69,9 @@ jobs:
           path: |
             ${{ env.PNPM_STORE_PATH }}
             node_modules
-            **/node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-
-      - name: Install dependencies (if needed)
-        if: needs.setup.outputs.pkg_changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
-        shell: pwsh
-        run: |
-          pnpm fetch
-          pnpm install -r
 
       - name: Configure PATH
         shell: pwsh
@@ -123,17 +113,9 @@ jobs:
           path: |
             ${{ env.PNPM_STORE_PATH }}
             node_modules
-            **/node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-
-
-      - name: Install dependencies (if needed)
-        if: needs.setup.outputs.pkg_changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
-        shell: pwsh
-        run: |
-          pnpm fetch
-          pnpm install -r
 
       - name: Configure PATH
         shell: pwsh
