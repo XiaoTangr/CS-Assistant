@@ -1,7 +1,6 @@
 <template>
-
-    <div class="container">
-        <div class="header">
+    <GlassCard class="container" shadow="never" body-class="content">
+        <template #header>
             <el-text>
                 我们目前提供一些网站来帮助你创建或者获取适合的准星, 在稍后我们将内置这些网站的某些功能。
             </el-text>
@@ -9,9 +8,8 @@
             <el-text type="danger">
                 这些网站内容由第三方提供，我们不保证其内容是否安全。
             </el-text>
-            <el-divider />
-        </div>
-        <div class="content">
+        </template>
+        <template #default>
             <div v-for="(group, idx) in linkData" class="group">
                 <el-text class="group-name">{{ idx }}</el-text>
                 <div class="items">
@@ -19,11 +17,12 @@
                         :title="item.title" />
                 </div>
             </div>
-        </div>
-    </div>
+        </template>
+    </GlassCard>
 </template>
 
 <script setup lang="ts">
+import GlassCard from '@/components/Common/GlassCard.vue';
 import ThirdLink from '@/components/Public/ThirdLink.vue';
 const linkData = {
     "中文": [
@@ -50,16 +49,12 @@ const linkData = {
 <style scoped lang="scss">
 .container {
     width: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
 
     .header {
         width: 100%;
     }
 
-    .content {
+    :deep(.content) {
         width: 100%;
         display: flex;
         flex-direction: column;

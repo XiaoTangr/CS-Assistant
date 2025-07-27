@@ -1,0 +1,14 @@
+.app-background {
+    z-index: -1;
+}
+
+.container-bg::before {
+    z-index: 0;
+}
+
+.container-bg {
+    z-index: 200;
+}
+.global-command-container{
+    z-index: 1000;
+}

@@ -1,12 +1,12 @@
 <template>
-    <el-card class="steam-users">
+    <GlassCard shadow="never" class="steam-users">
         <template #header>
             本机已登录的Steam账号:{{ data?.length }}
             (部分账号再次登录可能需要授权)
         </template>
         <template #default>
-            <el-space wrap alignment="stretch" :fill-ratio="0"  class="users-container">
-                <el-card class="user-container" v-for="(v) in data as any">
+            <el-space wrap alignment="stretch" :fill-ratio="0" class="users-container">
+                <GlassCard shadow="hover" class="user-container" v-for="(v) in data as any">
                     <div class="user-container-inner">
                         <div class="l">
                             <el-avatar class="avatar" shape="square" :src="v.avatarBase64" />
@@ -30,13 +30,13 @@
                             </div>
                         </div>
                     </div>
-                </el-card>
+                </GlassCard>
                 <el-empty :description="description" v-if="data === undefined">
                     <el-button type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
                 </el-empty>
             </el-space>
         </template>
-    </el-card>
+    </GlassCard>
 </template>
 
 <script setup lang="ts">
@@ -45,7 +45,7 @@ import { RefreshRight } from '@element-plus/icons-vue';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
-
+import GlassCard from '../Common/GlassCard.vue';
 const LoginedSteamUserStore = useLoginedSteamUserStore();
 
 const { data } = storeToRefs(LoginedSteamUserStore);
@@ -67,20 +67,13 @@ const getSteamLoginUsers = async () => {
 
     .users-container {
         display: flex;
-        // width: 100%;
         flex-wrap: wrap;
         justify-content: center;
 
         .user-container {
 
-            // margin: calc($globe-margin /2);
-
             .user-container-inner {
-                // width: $avatar-size;
-                // height: calc($item-height /1.5);
                 display: flex;
-                // flex-direction: row !important;
-                // flex-wrap: nowrap;
 
                 .l {
                     display: flex;
@@ -88,8 +81,8 @@ const getSteamLoginUsers = async () => {
                     align-items: center;
 
                     .avatar {
-                        width: calc($font-size * 5);
-                        height: calc($font-size * 5);
+                        width: calc($font-size * 4);
+                        height: calc($font-size * 4);
                     }
                 }
 

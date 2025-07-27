@@ -1,21 +1,23 @@
 <template>
-    <el-card class="container" style="display:flex;flex-direction:column;flex: 1;"
-        :body-style="{ flex: 1, 'overflow-y': 'auto', padding: '0' }">
+    <GlassCard shadow="never" class="container" headerClass="header" bodyClass="body">
+        <template #header>
 
-        <GlassCard class="header">
             <Bell class="icon" />
             <div class="text">公告</div>
-        </GlassCard>
-        <el-timeline class="body">
-            <el-timeline-item v-for="(activity, index) in data" :key="index" :timestamp="activity.publishDate"
-                placement="top">
-                <CommSpace :size="4">
-                    <el-text v-html="activity.publishContent" truncated line-clamp="2" />
-                    <el-link type="primary">详情</el-link>
-                </CommSpace>
-            </el-timeline-item>
-        </el-timeline>
-    </el-card>
+        </template>
+        <template #default>
+            <el-timeline>
+                <el-timeline-item v-for="(activity, index) in data" :key="index" :timestamp="activity.publishDate"
+                    placement="top">
+                    <CommSpace :size="4">
+                        <el-text v-html="activity.publishContent" truncated line-clamp="2" />
+                        <el-link type="primary">详情</el-link>
+                    </CommSpace>
+                </el-timeline-item>
+            </el-timeline>
+        </template>
+
+    </GlassCard>
 </template>
 
 <script setup lang="ts">
@@ -52,21 +54,17 @@ onMounted(() => {
 <style scoped lang="scss">
 .container {
     display: flex;
+
     flex-direction: column;
     width: 100%;
     height: 100%;
+    padding: 0;
 
-    .header,
-    .body {
-        padding: .5em 1em;
-    }
+    :deep(.header) {
+        padding: $globe-padding;
 
-
-    .header {
         z-index: 1;
-        position: sticky;
-        top: 0;
-        display: flex;
+        display: flex !important;
         justify-content: left;
         align-items: center;
 
@@ -79,5 +77,9 @@ onMounted(() => {
         }
     }
 
+    :deep(.body) {
+        padding: $globe-padding !important;
+        overflow-y: auto;
+    }
 }
 </style>

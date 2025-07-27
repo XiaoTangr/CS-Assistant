@@ -1,22 +1,21 @@
 <template>
-    <div class="container">
-        <div class="main-layout ">
-            <GlassCard :content-style="style" class="main-container">
-                <WindowCommand />
-                <el-space :size="4" class="nav-container" direction="vertical" alignment="stretch">
-                    <div v-for="(item) in RouterConfig" @click="navHandler(item.path)"
-                        :class="['nav-item-container', { 'nav-active': route.fullPath === item.path }]">
-                        <div class="icon">
-                            <DynamicIcon :icon="item.meta?.icon" />
-                        </div>
-                        <div class="text">
-                            {{ item.meta.text }}
-                        </div>
+    <div class="container-bg">
+        <GlassCard class="container" bodyClass="nav-body">
+            <WindowCommand />
+            <el-space :size="4" class="nav-container" direction="vertical" alignment="stretch">
+                <div v-for="(item) in RouterConfig" @click="navHandler(item.path)"
+                    :class="['nav-item-container', { 'nav-active': route.fullPath === item.path }]">
+                    <div class="icon">
+                        <DynamicIcon :icon="item.meta?.icon" />
                     </div>
-                </el-space>
-            </GlassCard>
-        </div>
+                    <div class="text">
+                        {{ item.meta.text }}
+                    </div>
+                </div>
+            </el-space>
+        </GlassCard>
     </div>
+
 
 </template>
 
@@ -37,17 +36,27 @@ const navHandler = (routeName: string) => {
     })
 }
 
-const style = {
-    'height': '100%',
-    'display': 'flex',
-    'flex-direction': 'column',
-}
 
 </script>
 
 <style lang="scss" scoped>
-.container {
-    z-index: 11;
+.container-bg::before {
+    content: '';
+    background: $font-color;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 5em;
+    backdrop-filter: blur(10em);
+    -webkit-backdrop-filter: blur(10em);
+    mask: linear-gradient(to bottom,
+            rgba(0, 0, 0, 1) 20%,
+            rgba(0, 0, 0, .75) 60%,
+            rgba(0, 0, 0, 0) 100%);
+}
+
+.container-bg {
     width: 100%;
     height: 100%;
     padding: 1em;
@@ -57,31 +66,32 @@ const style = {
             rgba(250, 250, 250, 0.9),
             rgba(250, 250, 250, 0.95));
 
-    .main-layout {
+
+
+
+    .container {
         height: 100%;
+        width: 100%;
         display: flex;
         flex-direction: column;
+        overflow: hidden;
         border-radius: 1em;
 
 
-        .main-container {
+        :deep(.nav-body) {
+            padding: 0;
+            height: 100%;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: start;
             align-items: center;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            border-radius: 1em;
             border: $simple-border;
-            z-index: 99;
 
             .nav-container {
-                padding: calc($globe-padding / 2) $globe-padding;
                 width: 100%;
-                height: 100%;
-
-
+                flex: 1;
+                padding: calc($globe-padding / 2) $globe-padding;
 
                 .nav-item-container {
                     background: rgba(250, 250, 250, 0.4);
@@ -112,7 +122,6 @@ const style = {
                         font-size: calc(1 * $font-size);
                         margin: calc(0.25 * $font-size);
                     }
-
                 }
 
                 .nav-active {
@@ -123,7 +132,6 @@ const style = {
                 }
 
                 .nav-item-container:hover {
-                    // border-left: $mac-green solid 4px;
                     background: rgba(250, 250, 250, 0.8);
                     color: rgba(64, 160, 255, 1) !important;
                 }

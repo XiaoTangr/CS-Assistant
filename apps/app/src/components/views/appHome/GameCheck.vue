@@ -1,9 +1,7 @@
 <template>
-
-    <el-card class="container" style="overflow: hidden; display:flex;flex-direction:column;flex: 1;"
-        :body-style="{ flex: 1, padding: '0px' }">
+    <GlassCard shadow="never" class="container">
         <el-space fill wrap alignment="stretch" class="inner-container">
-            <GlassCard :class="[{ 'not-install': !hasSteam }, `card`]">
+            <GlassCard shadow="hover" :class="[{ 'not-install': !hasSteam }, `card`]">
                 <div class="title">Steam</div>
                 <div v-if="hasSteam" class="content">
                     位于:<br>
@@ -13,7 +11,7 @@
                     <GlassButton size="large" round @click="setPath">查找Steam</GlassButton>
                 </div>
             </GlassCard>
-            <GlassCard :class="[{ 'not-install': !hasCS }, `card`]">
+            <GlassCard shadow="hover" :class="[{ 'not-install': !hasCS }, `card`]">
                 <div class="title">Counter Strike</div>
                 <div v-if="hasCS" class="content">
                     位于:<br>
@@ -26,7 +24,7 @@
                 </div>
             </GlassCard>
         </el-space>
-    </el-card>
+    </GlassCard>
 
 </template>
 
@@ -180,7 +178,6 @@ onMounted(async () => {
 @use "sass:color";
 
 .container {
-    padding: 1em;
 
     .inner-container {
         height: 100%;
@@ -195,7 +192,7 @@ onMounted(async () => {
             align-items: stretch;
             justify-content: center;
             border: $simple-border;
-            padding: $globe-padding;
+            // padding: $globe-padding;
             border-radius: $globe-border-radius;
 
             .title {

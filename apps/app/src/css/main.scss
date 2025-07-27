@@ -95,16 +95,16 @@ body {
     user-select: none;
 }
 
-.window-container {
-    ::-webkit-scrollbar {
-        width: $scrollbar-width-thiner ;
-    }
+// .window-container {
+//     ::-webkit-scrollbar {
+//         width: $scrollbar-width-thiner ;
+//     }
 
-    ::-webkit-scrollbar-track {
-        width: $scrollbar-width-thiner;
-    }
+//     ::-webkit-scrollbar-track {
+//         width: $scrollbar-width-thiner;
+//     }
 
-}
+// }
 
 ::-webkit-scrollbar {
     width: $scrollbar-width;

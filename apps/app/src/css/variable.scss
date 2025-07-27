@@ -70,7 +70,8 @@ $info-color-alpha-3: color.adjust($info-color, $alpha: -0.7);
 
 
 // base font
-$font-color: rgba(48, 49, 51, 1);
+// $font-color: rgba(48, 49, 51, 1);
+$font-color: var(el-text-color-primary);
 $font-family: 'DefaultFont',
     sans-serif;
 $font-weight-regular: normal;
@@ -95,7 +96,7 @@ $simple-box-shadow: rgba(152, 152, 152, 0.6) .25em .25em 2em 2px;
 
 
 // scrollbar
-$scrollbar-width: 10px;
+$scrollbar-width: 8px;
 $scrollbar-width-thiner: calc($scrollbar-width / 1.5);
 $scrollbar-baseColor: rgb(100, 100, 100, 0.7);
 $scrollbar-track-background: color.adjust($scrollbar-baseColor, $lightness: -80%, $space: hsl);

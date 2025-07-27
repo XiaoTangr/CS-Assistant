@@ -92,7 +92,8 @@ const MinimizeWindow = () => appWindow.minimize()
 <style lang="scss" scoped>
 .window-command-container {
     width: 100%;
-    z-index: 999;
+     
+    /* 添加定位属性 */
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -106,12 +107,10 @@ const MinimizeWindow = () => appWindow.minimize()
         padding: 1em;
         justify-content: start;
         align-items: center;
-
-
-
+         
+        /* 添加定位属性 */
 
         .window-command-item {
-
             display: flex;
             width: 14px;
             height: 14px;
@@ -171,15 +170,12 @@ const MinimizeWindow = () => appWindow.minimize()
             border-radius: 50%;
             box-shadow: $simple-box-shadow;
             border: $simple-border;
-
         }
 
         .text {
             margin-top: .5em;
         }
     }
-
-
 }
 </style>
 <style lang="scss">

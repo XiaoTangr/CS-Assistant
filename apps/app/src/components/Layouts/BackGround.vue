@@ -1,5 +1,5 @@
 <template>
-    <div class="bg"></div>
+    <div class="app-background"></div>
 </template>
 
 <script setup lang="ts">
@@ -7,9 +7,8 @@
 </script>
 
 <style scoped lang="scss">
-.bg {
-    position:fixed;
-    z-index: -99;
+.app-background {
+    position: fixed;
     width: 100vw;
     height: 100vh;
     background: url('@/assets/imgs/bg.png');

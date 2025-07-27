@@ -69,7 +69,6 @@ onBeforeUnmount(() => {
 <style scoped lang="scss">
 .Meida-masker {
     background-color: $globe-layout-color;
-    z-index: 1000 !important;
     backdrop-filter: $simpe-blur;
     position: absolute;
     width: 100vw;
