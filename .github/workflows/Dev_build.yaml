@@ -105,8 +105,8 @@ jobs:
           pnpm exec turbo run build --filter=app
 
           # 备用构建方法：直接进入目录构建
-          cd apps/app
-          pnpm run build
+          # cd apps/app
+          # pnpm run build
 
       - name: Upload MSI Installer
         uses: actions/upload-artifact@v4
