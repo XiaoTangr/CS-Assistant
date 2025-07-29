@@ -1,8 +1,8 @@
 <template>
     <div class="container">
         <el-space class="container-inner" wrap direction="vertical" fill>
-            <el-text v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
-            <el-card>
+            <el-text class="item" v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
+            <GlassCard class="item">
                 <template #header>
                     SQL ExecuteRaw
                 </template>
@@ -19,8 +19,8 @@
 
 
                 </template>
-            </el-card>
-            <el-card>
+            </GlassCard>
+            <GlassCard class="item">
                 <template #header> database - SettingsDB </template>
                 <el-form ref="dbformRef" label-position="left" label-width="auto" :model="dbsettings">
                     <el-form-item label="index(PK)">
@@ -76,8 +76,10 @@
                     </el-form-item>
                 </el-form>
                 <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea" placeholder="SQL Output..."></el-input>
-            </el-card>
-
+            </GlassCard>
+            <GlassCard class="item">
+                <ComponentTest />
+            </GlassCard>
 
         </el-space>
     </div>
@@ -92,6 +94,8 @@ import SettingsRepository from '@/core/repositories/Settings.Repository';
 import SettingsService from '@/core/services/Settings.services';
 import { baseCRUD } from "@/core/database";
 import LogUtil from '@/core/utils/LogUtil';
+import GlassCard from '@/components/Common/GlassCard.vue';
+import ComponentTest from '@/components/views/DevTools/ComponentTest.vue';
 
 const dbformRef = ref<FormInstance>();
 

@@ -1,33 +1,3 @@
-<template>
-    <GlassCard shadow="never" class="container">
-        <el-space fill wrap alignment="stretch" class="inner-container">
-            <GlassCard shadow="hover" :class="[{ 'not-install': !hasSteam }, `card`]">
-                <div class="title">Steam</div>
-                <div v-if="hasSteam" class="content">
-                    位于:<br>
-                    <CopyText :text="steamInstallPathStr as string" />
-                </div>
-                <div v-else class="content">
-                    <GlassButton size="large" round @click="setPath">查找Steam</GlassButton>
-                </div>
-            </GlassCard>
-            <GlassCard shadow="hover" :class="[{ 'not-install': !hasCS }, `card`]">
-                <div class="title">Counter Strike</div>
-                <div v-if="hasCS" class="content">
-                    位于:<br>
-                    <CopyText :text="cs2InstallPathStr as string">
-                        {{ cs2InstallPathStr }}
-                    </CopyText>
-                </div>
-                <div v-else class="content">
-                    指定Steam路径后自动识别!
-                </div>
-            </GlassCard>
-        </el-space>
-    </GlassCard>
-
-</template>
-
 <script setup lang="ts">
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { useSettingsStore } from '@/store/SettingsStore';
@@ -141,11 +111,6 @@ const setPath = async (): Promise<void> => {
     }
     await settingStore.saveChangedViewData();
 }
-
-
-
-
-
 /**
  * 通过vdf获取 CS2 安装路径
  * @returns CS2 安装路径 | null
@@ -173,39 +138,93 @@ onMounted(async () => {
 });
 
 </script>
+<template>
+    <GlassCard shadow="never" class="container">
 
+        <div class="group">
+            <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasSteam }, `card`]">
+                <div class="title">Steam</div>
+                <div v-if="hasSteam" class="content">
+                    位于:<br>
+                    <CopyText :text="steamInstallPathStr as string" />
+                </div>
+                <div v-else class="content">
+                    <GlassButton type="primary" size="large" round plain @click="setPath">指定Steam安装位置</GlassButton>
+                </div>
+            </GlassCard>
+            <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasCS }, `card`]">
+                <div class="title">Counter Strike</div>
+                <div v-if="hasCS" class="content">
+                    位于:<br>
+                    <CopyText :text="cs2InstallPathStr as string">
+                        {{ cs2InstallPathStr }}
+                    </CopyText>
+                </div>
+                <div v-else class="content">
+                    指定Steam路径后自动识别!
+                </div>
+            </GlassCard>
+        </div>
+
+
+
+    </GlassCard>
+
+</template>
 <style scoped lang="scss">
 @use "sass:color";
 
 .container {
 
-    .inner-container {
-        height: 100%;
-        width: 100%;
 
-        .card {
-            overflow: hidden;
-            background-color: $success-color-alpha-3;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            justify-content: center;
-            border: $simple-border;
-            // padding: $globe-padding;
-            border-radius: $globe-border-radius;
+    .group {
+        position: absolute;
+        top: 0;
+        right: 0;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+    }
 
-            .title {
-                font-size: 1.25rem;
-                font-weight: bold;
-                margin-bottom: 10px;
-            }
-        }
 
-        .not-install {
-            background-color: $danger-color-alpha-3 !important;
+
+    :deep(.item-body) {
+        padding: 4px;
+        overflow: hidden;
+        overflow-y: auto;
+        margin: 0;
+    }
+
+    .card:first-child {
+        margin-bottom: 0;
+    }
+
+    .card {
+        flex: 1;
+        margin: $globe-margin;
+        background-color: $success-color-alpha-3;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        border: $simple-border;
+        padding: $globe-padding;
+        border-radius: $globe-border-radius;
+
+        .title {
+            padding-bottom: calc($globe-padding / 2);
+            font-size: 1.1rem;
+            font-weight: bold;
         }
     }
+
+    .not-install {
+        background-color: $danger-color-alpha-3 !important;
+    }
+
 
 }
 </style>

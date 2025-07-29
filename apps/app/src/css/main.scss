@@ -108,23 +108,24 @@ body {
 
 ::-webkit-scrollbar {
     width: $scrollbar-width;
+    height: $scrollbar-width;
 }
 
 ::-webkit-scrollbar-track {
     width: $scrollbar-width;
-    background: rgba($scrollbar-track-background, 0.1);
-    -webkit-border-radius: .25em;
-    -moz-border-radius: 25em;
-    border-radius: 25em;
+    background: $scrollbar-track-background;
+    -webkit-border-radius: 100vw;
+    -moz-border-radius: 100vw;
+    border-radius: 100vw;
 }
 
 ::-webkit-scrollbar-thumb {
     background-color: $scrollbar-thumb-background;
     background-clip: padding-box;
     min-height: 28px;
-    -webkit-border-radius: .25em;
-    -moz-border-radius: .25em;
-    border-radius: .25em;
+    -webkit-border-radius: 100vw;
+    -moz-border-radius: 100vw;
+    border-radius: 100vw;
     transition: background-color .3s;
     cursor: pointer;
 }

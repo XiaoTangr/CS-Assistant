@@ -1,5 +1,5 @@
 <template>
-    <el-card class="container">
+    <GlassCard shadow="never" class="container">
         <template #header> 配置文件克隆器 </template>
         <template #default>
             <div class="body-container">
@@ -28,11 +28,12 @@
                 </el-space>
             </div>
         </template>
-    </el-card>
+    </GlassCard>
 </template>
 
 <script setup lang="ts">
 
+import GlassCard from '@/components/Common/GlassCard.vue';
 import { Settings } from '@/core/models';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { useSettingsStore } from '@/store/SettingsStore';

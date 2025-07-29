@@ -4,7 +4,7 @@ import { useSettingsStore } from "./SettingsStore";
 import { Settings, BasicSteamLoginUser } from "@/core/models";
 import { getVdfObjectByFilePath } from "@/core/utils/VdfUtils";
 import LogUtil from "@/core/utils/LogUtil";
-import { readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";
+import { isFileExists, readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";
 export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () => {
     const SettingsStore = useSettingsStore();
 
@@ -71,7 +71,12 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
 
 
     const _buildData = async () => {
-        let preData = (await getVdfObjectByFilePath(`${steamInstallPathStr.value}\\${_loginedUsersVdfPath}`)).users
+        let vdfPath = `${steamInstallPathStr.value}\\${_loginedUsersVdfPath}`
+        if (!await isFileExists(vdfPath)) {
+            LogUtil.debug(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
+            return null;
+        }
+        let preData = (await getVdfObjectByFilePath(vdfPath)).users
         let resultdata: BasicSteamLoginUser[] = await Promise.all(Object.keys(preData).map(async accountID => {
             let user = preData[accountID]
             return {

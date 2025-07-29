@@ -14,7 +14,7 @@ export const getVdfObjectByFilePath = async (filePath: string): Promise<Record<s
         return <Record<string, any>>parse(parsed);
     } catch (error: any) {
         const errorMessage = error.message || String(error);
-        console.error(`[VdfUtil] 读取或解析 VDF 文件失败: ${filePath}`, error);
+        console.trace(`[VdfUtil] 读取或解析 VDF 文件失败: ${filePath}`, error);
         throw new Error(`读取或解析 VDF 文件失败: ${errorMessage}`);
     }
 };

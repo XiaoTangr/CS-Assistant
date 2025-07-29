@@ -49,7 +49,7 @@ jobs:
         shell: pwsh
         run: |
           pnpm fetch
-          pnpm install -r
+          pnpm install --no-frozen-lockfile -r
 
   buildApp:
     name: Build Application

@@ -30,20 +30,17 @@
         <GlassDialog :close-on-click-modal="false" append-to="#app" width="400" v-model="centerDialogVisible"
             align-center>
             <template #header>
-
                 <span class="dg-title">
                     <el-icon class="dg-icon">
                         <WarningFilled />
                     </el-icon>
                     注意
                 </span>
-
             </template>
             <template #default> 所有未保存的更改都会消失! </template>
             <template #footer>
-                <GlassButton round type="primary" @click="centerDialogVisible = false">取消</GlassButton>
+                <GlassButton autofocus round type="primary" @click="centerDialogVisible = false">取消</GlassButton>
                 <GlassButton round @click="CloseWindow()"> 确定 </GlassButton>
-
             </template>
         </GlassDialog>
     </div>
@@ -92,7 +89,7 @@ const MinimizeWindow = () => appWindow.minimize()
 <style lang="scss" scoped>
 .window-command-container {
     width: 100%;
-     
+
     /* 添加定位属性 */
     display: flex;
     flex-direction: column;
@@ -107,7 +104,7 @@ const MinimizeWindow = () => appWindow.minimize()
         padding: 1em;
         justify-content: start;
         align-items: center;
-         
+
         /* 添加定位属性 */
 
         .window-command-item {

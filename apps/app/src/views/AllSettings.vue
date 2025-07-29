@@ -9,7 +9,7 @@
             </div>
         </div>
         <el-space class="operate">
-            <GlassButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" text round> 保存更改
+            <GlassButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" round> 保存更改
             </GlassButton>
             <GlassButton size="large" @click="SettingsStore.discardChanges" round> 放弃更改 </GlassButton>
         </el-space>

@@ -33,15 +33,15 @@ const openMenu = () => {
   position: absolute;
   top: 0;
   left: 0;
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   display: flex;
   border: $simple-border;
 
   .nav-Container {
     height: 100vh;
-    width: 20em;
-
+    min-width: 20em;
+    max-width: 20em;
     /* 添加定位属性 */
   }
 

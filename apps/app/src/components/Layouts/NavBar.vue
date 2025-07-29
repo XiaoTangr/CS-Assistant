@@ -48,8 +48,8 @@ const navHandler = (routeName: string) => {
     left: 0;
     width: 100vw;
     height: 5em;
-    backdrop-filter: blur(10em);
-    -webkit-backdrop-filter: blur(10em);
+    backdrop-filter: blur(100vw);
+    -webkit-backdrop-filter: blur(100vw);
     mask: linear-gradient(to bottom,
             rgba(0, 0, 0, 1) 20%,
             rgba(0, 0, 0, .75) 60%,
@@ -61,18 +61,20 @@ const navHandler = (routeName: string) => {
     height: 100%;
     padding: 1em;
     background: linear-gradient(to right,
-            rgba(250, 250, 250, 0.7),
-            rgba(250, 250, 250, 0.85),
-            rgba(250, 250, 250, 0.9),
+            rgba(250, 250, 250, 0.2),
+            rgba(250, 250, 250, 0.6),
+            rgba(250, 250, 250, 0.8),
             rgba(250, 250, 250, 0.95));
 
 
 
 
     .container {
+        // opacity: 0;
         height: 100%;
         width: 100%;
         display: flex;
+
         flex-direction: column;
         overflow: hidden;
         border-radius: 1em;
