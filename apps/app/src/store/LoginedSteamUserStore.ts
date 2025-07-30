@@ -57,7 +57,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                     }
 
                     const userId = match[1];
-                    LogUtil.debug(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
+                    LogUtil.info(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
                     return userId;
                 }
             } catch (error) {

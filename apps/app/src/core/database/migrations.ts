@@ -1,7 +1,7 @@
 // src/core/database/migrations.ts
 
-import {baseCRUD} from '@/core/database';
-import { defaultDatabaseData } from '@/core/defaultData';
+import { baseCRUD } from '@/core/database';
+import { defaultDatabaseData } from '@/core/database/defaultData';
 import { MigrationResult } from '@/core/models';
 
 /**

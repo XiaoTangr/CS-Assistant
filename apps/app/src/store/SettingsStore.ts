@@ -138,7 +138,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         if (!setting) {
             return;
         }
-        return await SettingsService.updateSetting(setting);
+        return await SettingsService.updateSettings(setting);
     };
 
 

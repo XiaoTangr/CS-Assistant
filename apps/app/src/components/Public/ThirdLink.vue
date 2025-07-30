@@ -1,28 +1,30 @@
 <template>
-    <el-tooltip :content="props.url">
-        <GlassButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
-            {{ props.title }}
-        </GlassButton>
-        <el-text v-else class="underline" @click="showDialog" round type="primary">
-            {{ props.title }}
-        </el-text>
-    </el-tooltip>
+    <div v-bind="$attrs">
+        <el-tooltip :content="props.url">
+            <GlassButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
+                {{ props.title }}
+            </GlassButton>
+            <el-text v-else class="underline" @click="showDialog" round type="primary">
+                {{ props.title }}
+            </el-text>
+        </el-tooltip>
 
-    <!-- ✅ 使用 v-model 正确绑定 dialogVisible -->
-    <GlassDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
-        <template #header>
-            <h4>即将前往:{{ props.title }}</h4>
-        </template>
-        <template #default>
-            <p>即将打开第三方链接{{ props.url }} </p>
-            <p> 请注意保护个人隐私! </p>
+        <!-- ✅ 使用 v-model 正确绑定 dialogVisible -->
+        <GlassDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
+            <template #header>
+                <h4>即将前往:{{ props.title }}</h4>
+            </template>
+            <template #default>
+                <p>即将打开第三方链接{{ props.url }} </p>
+                <p> 请注意保护个人隐私! </p>
 
-        </template>
-        <template #footer>
-            <GlassButton round type="primary" @click="handleCancel">复制该链接</GlassButton>
-            <GlassButton round @click="handleConfirm">访问该链接</GlassButton>
-        </template>
-    </GlassDialog>
+            </template>
+            <template #footer>
+                <GlassButton round type="primary" @click="handleCancel">复制该链接</GlassButton>
+                <GlassButton round @click="handleConfirm">访问该链接</GlassButton>
+            </template>
+        </GlassDialog>
+    </div>
 </template>
 
 <script setup lang="ts">
@@ -42,6 +44,11 @@ const props = withDefaults(
         type: 'link'
     }
 )
+
+// 启用属性继承
+defineOptions({
+    inheritAttrs: false
+})
 
 const dialogVisible = ref(false)
 const showDialog = () => {

@@ -6,9 +6,10 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import type { Component } from 'vue';
 
 interface Props {
-    icon?: any; // 接收 Element Plus 图标组件
+    icon?: Component; // 接收 Element Plus 图标组件
 }
 
 const props = defineProps<Props>();
@@ -20,4 +21,8 @@ const iconComponent = computed(() => {
 </script>
 
 <style lang="scss" scoped>
+.icon {
+    width: 1em;
+    height: 1em;
+}
 </style>

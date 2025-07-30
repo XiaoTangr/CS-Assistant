@@ -1,6 +1,7 @@
 // Settings.services.ts
 import SettingsRepository from "@/core/repositories/Settings.Repository";
 import { Settings } from "@/core/models";
+import { desVal, serVal } from "../utils";
 
 export default class SettingsService {
     /**
@@ -8,7 +9,7 @@ export default class SettingsService {
      * @returns 返回设置对象数组
      */
     static async getAllSettings(): Promise<Settings[]> {
-        return await SettingsRepository.queryAll();
+        return desVal(await SettingsRepository.queryAll());
     }
     /**
      * 根据 key 获取单个设置
@@ -24,8 +25,10 @@ export default class SettingsService {
      * @param setting - 要更新的 Setting 对象
      * @returns 受影响行数
      */
-    static async updateSetting(setting: Settings): Promise<number> {
-        return await SettingsRepository.updateRow(setting);
+    static async updateSettings(setting: Settings): Promise<number> {
+
+        let v = serVal(setting)
+        return await SettingsRepository.updateRow(v);
     }
 
     /**

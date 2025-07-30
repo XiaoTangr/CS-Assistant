@@ -1,6 +1,6 @@
 
 import { invoke } from '@tauri-apps/api/core';
-import { parse } from '@/core/utils/serialization';
+import { deserializeValues } from './serialization';
 /**
  * @description 从指定路径读取 VDF 文件并解析为对象
  * @param filePath 文件路径
@@ -11,7 +11,7 @@ export const getVdfObjectByFilePath = async (filePath: string): Promise<Record<s
     try {
         const fileContent: string = await invoke("read_text_file", { filePath: filePath });
         const parsed = parseVDF(fileContent);
-        return <Record<string, any>>parse(parsed);
+        return <Record<string, any>>deserializeValues(parsed);
     } catch (error: any) {
         const errorMessage = error.message || String(error);
         console.trace(`[VdfUtil] 读取或解析 VDF 文件失败: ${filePath}`, error);

@@ -49,7 +49,7 @@ jobs:
         shell: pwsh
         run: |
           pnpm fetch
-          pnpm install --no-frozen-lockfile -r
+          pnpm install --no-frozen-lockfile
 
   buildApp:
     name: Build Application
@@ -84,7 +84,7 @@ jobs:
           pnpm add -g @tauri-apps/cli
 
           # 安装应用特定依赖
-          pnpm install --filter app...
+          pnpm install --no-frozen-lockfile --filter app...
 
       - name: Configure PATH
         shell: pwsh
@@ -144,7 +144,7 @@ jobs:
 
       - name: Install doc dependencies
         shell: pwsh
-        run: pnpm install --filter doc...
+        run: pnpm install --no-frozen-lockfile --filter doc...
 
       - name: Configure PATH
         shell: pwsh

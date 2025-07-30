@@ -13,6 +13,16 @@
                     </div>
                 </div>
             </el-space>
+            <div class="footer">
+                <div :class="['nav-item-container']">
+                    <div class="icon">
+                        <DynamicIcon :icon="Bell" />
+                    </div>
+                    <div class="text">
+                        关于
+                    </div>
+                </div>
+            </div>
         </GlassCard>
     </div>
 
@@ -26,7 +36,7 @@ import { RouterConfig } from '@/router/RoutesCfg';
 import DynamicIcon from '../Common/DynamicIcon.vue';
 import { useRoute, useRouter } from 'vue-router';
 import GlassCard from '../Common/GlassCard.vue';
-
+import { Bell } from '@element-plus/icons-vue';
 const route = useRoute();
 const router = useRouter();
 
@@ -93,50 +103,57 @@ const navHandler = (routeName: string) => {
             .nav-container {
                 width: 100%;
                 flex: 1;
+                overflow-y: auto;
                 padding: calc($globe-padding / 2) $globe-padding;
+            }
 
-                .nav-item-container {
-                    background: rgba(250, 250, 250, 0.4);
-                    width: 100%;
-                    height: calc(2 * $font-size);
+            .footer {
+                width: 100%;
+                padding: calc($globe-padding / 2) $globe-padding;
+                padding-bottom: $globe-margin;
+            }
+
+            .nav-item-container {
+                background: rgba(250, 250, 250, 0.4);
+                width: 100%;
+                height: calc(2 * $font-size);
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: flex-start;
+                border-radius: 4px;
+                padding-left: 4px;
+                border-left: rgba(250, 250, 250, 0) solid 4px;
+                transition: all 0.2s ease-in-out;
+
+                .text {
+                    flex: 1;
                     display: flex;
-                    flex-direction: row;
+                    flex-direction: column;
+                    align-items: stretch;
+                    justify-content: center;
+                }
+
+                .icon {
+                    display: flex;
+                    flex-direction: column;
                     align-items: center;
-                    justify-content: flex-start;
-                    border-radius: 4px;
-                    padding-left: 4px;
-                    border-left: rgba(250, 250, 250, 0) solid 4px;
-                    transition: all 0.2s ease-in-out;
-
-                    .text {
-                        flex: 1;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: stretch;
-                        justify-content: center;
-                    }
-
-                    .icon {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: calc(1 * $font-size);
-                        margin: calc(0.25 * $font-size);
-                    }
+                    justify-content: center;
+                    font-size: calc(1 * $font-size);
+                    margin: calc(0.25 * $font-size);
                 }
+            }
 
-                .nav-active {
-                    border-left: $mac-green solid 4px;
-                    background: linear-gradient(to right,
-                            rgba(250, 250, 250, 1),
-                            rgba(250, 250, 250, 0.5));
-                }
+            .nav-active {
+                border-left: $mac-green solid 4px;
+                background: linear-gradient(to right,
+                        rgba(250, 250, 250, 1),
+                        rgba(250, 250, 250, 0.5));
+            }
 
-                .nav-item-container:hover {
-                    background: rgba(250, 250, 250, 0.8);
-                    color: rgba(64, 160, 255, 1) !important;
-                }
+            .nav-item-container:hover {
+                background: rgba(250, 250, 250, 0.8);
+                color: rgba(64, 160, 255, 1) !important;
             }
         }
     }

@@ -9,6 +9,15 @@
 .container-bg {
     z-index: 200;
 }
-.global-command-container{
-    z-index: 1000;
+
+.window-command-container {
+    z-index: 800;
+}
+
+.global-command-container {
+    z-index: 400;
+}
+
+.Meida-masker {
+    z-index: 400;
 }

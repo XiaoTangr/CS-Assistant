@@ -132,26 +132,26 @@ class DBBaseCRUD {
         return rowsAffected;
     }
 
-
-
-
-
-
     /**
      * 使用 WHERE 条件查询数据
      * @param tableName 表名
-     * @param whereClause WHERE 条件（如 "id = $1"）
-     * @param params 参数数组（如 [1]）
+     * @param where WHERE 条件对象（如 { id: 1 }）
      * @returns 查询结果数组
      */
     public async queryWhere<T>(
         tableName: string,
-        whereClause: string,
-        params: any[] = []
+        where: Record<string, any>
     ): Promise<T[]> {
         this.validateTableName(tableName);
-        const sql = `SELECT * FROM ${tableName} WHERE ${whereClause}`;
-        return await this._select<T>(sql, params);
+
+        if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
+            throw new Error(`Invalid WHERE clause provided for query`);
+        }
+
+        const whereKey = Object.keys(where)[0];
+        const whereValue = Object.values(where)[0];
+        const sql = `SELECT * FROM ${tableName} WHERE ${whereKey} = $1`;
+        return await this._select<T>(sql, [whereValue]);
     }
 
     /**
@@ -162,7 +162,8 @@ class DBBaseCRUD {
     public async queryAll<T>(tableName: string): Promise<T[] | null> {
         this.validateTableName(tableName);
         const sql = `SELECT * FROM ${tableName};`;
-        return await this._select<T>(sql);
+        let r = await this._select<T>(sql);
+        return r ? r : [];
     }
 
 
@@ -202,19 +203,24 @@ class DBBaseCRUD {
     /**
      * 根据字段删除
      * @param tableName 表名
-     * @param columnName 删除条件字段名
-     * @param columnValue 删除条件字段值
+     * @param where 删除条件对象（如 { id: 1 }）
      * @returns 受影响行数
      */
     public async deleteRow(
         tableName: string,
-        columnName: string,
-        columnValue: any
+        where: Record<string, any>
     ): Promise<number> {
         this.validateTableName(tableName);
-        this.validateColumnName(columnName);
-        const sql = `DELETE FROM ${tableName} WHERE ${columnName} = $1`;
-        return (await this._execute(sql, [columnValue])).rowsAffected;
+
+        if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
+            throw new Error(`Invalid WHERE clause provided for delete`);
+        }
+
+        const whereKey = Object.keys(where)[0];
+        const whereValue = Object.values(where)[0];
+        this.validateColumnName(whereKey);
+        const sql = `DELETE FROM ${tableName} WHERE ${whereKey} = $1`;
+        return (await this._execute(sql, [whereValue])).rowsAffected;
     }
 
     /**

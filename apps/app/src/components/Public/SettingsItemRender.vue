@@ -48,7 +48,7 @@
         <div v-if="props.item.type === 'PathInput'" class="settings-item item-FilePath">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
                 props.item.text
-            }}
+                }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
