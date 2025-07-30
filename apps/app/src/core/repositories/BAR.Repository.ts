@@ -21,8 +21,7 @@ export default class BackupAndRecoveryRepository {
     static async queryOneById(id: number): Promise<BackupAndRecovery | null> {
         const results = await baseCRUD.queryWhere<BackupAndRecovery>(
             this.TABLE_NAME,
-            "id = $1",
-            [id]
+            { c_id: id },
         );
         return results.length > 0 ? results[0] : null;
     }
@@ -51,7 +50,10 @@ export default class BackupAndRecoveryRepository {
      * @returns 受影响的行数
      */
     static async delete(id: number): Promise<number> {
-        return await baseCRUD.deleteRow(this.TABLE_NAME, 'id', id);
+        return await baseCRUD.deleteRow(
+            this.TABLE_NAME,
+            { 'c_id': id }
+        );
     }
     /**
      * 获取表的总记录数
