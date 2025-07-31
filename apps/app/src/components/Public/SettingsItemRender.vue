@@ -1,6 +1,6 @@
 <template>
     <div class="container ">
-        <div v-if="props.item.type === 'Boolean'" class="settings-item   item-Boolean">
+        <div v-if="props.item.type === 'Boolean'" class="settings-item item-Boolean">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
                 props.item.text }}
             </p>
@@ -32,7 +32,7 @@
                 </div>
             </div>
         </div>
-        <div v-if="props.item.type === 'Input'" class="settings-item  item-Input">
+        <div v-if="props.item.type === 'Input'" class="settings-item item-Input">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
                 props.item.text }}
             </p>
@@ -48,7 +48,7 @@
         <div v-if="props.item.type === 'PathInput'" class="settings-item item-FilePath">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
                 props.item.text
-                }}
+            }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
@@ -70,6 +70,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { Settings } from '@/core/models';
 import { computed, PropType } from 'vue';
 import { useSettingsStore } from '@/store/SettingsStore';
+import { LogServices } from '@/core/services';
 const props = defineProps({
     item: {
         type: Object as PropType<Settings>,
@@ -95,10 +96,10 @@ const openPathChoose = async () => {
             props.item.selected = file;
         } else {
             // 用户取消选择或未选择有效路径
-            console.warn('未选择有效的路径');
+            LogServices.warn('未选择有效的路径');
         }
     } catch (error: any) {
-        console.error('打开路径选择器时发生错误:', error);
+        LogServices.error('打开路径选择器时发生错误:', error);
     }
 };
 </script>

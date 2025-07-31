@@ -93,7 +93,7 @@ import { Settings, SettingsRowOptions } from '@/core/models';
 import SettingsRepository from '@/core/repositories/Settings.Repository';
 import SettingsService from '@/core/services/Settings.services';
 import { baseCRUD } from "@/core/database";
-import LogUtil from '@/core/utils/LogUtil';
+import LogServices from "@/core/services/Log.services";
 import GlassCard from '@/components/Common/GlassCard.vue';
 import ComponentTest from '@/components/views/DevTools/ComponentTest.vue';
 
@@ -116,7 +116,7 @@ const dbsettings = reactive<Settings & { options: SettingsRowOptions[] }>({
 const dbsettingsSQLout = ref('');
 // 错误处理函数
 const handleDBError = (error: any, action: string) => {
-    console.error(`[DevTools] Database operation failed: ${action}`, {
+    LogServices.error(`[DevTools] Database operation failed: ${action}`, {
         error,
         dbsettings: JSON.parse(JSON.stringify(dbsettings)), // 模拟 cloneDeep
         timestamp: new Date().toISOString()
@@ -221,7 +221,7 @@ const insertSettingsRowtodb = async () => {
             resetForm();
         }
     } catch (e) {
-        console.error(e);
+        LogServices.error(e);
     }
 };
 
@@ -292,7 +292,7 @@ const executeSQL = async () => {
 
     try {
         const res = await baseCRUD.executeRaw(sqlInput.value);
-        LogUtil.debug(res)
+        LogServices.debug(res)
         sqlOutput.value = JSON.stringify(res, null, 2);
     } catch (e) {
         handleDBError(e, '执行SQL');

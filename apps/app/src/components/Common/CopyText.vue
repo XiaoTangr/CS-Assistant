@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+import { LogServices } from '@/core/services';
 import { ElNotification } from 'element-plus';
 import { ref, getCurrentInstance } from 'vue';
 
@@ -33,7 +34,7 @@ const copyToClipboard = async () => {
         await navigator.clipboard.writeText(textToCopy);
         ElNotification.success(`复制成功: ${textToCopy}`);
     } catch (err) {
-        console.error('复制失败', err);
+        LogServices.error('复制失败', err);
     }
 };
 </script>

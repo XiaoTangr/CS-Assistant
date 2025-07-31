@@ -1,4 +1,4 @@
-import LogUtil from "@/core/utils/LogUtil";
+import LogServices from "@/core/services/Log.services";
 import { Settings } from "@/core/models";
 import SettingsService from "@/core/services/Settings.services";
 import { ElNotification } from "element-plus";
@@ -19,7 +19,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         const grouped: Record<string, Settings[]> = {};
         for (const item of sortedByIndex) {
             if (!item.groupName) {
-                console.warn('Encountered setting with undefined groupName', item);
+                LogServices.warn('Encountered setting with undefined groupName', item);
                 continue;
             }
             if (!grouped[item.groupName]) {
@@ -55,7 +55,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         const viewItem = (viewData.value ?? []).find((item: Settings) => item.key === key);
 
         if (!dbItem || !viewItem) {
-            LogUtil.error(`找不到 key 为 ${key} 的设置项`, { dbItem, viewItem });
+            LogServices.error(`找不到 key 为 ${key} 的设置项`, { dbItem, viewItem });
             return false;
         }
 
@@ -114,7 +114,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             // 并行保存所有变更项
             await Promise.all(
                 changedItems.map(async (item: Settings) => {
-                    LogUtil.debug(`正在保存配置项：${item.key ?? ''}`, item);
+                    LogServices.debug(`正在保存配置项：${item.key ?? ''}`, item);
                     await saveOneData(item);
                     ElNotification.success({
                         title: "成功",
@@ -126,7 +126,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             // 所有数据保存完成后刷新视图数据
             await fetchData();
         } catch (error) {
-            LogUtil.error("保存或刷新过程中发生错误：", error);
+            LogServices.error("保存或刷新过程中发生错误：", error);
             ElNotification.error({
                 title: "错误",
                 message: "保存过程中发生错误，请查看控制台日志。",

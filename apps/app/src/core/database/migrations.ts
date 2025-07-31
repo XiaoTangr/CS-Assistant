@@ -3,6 +3,7 @@
 import { baseCRUD } from '@/core/database';
 import { defaultDatabaseData } from '@/core/database/defaultData';
 import { MigrationResult } from '@/core/models';
+import { LogServices } from '../services';
 
 /**
  * 初始化数据库表结构和默认数据
@@ -34,7 +35,7 @@ export async function runMigrations(): Promise<MigrationResult> {
 
             const createTableSql = `CREATE TABLE IF NOT EXISTS "${tableName}" (${columnDefs.join(', ')});`;
 
-            console.log(`[DB] Creating table: ${tableName}`);
+            LogServices.log(`[DB] Creating table: ${tableName}`);
             await baseCRUD.executeRaw(createTableSql);
             result.createdTables.push(tableName);
 
@@ -48,10 +49,10 @@ export async function runMigrations(): Promise<MigrationResult> {
             }
         }
 
-        console.log('[DB] Database initialized successfully.');
+        LogServices.log('[DB] Database initialized successfully.');
         return result;
     } catch (error) {
-        console.error('[DB] Failed to initialize database:', error);
+        LogServices.error('[DB] Failed to initialize database:', error);
         result.success = false;
         result.error = error as Error;
         return result;
@@ -89,25 +90,25 @@ async function insertDefaultData(tableName: string, defaultData: any[]): Promise
         const count = await baseCRUD.count(tableName);
 
         if (count === 0) {
-            console.log(`[DB] Inserting default data into ${tableName}`);
+            LogServices.log(`[DB] Inserting default data into ${tableName}`);
 
             // 确保传入的是真实的数据数组
             const dataToInsert = defaultData;
 
             // 增加校验：确保数组非空且第一个元素是对象
             if (!Array.isArray(dataToInsert) || dataToInsert.length === 0 || typeof dataToInsert[0] !== 'object') {
-                console.error(`[DB] Invalid default data for table ${tableName}:`, dataToInsert);
+                LogServices.error(`[DB] Invalid default data for table ${tableName}:`, dataToInsert);
                 return false;
             }
 
             const rowsAffected = await baseCRUD.insertRows(tableName, dataToInsert);
-            console.log(`[DB] Inserted ${rowsAffected} rows into ${tableName}`);
+            LogServices.log(`[DB] Inserted ${rowsAffected} rows into ${tableName}`);
             return rowsAffected > 0;
         }
 
         return true; // 表中已有数据，无需插入
     } catch (error) {
-        console.error(`[DB] Failed to insert default data into ${tableName}:`, error);
+        LogServices.error(`[DB] Failed to insert default data into ${tableName}:`, error);
         return false;
     }
 }

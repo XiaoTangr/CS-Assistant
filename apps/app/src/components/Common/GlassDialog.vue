@@ -65,7 +65,7 @@ interface LiquidDialogProps {
 withDefaults(defineProps<LiquidDialogProps>(), {
     modelValue: false,
     title: '',
-    width: '50%',
+    width: '400px',
     fullscreen: false,
     top: '15vh',
     modal: true,
@@ -73,8 +73,8 @@ withDefaults(defineProps<LiquidDialogProps>(), {
     headerClass: undefined,
     bodyClass: undefined,
     footerClass: undefined,
-    appendToBody: false,
-    appendTo: 'body',
+    appendToBody: true,
+    appendTo: undefined,
     lockScroll: true,
     openDelay: 0,
     closeDelay: 0,
@@ -85,8 +85,8 @@ withDefaults(defineProps<LiquidDialogProps>(), {
     draggable: false,
     overflow: false,
     center: false,
-    alignCenter: false,
-    destroyOnClose: false,
+    alignCenter: true,
+    destroyOnClose: true,
     closeIcon: undefined,
     zIndex: undefined,
     headerAriaLevel: '2',
@@ -114,7 +114,7 @@ defineEmits<{
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     box-shadow:
         0 8px 32px rgba(31, 38, 135, 0.08),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
     border-radius: 1em !important;
 }
 
@@ -134,6 +134,4 @@ defineEmits<{
 //         0 8px 32px rgba(31, 38, 135, 0.08),
 //         inset 0 1px 2px rgba(255, 255, 255, 0.6);
 //     border-radius: 1em !important;
-// }
-
-</style>
+// }</style>

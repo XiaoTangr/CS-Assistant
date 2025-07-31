@@ -6,24 +6,23 @@
         <div class="global-command-container">
           <GlobalCommand />
         </div>
-        <div class="content-container">
+        <div id="content" class="content-container">
           <RouterView />
         </div>
       </div>
     </div>
     <ViewCheck />
     <BackGround />
-
   </div>
-
 </template>
 <script setup lang="ts">
 import BackGround from './components/Layouts/BackGround.vue';
 import NavBar from './components/Layouts/NavBar.vue';
 import ViewCheck from './components/Layouts/ViewCheck.vue';
 import GlobalCommand from './components/Public/GlobalCommand.vue';
+import LogServices from '@/core/services/Log.services';
 const openMenu = () => {
-  console.warn('User try open contextmenu!')
+  LogServices.info('User try open contextmenu!')
 }
 
 </script>

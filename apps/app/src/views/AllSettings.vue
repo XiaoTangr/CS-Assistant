@@ -1,12 +1,15 @@
 <template>
     <div class="container">
         <div class="groups">
-            <div class="group" v-for="(g, i) in groupedViewData" :key="i">
-                <div class="item">
-                    <el-divider border-style="dashed" class="group-title" content-position="left">{{ i }}</el-divider>
-                    <SettingsItemRender class="item-render" v-for="(item) in g" :item="item" />
+            <template v-for="(g, i) in groupedViewData" :key="i">
+                <div class="group">
+                    <div class="item">
+                        <el-divider border-style="dashed" class="group-title" content-position="left">{{ i
+                            }}</el-divider>
+                        <SettingsItemRender class="item-render" v-for="(item) in g" :item="item" :key="g.length - 1" />
+                    </div>
                 </div>
-            </div>
+            </template>
         </div>
         <el-space class="operate">
             <GlassButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" round> 保存更改

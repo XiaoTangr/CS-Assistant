@@ -1,3 +1,4 @@
+import { LogServices } from "../services";
 import { connecter } from "./";
 
 class DBBaseCRUD {
@@ -13,7 +14,7 @@ class DBBaseCRUD {
     }
 
     private log(message: string) {
-        console.log(`[DBBaseCRUD] ${message}`);
+        LogServices.log(`[DBBaseCRUD] ${message}`);
     }
 
     private validateTableName(tableName: string): void {
@@ -40,7 +41,7 @@ class DBBaseCRUD {
             return await db.select(sql, params);
         } catch (error: any) {
             const errorMessage = `Query failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
-            console.error(errorMessage, {
+            LogServices.error(errorMessage, {
                 error,
                 sql,
                 params,
@@ -73,7 +74,7 @@ class DBBaseCRUD {
             };
         } catch (error: any) {
             const errorMessage = `Execute failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
-            console.error(errorMessage, {
+            LogServices.error(errorMessage, {
                 error,
                 sql,
                 params,
@@ -121,7 +122,7 @@ class DBBaseCRUD {
             await this._execute("COMMIT");
         } catch (e: any) {
             await this._execute("ROLLBACK");
-            console.error(`[SQLite insertRows] 失败`, {
+            LogServices.error(`[SQLite insertRows] 失败`, {
                 error: e.message,
                 sql,
                 lastParams: data[data.length - 1]

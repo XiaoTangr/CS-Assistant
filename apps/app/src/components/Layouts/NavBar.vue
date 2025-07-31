@@ -3,26 +3,31 @@
         <GlassCard class="container" bodyClass="nav-body">
             <WindowCommand />
             <el-space :size="4" class="nav-container" direction="vertical" alignment="stretch">
-                <div v-for="(item) in RouterConfig" @click="navHandler(item.path)"
-                    :class="['nav-item-container', { 'nav-active': route.fullPath === item.path }]">
-                    <div class="icon">
-                        <DynamicIcon :icon="item.meta?.icon" />
-                    </div>
-                    <div class="text">
-                        {{ item.meta.text }}
+                <div v-for="(item) in mainRouterConfig">
+                    <div v-if="hasRoute(item.name)" @click="navHandler(item.path)"
+                        :class="['nav-item-container', { 'nav-active': route.fullPath === item.path }]">
+                        <div class="icon">
+                            <DynamicIcon :icon="item.meta?.icon" />
+                        </div>
+                        <div class="text">
+                            {{ item.meta.text }}
+                        </div>
                     </div>
                 </div>
             </el-space>
-            <div class="footer">
-                <div :class="['nav-item-container']">
-                    <div class="icon">
-                        <DynamicIcon :icon="Bell" />
-                    </div>
-                    <div class="text">
-                        关于
+            <el-space :size="4" class="nav-footer" direction="vertical" alignment="stretch">
+                <div v-for="(item) in footerRouterConfig">
+                    <div v-if="hasRoute(item.name)" @click="navHandler(item.path)"
+                        :class="['nav-item-container', { 'nav-active': route.fullPath === item.path }]">
+                        <div class="icon">
+                            <DynamicIcon :icon="item.meta?.icon" />
+                        </div>
+                        <div class="text">
+                            {{ item.meta.text }}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </el-space>
         </GlassCard>
     </div>
 
@@ -32,24 +37,31 @@
 <script setup lang="ts">
 import WindowCommand from '@/components/Public/WindowCommand.vue'
 
-import { RouterConfig } from '@/router/RoutesCfg';
+import { mainRouterConfig, footerRouterConfig } from '@/router/RoutesCfg';
 import DynamicIcon from '../Common/DynamicIcon.vue';
 import { useRoute, useRouter } from 'vue-router';
 import GlassCard from '../Common/GlassCard.vue';
-import { Bell } from '@element-plus/icons-vue';
+import { LogServices } from '@/core/services';
+
 const route = useRoute();
 const router = useRouter();
 
 const navHandler = (routeName: string) => {
     router.push({ path: routeName }).catch(err => {
-        console.error('Navigation failed:', err)
+        LogServices.error('Navigation failed:', err)
     })
 }
 
 
+// 提供一个函数用来事实判断是否有路由，参数为路由名称
+const hasRoute = (routeName: string) => {
+    return router.hasRoute(routeName)
+}
+
 </script>
 
 <style lang="scss" scoped>
+// app顶部的白色阴影，放在此处方便处理z-index
 .container-bg::before {
     content: '';
     background: $font-color;
@@ -107,7 +119,7 @@ const navHandler = (routeName: string) => {
                 padding: calc($globe-padding / 2) $globe-padding;
             }
 
-            .footer {
+            .nav-footer {
                 width: 100%;
                 padding: calc($globe-padding / 2) $globe-padding;
                 padding-bottom: $globe-margin;
@@ -145,7 +157,7 @@ const navHandler = (routeName: string) => {
             }
 
             .nav-active {
-                border-left: $mac-green solid 4px;
+                border-left: $primary-color solid 4px;
                 background: linear-gradient(to right,
                         rgba(250, 250, 250, 1),
                         rgba(250, 250, 250, 0.5));

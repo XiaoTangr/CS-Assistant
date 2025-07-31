@@ -1,6 +1,7 @@
 import Database from "@tauri-apps/plugin-sql";
 import { appDataDir, join } from '@tauri-apps/api/path';
 import { create, exists } from '@tauri-apps/plugin-fs';
+import { LogServices } from "../services";
 export class connecter {
     private static instance: connecter;
     private db: Database | null = null;
@@ -17,7 +18,7 @@ export class connecter {
     }
 
     private log(message: string) {
-        console.log(`[DB connecter] ${message}`);
+        LogServices.log(`[DB connecter] ${message}`);
     }
 
     public isDbConnected(): boolean {

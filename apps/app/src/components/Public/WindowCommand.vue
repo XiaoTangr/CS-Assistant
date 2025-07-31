@@ -27,8 +27,7 @@
             <el-image class="icon" :src="AppIcon" />
             <h2 class="text">CS Assistant</h2>
         </div>
-        <GlassDialog :close-on-click-modal="false" append-to="#app" width="400" v-model="centerDialogVisible"
-            align-center>
+        <GlassDialog :close-on-click-modal="false" v-model="centerDialogVisible" align-center>
             <template #header>
                 <span class="dg-title">
                     <el-icon class="dg-icon">

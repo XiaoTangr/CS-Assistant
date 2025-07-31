@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { useSettingsStore } from "./SettingsStore";
 import { Settings, BasicSteamLoginUser } from "@/core/models";
 import { getVdfObjectByFilePath } from "@/core/utils/VdfUtils";
-import LogUtil from "@/core/utils/LogUtil";
+import LogServices from "@/core/services/Log.services";
 import { isFileExists, readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";
 export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () => {
     const SettingsStore = useSettingsStore();
@@ -36,7 +36,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _getLocalVdfsPathArr = async (): Promise<Array<string> | null> => {
         const SEARCH_PATH = `${steamInstallPathStr.value}\\userdata`
         let res = await searchFilesByName(SEARCH_PATH, "localconfig.vdf")
-        LogUtil.debug(res)
+        LogServices.debug(res)
         return res;
     }
 
@@ -57,11 +57,11 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                     }
 
                     const userId = match[1];
-                    LogUtil.info(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
+                    LogServices.info(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
                     return userId;
                 }
             } catch (error) {
-                console.error(`Error processing file ${item}:`, error);
+                LogServices.error(`Error processing file ${item}:`, error);
             }
         }
 
@@ -73,7 +73,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _buildData = async () => {
         let vdfPath = `${steamInstallPathStr.value}\\${_loginedUsersVdfPath}`
         if (!await isFileExists(vdfPath)) {
-            LogUtil.debug(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
+            LogServices.debug(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
             return null;
         }
         let preData = (await getVdfObjectByFilePath(vdfPath)).users
@@ -89,7 +89,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         }))
 
 
-        LogUtil.debug(resultdata)
+        LogServices.debug(resultdata)
 
         return resultdata;
     }
@@ -108,8 +108,8 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         let steamInstallPathData = SettingsStore.getViewDataItemByKey("steamInstallPath");
         let cs2InstallPathData = SettingsStore.getViewDataItemByKey("cs2InstallPath");
 
-        LogUtil.debug("steamInstallPathData:", steamInstallPathData);
-        LogUtil.debug("cs2InstallPathData:", cs2InstallPathData);
+        LogServices.debug("steamInstallPathData:", steamInstallPathData);
+        LogServices.debug("cs2InstallPathData:", cs2InstallPathData);
 
         return { steamInstallPath: steamInstallPathData, cs2InstallPath: cs2InstallPathData };
     }

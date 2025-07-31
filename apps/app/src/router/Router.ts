@@ -1,7 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { RouterConfig } from './RoutesCfg'
+import { footerRouterConfig, mainRouterConfig } from './RoutesCfg'
+
+
 
 export const MainRouter = createRouter({
     history: createWebHistory(),
-    routes: RouterConfig
+    routes: [...mainRouterConfig, ...footerRouterConfig],
+    
 })

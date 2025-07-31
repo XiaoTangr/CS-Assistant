@@ -1,6 +1,6 @@
 <template>
     <div v-bind="$attrs">
-        <el-tooltip :content="props.url">
+        <el-tooltip placement="top" :content="props.url">
             <GlassButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
                 {{ props.title }}
             </GlassButton>
@@ -9,14 +9,13 @@
             </el-text>
         </el-tooltip>
 
-        <!-- ✅ 使用 v-model 正确绑定 dialogVisible -->
         <GlassDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
             <template #header>
                 <h4>即将前往:{{ props.title }}</h4>
             </template>
             <template #default>
-                <p>即将打开第三方链接{{ props.url }} </p>
-                <p> 请注意保护个人隐私! </p>
+                <p>即将打开第三方链接： {{ props.url }}</p>
+                <p> 请注意保护个人隐私及安全! </p>
 
             </template>
             <template #footer>

@@ -27,11 +27,11 @@ import ThirdLink from '@/components/Public/ThirdLink.vue';
 const linkData = {
     "中文": [
         {
-            title: 'NBCSGO',
-            url: 'https://www.nbcsgo.com/zx',
-        }, {
             title: 'CS-Going',
             url: 'https://cs-going.com/zh/',
+        }, {
+            title: 'NBCSGO',
+            url: 'https://www.nbcsgo.com/zx',
         }, {
             title: "CS2Util",
             url: "https://www.cs2util.com/zh/crosshairs"
@@ -75,6 +75,11 @@ const linkData = {
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
+
+
+                .item {
+                    margin: calc($globe-margin / 2);
+                }
             }
         }
     }

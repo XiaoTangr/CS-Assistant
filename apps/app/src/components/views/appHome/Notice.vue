@@ -11,31 +11,53 @@
                     placement="top">
                     <CommSpace :size="4">
                         <el-text v-html="activity.publishContent" truncated line-clamp="2" />
-                        <el-link type="primary">详情</el-link>
+                        <el-link type="primary" @click="setIndex(index)">详情</el-link>
                     </CommSpace>
                 </el-timeline-item>
             </el-timeline>
         </template>
-
     </GlassCard>
+    <GlassDialog  :draggable="true" width="400" align-center v-model="isShow" @closed="showDetail = -1">
+        <template #header>
+            <div class="Notice-dialog-header">
+                公告详情
+            </div>
+        </template>
+        <p v-html="NoticeDetail?.publishContent" />
+        <template #footer>
+            <el-text>
+                {{ NoticeDetail?.publishDate }}
+            </el-text>
+        </template>
+    </GlassDialog>
 </template>
 
 <script setup lang="ts">
 import { Bell } from '@element-plus/icons-vue';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
-import { ElNotification } from 'element-plus';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { Notice } from '@/core/models';
 import CommSpace from '@/components/Common/CommSpace.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
+import { LogServices } from '@/core/services';
+import GlassDialog from '@/components/Common/GlassDialog.vue';
 const SettingsStore = useSettingsStore();
-const data = ref<Array<Notice>>([
-    {
-        publishDate: '',
-        publishContent: ''
-    }
-])
+const data = ref<Array<Notice>>();
+
+
+const showDetail = ref(-1)
+
+const isShow = computed(() => showDetail.value >= 0)
+
+const NoticeDetail = computed(() => {
+    return data.value?.[showDetail.value]
+})
+
+const setIndex = (index: number) => {
+    LogServices.error('setIndex', index)
+    showDetail.value = index
+}
 
 onMounted(() => {
     const baseUrl = SettingsStore.getDbDataItemByKey('remoteUrlPrefix')?.selected;
@@ -44,7 +66,7 @@ onMounted(() => {
     ).then((res) => {
         data.value = res.data
     }).catch((e) => {
-        ElNotification.error(e.toString())
+        LogServices.error(e.toString())
     })
 })
 
@@ -80,6 +102,18 @@ onMounted(() => {
     :deep(.body) {
         padding: $globe-padding !important;
         overflow-y: auto;
+
+
     }
+
+
+}
+
+.Notice-dialog-header {
+    font-weight: bold;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 </style>

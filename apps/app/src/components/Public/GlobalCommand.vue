@@ -30,6 +30,7 @@ import { useRouter } from 'vue-router';
 import GlassButtonGroup from '../Common/GlassButtonGroup.vue';
 import GlassButton from '../Common/GlassButton.vue';
 import CommSpace from '../Common/CommSpace.vue';
+import { LogServices } from '@/core/services';
 
 const router = useRouter();
 const back = () => {
@@ -47,7 +48,7 @@ const backUp = () => {
             behavior: 'smooth'
         });
     } else {
-        console.error('Element with class .window-container not found');
+        LogServices.error('Element with class .window-container not found');
     }
 }
 </script>
