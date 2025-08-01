@@ -1,14 +1,19 @@
 <template>
     <div v-bind="$attrs">
         <el-tooltip placement="top" :content="props.url">
-            <GlassButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
-                {{ props.title }}
-            </GlassButton>
-            <el-text v-else class="underline" @click="showDialog" round type="primary">
-                {{ props.title }}
-            </el-text>
+            <div v-if="$slots.default" class="third-link-custom" @click="showDialog">
+                <slot name="default"></slot>
+            </div>
+            <template v-else>
+                <!-- 如果没有传入 slot 内容，则根据 type 属性决定显示按钮还是链接 -->
+                <GlassButton v-if="props.type === 'button'" @click="showDialog" round type="primary" plain>
+                    {{ props.title }}
+                </GlassButton>
+                <el-text v-else class="underline" @click="showDialog" round type="primary">
+                    {{ props.title }}
+                </el-text>
+            </template>
         </el-tooltip>
-
         <GlassDialog show-close align-center v-model="dialogVisible" append-to-body width="400">
             <template #header>
                 <h4>即将前往:{{ props.title }}</h4>
@@ -74,5 +79,16 @@ const handleCancel = () => {
 .underline:hover {
     transition: all cubic-bezier(0.075, 0.82, 0.165, 1);
     text-decoration: underline
+}
+
+.third-link-custom {
+    display: inline-block;
+    color: var(--el-color-primary);
+    cursor: pointer;
+    transition: all cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.third-link-custom:hover {
+    text-decoration: underline;
 }
 </style>
