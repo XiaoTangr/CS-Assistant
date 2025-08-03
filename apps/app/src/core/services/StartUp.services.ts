@@ -2,11 +2,12 @@ import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
 import { useMapStore } from "@/store/MapStore";
 import { useSettingsStore } from "@/store/SettingsStore";
 import { connecter } from "../database/connector";
-import { runMigrations } from "@/core/database";
+import { baseCRUD, runMigrations } from "@/core/database";
 import LogServices from "@/core/services/Log.services";
 import { MainRouter } from "@/router/Router";
 import { ref } from "vue";
-
+import { t_Settings } from "../database/models";
+import { fromDb } from "../utils";
 export default class StartUp {
 
     static async initDB(): Promise<boolean> {
@@ -15,6 +16,7 @@ export default class StartUp {
         }
         return true;
     }
+
 
     static async installDB(): Promise<boolean> {
         if (! await runMigrations()) {
@@ -33,8 +35,14 @@ export default class StartUp {
     // 根据配置初始化程序
     static async initConfig(): Promise<void> {
 
-        // 设置默认日志级别为warn
-        LogServices.setLogLevel(2);
+        let dblogLevel = (await baseCRUD.queryWhere<t_Settings>(
+            "t_settings",
+            { c_key: "defaultLogLevel" }
+        ));
+
+        let logLevel = fromDb(dblogLevel[0]).selected;
+
+        LogServices.setLogLevel(parseInt(logLevel as string));
     }
 
 
@@ -49,11 +57,11 @@ export default class StartUp {
     }
 
     static async startUp(): Promise<void> {
+        await this.initConfig();
         await this.initDB();
         await this.installDB();
         await this.initStores();
         await this.initRoutes();
-        await this.initConfig();
     }
 }
 

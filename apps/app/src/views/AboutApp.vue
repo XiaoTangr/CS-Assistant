@@ -34,13 +34,12 @@ import ThirdLink from '@/components/Public/ThirdLink.vue';
 import { ref } from 'vue';
 import appIcon from '@/assets/icons/app/app-icon.png';
 
-
 const openSourceData = ref([
     {
         "name": "Tauri",
         "version": "^2",
         "url": "https://github.com/tauri-apps/tauri",
-        "iconUrl": "https://github.com/tauri-apps.png",
+        "iconUrl": "https://github.com/Tauri",
         "license": "MIT OR Apache-2.0"
     }, {
         "name": "Vue",

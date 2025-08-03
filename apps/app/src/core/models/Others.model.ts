@@ -27,8 +27,9 @@ export interface BasicSteamLoginUser {
  * 公告信息结构
  */
 export interface Notice {
-    publishDate: string;
-    publishContent: string;
+    publishTitle: string | null,
+    publishDate: string | null;
+    publishContent: string | null;
 }
 
 /**
@@ -55,4 +56,22 @@ export interface FileOrDir {
     path: string;
     is_directory: boolean;
     children: FileOrDir[];
+}
+
+
+// 定义响应结构，使用严格的泛型
+export interface ApiResponse<T = Record<string, unknown>> {
+    data: T | null;  // 使用 null 而不是 undefined 表示无数据
+    code: number;
+    success: boolean;
+    headers: Record<string, string>;
+    message?: string;
+}
+
+// 定义请求配置，使用严格的类型
+export interface RequestConfig<B = Record<string, unknown>> {
+    method?: 'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH';
+    headers?: Record<string, string>;
+    body?: B;
+    timeout?: number;
 }

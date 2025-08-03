@@ -45,16 +45,19 @@
                     </el-form-item>
 
                     <div v-if="dbsettings.type === 'Select'">
-                        <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'option ' + i">
-                            <el-form-item label="text">
-                                <el-input v-model="e.text" />
-                            </el-form-item>
-                            <el-form-item label="value">
-                                <el-input v-model="e.value" />
-                            </el-form-item>
-                            <el-form-item>
-                                <el-button @click.prevent="delSettingsOption(e)" type="warning">删除选项</el-button>
-                            </el-form-item>
+                        <el-form-item v-for="(e, i) in dbsettings.options" :key="i" :label="'option_' + (i + 1)">
+                            <el-form style="width: 100%;">
+                                <el-form-item label="text:">
+                                    <el-input v-model="e.text" />
+                                </el-form-item>
+                                <el-form-item label="value:">
+                                    <el-input v-model="e.value" />
+                                </el-form-item>
+                                <el-form-item>
+                                    <el-button @click.prevent="delSettingsOption(e)" type="warning">删除选项</el-button>
+                                </el-form-item>
+                            </el-form>
+
                         </el-form-item>
                         <el-form-item>
                             <el-button @click="addSettingsOption" type="primary">添加选项</el-button>
@@ -69,7 +72,8 @@
                     </el-form-item>
                     <el-form-item label="操作">
                         <el-button type="info" @click="generateSettingsdbSQL">生成 SQL</el-button>
-                        <el-button type="success" @click="querySettingsRow">查询</el-button>
+                        <el-button type="success" @click="querySettingsRowByKey">查询 by key</el-button>
+                        <el-button type="success" @click="querySettingsRowByText">查询 by text</el-button>
                         <el-button type="primary" @click="insertSettingsRowtodb">插入</el-button>
                         <el-button type="warning" @click="updateSettingsRow">更新</el-button>
                         <el-button type="danger" @click="deleteSettingsRow">删除</el-button>
@@ -96,6 +100,7 @@ import { baseCRUD } from "@/core/database";
 import LogServices from "@/core/services/Log.services";
 import GlassCard from '@/components/Common/GlassCard.vue';
 import ComponentTest from '@/components/views/DevTools/ComponentTest.vue';
+import { desVal } from '@/core/utils';
 
 const dbformRef = ref<FormInstance>();
 
@@ -244,15 +249,17 @@ const updateSettingsRow = async () => {
 };
 
 // 查询配置项
-const querySettingsRow = async () => {
+const querySettingsRowByKey = async () => {
     if (!dbsettings.key?.trim()) {
         ElNotification.error('key 不能为空');
         return;
     }
 
     try {
-        const res = await SettingsRepository.queryOneByKey(dbsettings.key);
+        let res = (await SettingsRepository.queryWhere({ c_key: dbsettings.key }))[0];
+
         if (res) {
+            res = desVal(res);
             Object.assign(dbsettings, res);
             ElNotification.success(`查询成功`);
         } else {
@@ -262,6 +269,29 @@ const querySettingsRow = async () => {
         handleDBError(e, '查询配置');
     }
 };
+
+const querySettingsRowByText = async () => {
+
+    if (!dbsettings.text?.trim()) {
+        ElNotification.error('text 不能为空');
+        return;
+    }
+
+    try {
+        let res = (await SettingsRepository.queryWhere({ c_text: dbsettings.text }))[0];
+
+        if (res) {
+            res = desVal(res);
+            Object.assign(dbsettings, res);
+            ElNotification.success(`查询成功`);
+        } else {
+            ElNotification.warning('未找到记录');
+        }
+    } catch (e) {
+        handleDBError(e, '查询配置');
+    }
+};
+
 
 // 删除配置项
 const deleteSettingsRow = async () => {

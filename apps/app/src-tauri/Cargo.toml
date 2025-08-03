@@ -29,3 +29,4 @@ tauri-plugin-fs = "2.0.0"
 tauri-plugin-sql = { version = "2.0.0", features = ["sqlite"] }
 tauri-plugin-dialog = "2"
 base64 = "0.22"  # 使用最新稳定版
+tauri-plugin-http = "2.5.1"

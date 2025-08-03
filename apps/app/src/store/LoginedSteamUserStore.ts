@@ -36,7 +36,6 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _getLocalVdfsPathArr = async (): Promise<Array<string> | null> => {
         const SEARCH_PATH = `${steamInstallPathStr.value}\\userdata`
         let res = await searchFilesByName(SEARCH_PATH, "localconfig.vdf")
-        LogServices.debug(res)
         return res;
     }
 
@@ -57,7 +56,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                     }
 
                     const userId = match[1];
-                    LogServices.info(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
+                    LogServices.log(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
                     return userId;
                 }
             } catch (error) {
@@ -73,7 +72,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _buildData = async () => {
         let vdfPath = `${steamInstallPathStr.value}\\${_loginedUsersVdfPath}`
         if (!await isFileExists(vdfPath)) {
-            LogServices.debug(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
+            LogServices.warn(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
             return null;
         }
         let preData = (await getVdfObjectByFilePath(vdfPath)).users
@@ -87,10 +86,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                 avatarBase64: (await _getAvatarDataUrl(accountID)),
             }
         }))
-
-
-        LogServices.debug(resultdata)
-
+        LogServices.log('[LoginedSteamUserStore._buildData]',resultdata)
         return resultdata;
     }
 
@@ -108,8 +104,8 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         let steamInstallPathData = SettingsStore.getViewDataItemByKey("steamInstallPath");
         let cs2InstallPathData = SettingsStore.getViewDataItemByKey("cs2InstallPath");
 
-        LogServices.debug("steamInstallPathData:", steamInstallPathData);
-        LogServices.debug("cs2InstallPathData:", cs2InstallPathData);
+        LogServices.log("[LoginedSteamUserStore._getViewData] steamInstallPathData:", steamInstallPathData);
+        LogServices.log("[LoginedSteamUserStore._getViewData] cs2InstallPathData:", cs2InstallPathData);
 
         return { steamInstallPath: steamInstallPathData, cs2InstallPath: cs2InstallPathData };
     }

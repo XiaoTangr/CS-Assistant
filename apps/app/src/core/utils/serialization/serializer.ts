@@ -1,37 +1,42 @@
 /**
  * 将整个对象或数组序列化为 JSON 字符串
  * 支持对象和数组类型，提供错误处理机制
- * 
+ *
  * @param input - 要序列化的对象或数组
  * @param fallback - 序列化失败时的回退值，默认为 '{}'
  * @returns JSON 字符串或回退值
- * 
+ *
  * @example
  * const obj = { name: 'John', age: 30 };
  * const serialized = serializeObject(obj);
  * // 结果: '{"name":"John","age":30}'
  */
-export function serializeObject<T extends Record<string, any> | any[]>(input: T, fallback: string = '{}'): string {
+export const serializeObject = <T extends Record<string, any> | any[]>(
+    input: T,
+    fallback: string = '{}'
+): string => {
     try {
         return JSON.stringify(input);
     } catch {
         return fallback;
     }
-}
+};
 
 /**
  * 深度序列化对象或数组中的所有值，仅将值转换为 JSON 字符串
  * 保持对象/数组结构不变，只序列化其中的值
- * 
+ *
  * @param input - 要序列化的对象或数组
  * @returns 序列化后的对象或数组，其中所有值都被转为 JSON 字符串
- * 
+ *
  * @example
  * const obj = { user: { name: 'John' }, active: true };
  * const serialized = serializeValues(obj);
  * // 结果: { user: '{"name":"John"}', active: "true" }
  */
-export function serializeValues<T extends Record<string, any> | any[]>(input: T): T {
+export const serializeValues = <T extends Record<string, any> | any[]>(
+    input: T
+): T => {
     // 处理 null 或 undefined
     if (input === null || input === undefined) {
         return input;
@@ -67,42 +72,48 @@ export function serializeValues<T extends Record<string, any> | any[]>(input: T)
 
     // 基本类型直接返回
     return input;
-}
-
+};
 
 /**
  * 解析整个 JSON 字符串为对象或数组
- * 
+ *
  * @param input - 要解析的 JSON 字符串
  * @param fallback - 解析失败时的回退值
  * @returns 解析后的对象或数组，或回退值
- * 
+ *
  * @example
  * const str = '{"name": "John", "age": 30}';
  * const parsed = deserializeObject(str);
  * // 结果: {name: "John", age: 30}
  */
-export function deserializeObject<T extends Record<string, any> | any[]>(input: string, fallback?: T): T | undefined {
+export const deserializeObject = <T extends Record<string, any> | any[]>(
+    input: string,
+    fallback?: T,
+    options: { trim?: boolean } = { trim: true }
+): T | undefined => {
     try {
-        return JSON.parse(input);
+        const text = options.trim ? input.trim() : input;
+        return JSON.parse(text);
     } catch {
         return fallback;
     }
-}
+};
 
 /**
  * 深度解析对象或数组中的字符串值，将字符串形式的 JSON 转换为对象
  * 保持对象/数组结构不变，只解析其中的字符串值
- * 
+ *
  * @param input - 要解析的对象或数组
  * @returns 解析后的对象或数组，其中字符串形式的 JSON 都被转换为对象
- * 
+ *
  * @example
  * const obj = {user: '{"name": "John"}', active: "true"};
  * const parsed = deserializeValues(obj);
  * // 结果: {user: {name: "John"}, active: true}
  */
-export function deserializeValues<T extends Record<string, any> | any[]>(input: T): T {
+export const deserializeValues = <T extends Record<string, any> | any[]>(
+    input: T
+): T => {
     // 处理 null 或 undefined
     if (input === null || input === undefined) {
         return input;
@@ -142,4 +153,32 @@ export function deserializeValues<T extends Record<string, any> | any[]>(input: 
 
     // 基本类型直接返回
     return input;
-}
+};
+
+/**
+ * 深度解析字符串为对象，自动处理所有嵌套的JSON字符串
+ * 1. 先解析最外层JSON字符串
+ * 2. 然后递归解析所有属性中的JSON字符串
+ *
+ * @param input - 要解析的JSON字符串
+ * @param fallback - 解析失败时的回退值（可选）
+ * @returns 完全解析后的对象，或回退值（如果提供）
+ *
+ * @example
+ * const str = '{"user": "{\\"name\\":\\"John\\"}", "settings": "{\\"darkMode\\":\\"true\\"}"}';
+ * const parsed = deepParseString(str);
+ * // 结果: { user: { name: "John" }, settings: { darkMode: "true" } }
+ */
+export const deepParseString = <T extends Record<string, any> | any[]>(
+    input: string,
+    fallback?: T,
+    options: { trim?: boolean } = { trim: true }
+): T | undefined => {
+    try {
+        const text = options.trim ? input.trim() : input;
+        const parsed = deserializeObject<T>(text, undefined, { trim: false });
+        return parsed !== undefined ? deserializeValues(parsed) : fallback;
+    } catch {
+        return fallback;
+    }
+};

@@ -9,7 +9,7 @@
             <el-timeline>
                 <el-timeline-item v-for="(activity, index) in data" :key="index" :timestamp="activity.publishDate"
                     placement="top">
-                    <CommSpace :size="4">
+                    <CommSpace direction="vertical" :size="4">
                         <el-text v-html="activity.publishContent" truncated line-clamp="2" />
                         <el-link type="primary" @click="setIndex(index)">详情</el-link>
                     </CommSpace>
@@ -17,10 +17,10 @@
             </el-timeline>
         </template>
     </GlassCard>
-    <GlassDialog  :draggable="true" width="400" align-center v-model="isShow" @closed="showDetail = -1">
+    <GlassDialog :draggable="true" width="400" align-center v-model="isShow" @closed="showDetail = -1">
         <template #header>
             <div class="Notice-dialog-header">
-                公告详情
+                {{ NoticeDetail?.publishTitle }}
             </div>
         </template>
         <p v-html="NoticeDetail?.publishContent" />
@@ -35,15 +35,13 @@
 <script setup lang="ts">
 import { Bell } from '@element-plus/icons-vue';
 import { computed, onMounted, ref } from 'vue';
-import axios from 'axios';
-import { useSettingsStore } from '@/store/SettingsStore';
 import { Notice } from '@/core/models';
 import CommSpace from '@/components/Common/CommSpace.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
 import { LogServices } from '@/core/services';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
-const SettingsStore = useSettingsStore();
-const data = ref<Array<Notice>>();
+import { ApiService } from '@/core/api';
+const data = ref<Array<Notice> | null>();
 
 
 const showDetail = ref(-1)
@@ -59,15 +57,8 @@ const setIndex = (index: number) => {
     showDetail.value = index
 }
 
-onMounted(() => {
-    const baseUrl = SettingsStore.getDbDataItemByKey('remoteUrlPrefix')?.selected;
-    axios.get(
-        `${baseUrl}/Notice.json`
-    ).then((res) => {
-        data.value = res.data
-    }).catch((e) => {
-        LogServices.error(e.toString())
-    })
+onMounted(async () => {
+    data.value = (await ApiService.getNotice()).data;
 })
 
 

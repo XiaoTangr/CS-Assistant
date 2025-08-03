@@ -1,5 +1,4 @@
 
-
 class LogServices {
     private static instance: LogServices;
 
@@ -10,11 +9,10 @@ class LogServices {
      * 2: WARN（记录警告和错误）
      * 3: ERROR（只记录错误）
      */
-    private logLevel: number = 2;
+    private logLevel: number = 0;
 
 
-    private constructor() {
-    }
+    private constructor() { }
 
     public static getInstance(): LogServices {
         if (!LogServices.instance) {
@@ -30,6 +28,7 @@ class LogServices {
     public setLogLevel(level: number): void {
         if (level >= 0 && level <= 3) {
             this.logLevel = level;
+            console.warn('[LogServices] Set Log Level to :', this.logLevel);
         } else {
             LogServices.getInstance().error("Invalid log level: " + level);
         }
@@ -106,9 +105,10 @@ class LogServices {
      * @param args 可选参数
      */
     debug = (msg: any, ...args: any[]) => {
-        if (this.shouldLog(0)) {
-            console.debug('[Debug]', msg, ...args);
-        }
+        // if (this.shouldLog(0)) {
+        //     console.debug('[Debug]', msg, ...args);
+        // }
+        console.trace('[Debug]', msg, ...args)
     }
 }
 

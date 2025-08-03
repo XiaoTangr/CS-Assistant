@@ -31,6 +31,19 @@ export default class SettingsRepository {
     }
 
     /**
+     * where查询
+     * @param where 查询条件
+     * @returns
+     */
+    static async queryWhere(where: Record<string, any>): Promise<Settings[]> {
+        const result = await baseCRUD.queryWhere<Settings>(this.TABLE_NAME, where);
+        // 使用转换器将数据库结构转换为应用结构
+        return result ? result.map((item) => fromDb(item)) : [];
+    }
+
+
+
+    /**
      * 更新一条记录
      * @param row - 要更新的 Settings 对象
      * @returns 受影响行数
