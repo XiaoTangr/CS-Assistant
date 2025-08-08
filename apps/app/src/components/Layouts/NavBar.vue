@@ -17,7 +17,7 @@
             </el-space>
             <el-space :size="4" class="nav-footer" direction="vertical" alignment="stretch">
                 <div v-for="(item) in footerRouterConfig">
-                    <div v-if="hasRoute(item.name)" @click="navHandler(item.path)"
+                    <div bodyClass="nav-item-body" v-if="hasRoute(item.name)" @click="navHandler(item.path)"
                         :class="['nav-item-container', { 'nav-active': route.fullPath === item.path }]">
                         <div class="icon">
                             <DynamicIcon :icon="item.meta?.icon" />
@@ -61,6 +61,11 @@ const hasRoute = (routeName: string) => {
 </script>
 
 <style lang="scss" scoped>
+:deep(.nav-item-body) {
+    display: flex;
+}
+
+
 // app顶部的白色阴影，放在此处方便处理z-index
 .container-bg::before {
     content: '';
@@ -88,9 +93,6 @@ const hasRoute = (routeName: string) => {
             rgba(250, 250, 250, 0.8),
             rgba(250, 250, 250, 0.95));
 
-
-
-
     .container {
         // opacity: 0;
         height: 100%;
@@ -117,6 +119,7 @@ const hasRoute = (routeName: string) => {
                 flex: 1;
                 overflow-y: auto;
                 padding: calc($globe-padding / 2) $globe-padding;
+                padding-top: 1.5em;
             }
 
             .nav-footer {
@@ -125,18 +128,24 @@ const hasRoute = (routeName: string) => {
                 padding-bottom: $globe-margin;
             }
 
+            .nav-active {
+                background: linear-gradient(to right,
+                        rgba(250, 250, 250, 0.7),
+                        rgba(250, 250, 250, 0.2));
+                color: $primary-color !important;
+                box-shadow: 0px 0px 32px rgba(31, 38, 135, 0.12);
+            }
+
             .nav-item-container {
-                background: rgba(250, 250, 250, 0.4);
                 width: 100%;
                 height: calc(2 * $font-size);
                 display: flex;
                 flex-direction: row;
                 align-items: center;
                 justify-content: flex-start;
-                border-radius: 4px;
-                padding-left: 4px;
-                border-left: rgba(250, 250, 250, 0) solid 4px;
-                transition: all 0.2s ease-in-out;
+                overflow: hidden;
+                border-radius: $globe-border-radius;
+
 
                 .text {
                     flex: 1;
@@ -148,25 +157,39 @@ const hasRoute = (routeName: string) => {
 
                 .icon {
                     display: flex;
-                    flex-direction: column;
+                    flex-direction: row;
                     align-items: center;
                     justify-content: center;
                     font-size: calc(1 * $font-size);
-                    margin: calc(0.25 * $font-size);
+                    margin-right: calc(0.5 * $font-size);
                 }
             }
 
-            .nav-active {
-                border-left: $primary-color solid 4px;
+            .nav-item-container:hover {
                 background: linear-gradient(to right,
-                        rgba(250, 250, 250, 1),
-                        rgba(250, 250, 250, 0.5));
+                        rgba(250, 250, 250, 0.8),
+                        rgba(250, 250, 250, 0.2));
+                // border-left: rgba(250, 250, 250, ) solid 4px;
+                color: $primary-color !important;
+                transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
             }
 
-            .nav-item-container:hover {
-                background: rgba(250, 250, 250, 0.8);
-                color: rgba(64, 160, 255, 1) !important;
+            .nav-active::before,
+            .nav-item-container::before {
+                content: '';
+                width: .5em;
+                height: 0em;
+                border-radius: 100vw;
+                margin: calc(0.5 * $font-size);
+                transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);
             }
+
+            .nav-active::before {
+                background-color: $primary-color ;
+                height: $font-size;
+            }
+
+
         }
     }
 }

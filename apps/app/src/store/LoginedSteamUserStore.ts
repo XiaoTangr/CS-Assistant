@@ -56,7 +56,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                     }
 
                     const userId = match[1];
-                    LogServices.log(`[LoginedSteamUserStore] matchAccountIdAndFriendId: ${targetPersonaName} -> ${userId}`)
+                    LogServices.info(`[LoginedSteamUserStore._matchAccountIdAndFriendId] `, `match result: ${targetPersonaName} -> ${userId}`)
                     return userId;
                 }
             } catch (error) {
@@ -86,7 +86,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                 avatarBase64: (await _getAvatarDataUrl(accountID)),
             }
         }))
-        LogServices.log('[LoginedSteamUserStore._buildData]',resultdata)
+        LogServices.info('[LoginedSteamUserStore._buildData]', resultdata)
         return resultdata;
     }
 
@@ -103,10 +103,6 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _getViewData = async () => {
         let steamInstallPathData = SettingsStore.getViewDataItemByKey("steamInstallPath");
         let cs2InstallPathData = SettingsStore.getViewDataItemByKey("cs2InstallPath");
-
-        LogServices.log("[LoginedSteamUserStore._getViewData] steamInstallPathData:", steamInstallPathData);
-        LogServices.log("[LoginedSteamUserStore._getViewData] cs2InstallPathData:", cs2InstallPathData);
-
         return { steamInstallPath: steamInstallPathData, cs2InstallPath: cs2InstallPathData };
     }
 

@@ -1,6 +1,6 @@
 <template>
     <div v-if="isMaskNeedShow" class="Meida-masker">
-        <CommSpace>
+        <CommSpace class="container" :fill-ratio="100" fill direction="vertical">
             <div class="msg">
                 <el-icon>
                     <WarningFilled />
@@ -8,7 +8,7 @@
                 <span>较小窗口可能出现显示异常!</span>
             </div>
             <div class="operate">
-                <CommSpace alignment="center" :fill="false" direction="horizontal">
+                <CommSpace direction="horizontal">
                     <el-checkbox v-model="isChecked" size="small">不再提示</el-checkbox>
                     <GlassButton round type="warning" size="small" @click="closeMask">
                         {{ isChecked ? "确认关闭" : "忽略本次" }}
@@ -78,19 +78,26 @@ onBeforeUnmount(() => {
     justify-content: center;
     align-items: center;
 
-    .msg {
-        width: 100vw;
+    .container {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
+
+
+        .msg {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .operate {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
     }
 
-    .operate {
-        width: 100vw;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
 }
 
 

@@ -15,7 +15,8 @@
                     <div class="r">
                         <p>目标(可多选)</p>
 
-                        <el-select clearable v-model="CopyTargetSelected" multiple placeholder="选择复制目标" style="flex: 1;">
+                        <el-select clearable v-model="CopyTargetSelected" multiple placeholder="选择复制目标"
+                            style="flex: 1;">
                             <el-option v-for="item in userSettingsArr" :disabled="!item.asTarget" :key="item.folderName"
                                 :label="item.userName" :value="item.folderName" />
                         </el-select>
@@ -24,7 +25,7 @@
 
                 <el-space class="operaters">
                     <el-checkbox v-model="backupUserSettings" label="备份目标的配置文件" />
-                    <el-button type="primary" @click="copyHandler">确定</el-button>
+                    <GlassButton round type="primary" @click="copyHandler">确定</GlassButton>
                 </el-space>
             </div>
         </template>
@@ -33,6 +34,7 @@
 
 <script setup lang="ts">
 
+import GlassButton from '@/components/Common/GlassButton.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
 import { Settings } from '@/core/models';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';

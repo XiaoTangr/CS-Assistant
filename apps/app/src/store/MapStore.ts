@@ -2,15 +2,12 @@ import MapRepository from "@/core/repositories/Map.Repository";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { Map } from "@/core/models";
-import { LogServices } from "@/core/services";
-
 
 export const useMapStore = defineStore("MapStore", () => {
     const dbData = ref<Map[]>([]);
     const viewData = ref<Map[]>([]);
 
     const fetchData = async () => {
-        LogServices.log(`[MapStore] fetchData`)
         const res = await MapRepository.queryAll(); // Map[] | null
         // 过滤 null 值并保持类型正确
         dbData.value = res.filter((item): item is Map => item !== null);

@@ -8,7 +8,7 @@ export interface BackupAndRecovery {
     // 描述
     description?: string;
     // 创建日期
-    createdAt: string;
+    createdAt: number;
     // 文件夹路径
     folderPath: string;
 }

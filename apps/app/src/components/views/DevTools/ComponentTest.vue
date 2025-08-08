@@ -3,7 +3,20 @@
         <div>
             <div>
                 <div class="mb-4">
-                    <GlassButton text>中文</GlassButton>
+                    <GlassButton shadow="always" type="primary">always</GlassButton>
+                    <GlassButton shadow="hover" type="primary">hover</GlassButton>
+                    <GlassButton shadow="never" type="primary">never</GlassButton>
+                </div>
+                <div class="mb-4">
+                    <GlassButton link>link</GlassButton>
+                    <GlassButton link type="primary">中文</GlassButton>
+                    <GlassButton link type="success">中文</GlassButton>
+                    <GlassButton link type="info">中文</GlassButton>
+                    <GlassButton link type="warning">中文</GlassButton>
+                    <GlassButton link type="danger">中文</GlassButton>
+                </div>
+                <div class="mb-4">
+                    <GlassButton text>text</GlassButton>
                     <GlassButton text type="primary">中文</GlassButton>
                     <GlassButton text type="success">中文</GlassButton>
                     <GlassButton text type="info">中文</GlassButton>
@@ -20,7 +33,7 @@
                 </div>
 
                 <div class="mb-4">
-                    <GlassButton plain>Plain</GlassButton>
+                    <GlassButton plain>plain</GlassButton>
                     <GlassButton type="primary" plain>Primary</GlassButton>
                     <GlassButton type="success" plain>Success</GlassButton>
                     <GlassButton type="info" plain>Info</GlassButton>
@@ -48,12 +61,12 @@
             </div>
             <div>
                 <div class="mb-4">
-                    <el-button text>Default text</el-button>
-                    <el-button text type="primary">Primary</el-button>
-                    <el-button text type="success">Success</el-button>
-                    <el-button text type="info">Info</el-button>
-                    <el-button text type="warning">Warning</el-button>
-                    <el-button text type="danger">Danger</el-button>
+                    <el-buttontext>Default text</el-buttontext>
+                    <el-button type="primary">Primary</el-button>
+                    <el-button type="success">Success</el-button>
+                    <el-button type="info">Info</el-button>
+                    <el-button type="warning">Warning</el-button>
+                    <el-button type="danger">Danger</el-button>
                 </div>
                 <div class="mb-4">
                     <el-button>Default</el-button>

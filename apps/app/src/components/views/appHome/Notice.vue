@@ -1,7 +1,6 @@
 <template>
-    <GlassCard shadow="never" class="container" headerClass="header" bodyClass="body">
+    <GlassCard shadow="never" class="container" headerClass="notice-header" bodyClass="notice-body">
         <template #header>
-
             <Bell class="icon" />
             <div class="text">公告</div>
         </template>
@@ -15,21 +14,22 @@
                     </CommSpace>
                 </el-timeline-item>
             </el-timeline>
+            <GlassDialog :draggable="true" width="400" align-center v-model="isShow" @closed="showDetail = -1">
+                <template #header>
+                    <div class="Notice-dialog-header">
+                        {{ NoticeDetail?.publishTitle }}
+                    </div>
+                </template>
+                <p v-html="NoticeDetail?.publishContent" />
+                <template #footer>
+                    <el-text>
+                        {{ NoticeDetail?.publishDate }}
+                    </el-text>
+                </template>
+            </GlassDialog>
         </template>
     </GlassCard>
-    <GlassDialog :draggable="true" width="400" align-center v-model="isShow" @closed="showDetail = -1">
-        <template #header>
-            <div class="Notice-dialog-header">
-                {{ NoticeDetail?.publishTitle }}
-            </div>
-        </template>
-        <p v-html="NoticeDetail?.publishContent" />
-        <template #footer>
-            <el-text>
-                {{ NoticeDetail?.publishDate }}
-            </el-text>
-        </template>
-    </GlassDialog>
+
 </template>
 
 <script setup lang="ts">
@@ -53,7 +53,7 @@ const NoticeDetail = computed(() => {
 })
 
 const setIndex = (index: number) => {
-    LogServices.error('setIndex', index)
+    LogServices.debug('setIndex', index)
     showDetail.value = index
 }
 
@@ -66,14 +66,12 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 .container {
-    display: flex;
 
-    flex-direction: column;
     width: 100%;
     height: 100%;
     padding: 0;
 
-    :deep(.header) {
+    :deep(.notice-header) {
         padding: $globe-padding;
 
         z-index: 1;
@@ -90,7 +88,7 @@ onMounted(async () => {
         }
     }
 
-    :deep(.body) {
+    :deep(.notice-body) {
         padding: $globe-padding !important;
         overflow-y: auto;
 

@@ -56,7 +56,7 @@
                 </div>
                 <div class="item-options">
                     <el-input class="path-item" v-model="props.item.selected" placeholder="选择路径" />
-                    <el-button class="path-item" @click="openPathChoose" type="primary" :icon="FolderOpened" circle
+                    <GlassButton class="path-item" @click="openPathChoose" type="primary" :icon="FolderOpened" circle
                         plain />
                 </div>
             </div>
@@ -71,6 +71,7 @@ import { Settings } from '@/core/models';
 import { computed, PropType } from 'vue';
 import { useSettingsStore } from '@/store/SettingsStore';
 import { LogServices } from '@/core/services';
+import GlassButton from '../Common/GlassButton.vue';
 const props = defineProps({
     item: {
         type: Object as PropType<Settings>,

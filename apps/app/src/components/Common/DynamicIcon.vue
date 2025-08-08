@@ -1,5 +1,5 @@
 <template>
-    <el-icon class="icon" v-if="iconComponent">
+    <el-icon v-if="iconComponent">
         <component :is="iconComponent" />
     </el-icon>
 </template>
@@ -20,9 +20,4 @@ const iconComponent = computed(() => {
 });
 </script>
 
-<style lang="scss" scoped>
-.icon {
-    width: 1em;
-    height: 1em;
-}
-</style>
+<style lang="scss" scoped></style>

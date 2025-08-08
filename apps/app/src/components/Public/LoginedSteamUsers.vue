@@ -6,7 +6,8 @@
         </template>
         <template #default>
             <el-space wrap alignment="stretch" :fill-ratio="0" class="users-container">
-                <GlassCard shadow="hover" class="user-container" v-for="(v) in data as any">
+                <GlassCard body-class="user-container-body" shadow="hover" class="user-container"
+                    v-for="(v) in data as any">
                     <div class="user-container-inner">
                         <div class="l">
                             <el-avatar class="avatar" shape="square" :src="v.avatarBase64" />
@@ -32,7 +33,7 @@
                     </div>
                 </GlassCard>
                 <el-empty :description="description" v-if="data === undefined">
-                    <el-button type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
+                    <GlassButton type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
                 </el-empty>
             </el-space>
         </template>
@@ -46,6 +47,7 @@ import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { storeToRefs } from 'pinia';
 import { computed } from 'vue';
 import GlassCard from '../Common/GlassCard.vue';
+import GlassButton from '../Common/GlassButton.vue';
 const LoginedSteamUserStore = useLoginedSteamUserStore();
 
 const { data } = storeToRefs(LoginedSteamUserStore);
@@ -72,17 +74,24 @@ const getSteamLoginUsers = async () => {
 
         .user-container {
 
+            :deep(.user-container-body) {
+                padding: calc($font-size * .5);
+            }
+
             .user-container-inner {
                 display: flex;
+                height: calc($font-size * 4.4);
 
                 .l {
                     display: flex;
                     justify-content: center;
                     align-items: center;
+                    margin-right: calc($globe-margin / 2);
+
 
                     .avatar {
-                        width: calc($font-size * 4);
-                        height: calc($font-size * 4);
+                        width: 100%;
+                        height: 100%;
                     }
                 }
 
@@ -95,7 +104,8 @@ const getSteamLoginUsers = async () => {
                     padding-left: calc($globe-padding /4);
 
                     .text {
-                        line-height: $font-size ;
+                        line-height: calc($font-size * 1.1);
+                        font-size: calc($font-size * 0.9);
                         width: 100%;
                     }
                 }

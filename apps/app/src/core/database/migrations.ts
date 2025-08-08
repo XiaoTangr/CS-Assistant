@@ -9,7 +9,7 @@ import { LogServices } from '../services';
  * 初始化数据库表结构和默认数据
  * @returns 返回迁移结果对象
  */
-export async function runMigrations(): Promise<MigrationResult> {
+export const runMigrations = async (): Promise<MigrationResult> => {
     const result: MigrationResult = {
         success: true,
         createdTables: [],
@@ -20,6 +20,7 @@ export async function runMigrations(): Promise<MigrationResult> {
         for (const table of defaultDatabaseData) {
             const tableName = table.tableName;
             const columns = table.Structure;
+
 
             // 构建 CREATE TABLE SQL
             const columnDefs = columns.map((col, index) => {
@@ -35,8 +36,8 @@ export async function runMigrations(): Promise<MigrationResult> {
 
             const createTableSql = `CREATE TABLE IF NOT EXISTS "${tableName}" (${columnDefs.join(', ')});`;
 
-            LogServices.log(`[DB] Creating table: ${tableName}`);
             await baseCRUD.executeRaw(createTableSql);
+
             result.createdTables.push(tableName);
 
             // 插入默认数据（如果存在）
@@ -49,10 +50,10 @@ export async function runMigrations(): Promise<MigrationResult> {
             }
         }
 
-        LogServices.log('[DB] Database initialized successfully.');
+        LogServices.log('[DB runMigrations] Database initialized successfully.');
         return result;
     } catch (error) {
-        LogServices.error('[DB] Failed to initialize database:', error);
+        LogServices.error('[DB runMigrations] Failed to initialize database:', error);
         result.success = false;
         result.error = error as Error;
         return result;
@@ -62,7 +63,7 @@ export async function runMigrations(): Promise<MigrationResult> {
 /**
  * 将 JS 类型映射为 SQLite 类型
  */
-function mapType(jsType: string): string {
+const mapType = (jsType: string): string => {
     switch (jsType) {
         case 'string':
         case 'text':
@@ -85,30 +86,30 @@ function mapType(jsType: string): string {
  * @param defaultData 默认数据数组
  * @returns 成功返回 true，失败返回 false
  */
-async function insertDefaultData(tableName: string, defaultData: any[]): Promise<boolean> {
+const insertDefaultData = async (tableName: string, defaultData: any[]): Promise<boolean> => {
     try {
         const count = await baseCRUD.count(tableName);
 
         if (count === 0) {
-            LogServices.log(`[DB] Inserting default data into ${tableName}`);
+            LogServices.log(`[DB insertDefaultData] Inserting default data into ${tableName}`);
 
             // 确保传入的是真实的数据数组
             const dataToInsert = defaultData;
 
             // 增加校验：确保数组非空且第一个元素是对象
             if (!Array.isArray(dataToInsert) || dataToInsert.length === 0 || typeof dataToInsert[0] !== 'object') {
-                LogServices.error(`[DB] Invalid default data for table ${tableName}:`, dataToInsert);
+                LogServices.error(`[DB insertDefaultData] Invalid default data for table ${tableName}:`, dataToInsert);
                 return false;
             }
 
-            const rowsAffected = await baseCRUD.insertRows(tableName, dataToInsert);
-            LogServices.log(`[DB] Inserted ${rowsAffected} rows into ${tableName}`);
+            const rowsAffected = (await baseCRUD.insertRows(tableName, dataToInsert)).rowsAffected;
+            LogServices.log(`[DB insertDefaultData] Inserted ${rowsAffected} rows into ${tableName}`);
             return rowsAffected > 0;
         }
 
         return true; // 表中已有数据，无需插入
     } catch (error) {
-        LogServices.error(`[DB] Failed to insert default data into ${tableName}:`, error);
+        LogServices.error(`[DB insertDefaultData] Failed to insert default data into ${tableName}:`, error);
         return false;
     }
 }

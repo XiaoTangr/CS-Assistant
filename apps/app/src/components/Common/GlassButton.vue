@@ -1,32 +1,61 @@
 <template>
-    <el-button class="GlassButton" :text="text" :type="type" :size="size" :disabled="disabled" :loading="loading"
-        :native-type="nativeType" :autofocus="autofocus" :round="round" :plain="plain" :circle="circle"
-        :style="customStyle" @click="$emit('click')">
+    <el-button class="GlassButton"
+        :class="{ 'is-shadow-hover': shadow == 'hover', 'is-shadow-never': shadow == 'never' }" :text="text"
+        :type="type" :size="size" :disabled="disabled" :loading="loading" :native-type="nativeType"
+        :autofocus="autofocus" :round="round" :plain="plain" :circle="circle" :style="customStyle" :bg="bg" :link="link"
+        @click="$emit('click')">
         <!-- 显式渲染图标 -->
         <el-icon v-if="icon">
             <component :is="icon" />
         </el-icon>
 
         <!-- 插槽内容 -->
-        <slot v-if="$slots.default"></slot>
+        <div class="btn-def">
+            <slot v-if="$slots.default"></slot>
+        </div>
+
     </el-button>
 </template>
 
 <script setup lang="ts">
-defineProps<{
-    type?: string;
-    size?: string;
-    disabled?: boolean;
-    loading?: boolean;
-    icon?: any; // 接收图标的组件或名称
-    nativeType?: string;
-    autofocus?: boolean;
-    round?: boolean;
-    plain?: boolean;
-    circle?: boolean;
-    customStyle?: Record<string, string>;
-    text?: boolean;
-}>();
+
+withDefaults(
+    defineProps<{
+        type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | '';
+        size?: 'large' | 'default' | 'small';
+        disabled?: boolean;
+        loading?: boolean;
+        icon?: any; // 接收图标的组件或名称
+        nativeType?: 'button' | 'submit' | 'reset';
+        autofocus?: boolean;
+        round?: boolean;
+        plain?: boolean;
+        circle?: boolean;
+        customStyle?: Record<string, string>;
+        text?: boolean;
+        bg?: boolean;
+        link?: boolean;
+        shadow?: 'always' | 'never' | 'hover';
+    }>(), {
+    type: 'default',
+    size: undefined,
+    disabled: undefined,
+    loading: undefined,
+    icon: undefined, // 接收图标的组件或名称
+    nativeType: 'button',
+    autofocus: undefined,
+    round: undefined,
+    plain: undefined,
+    circle: undefined,
+    customStyle: undefined,
+    text: undefined,
+    bg: undefined,
+    link: undefined,
+    shadow: 'always',
+})
+
+
+
 
 defineEmits<{
     (e: 'click'): void;
@@ -34,22 +63,27 @@ defineEmits<{
 </script>
 
 <style scoped lang="scss">
+.btn-def {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+
 .GlassButton.el-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     backdrop-filter: blur(16px) saturate(150%);
     -webkit-backdrop-filter: blur(16px) saturate(150%);
-    box-shadow:
-        0 2px 8px rgba(0, 0, 0, 0.06),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+
     /* 基础颜色变量 */
-    --el-color-primary: #40a0ff66;
-    --el-color-success: #67c23a66;
-    --el-color-warning: #e6a23c66;
-    --el-color-danger: #f56c6c66;
-    --el-color-info: #90939966;
+    --el-color-primary: #40a0ff88;
+    --el-color-success: #67c23a88;
+    --el-color-warning: #e6a23c88;
+    --el-color-danger: #f56c6c88;
+    --el-color-info: #90939988;
 
     --el-fill-color-light: #f5f7fa66;
     --el-fill-color-blank: #f5f7fa66;
@@ -90,12 +124,46 @@ defineEmits<{
 
 }
 
-.GlassButton.el-button:hover {
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
+.GlassButton.el-button {
     box-shadow:
-        0 8px 32px rgba(31, 38, 135, 0.08),
+        0 .2em .8em rgba(0, 0, 0, 0.08),
         inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button:hover {
+    box-shadow:
+        0 .2em .8em rgba(31, 38, 135, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button.is-shadow-always {
+    box-shadow:
+        0 .2em .8em rgba(31, 38, 135, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button.is-shadow-always:hover {
+    box-shadow:
+        0 .2em .8em rgba(31, 38, 135, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button.is-shadow-hover {
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button.is-shadow-hover:hover {
+    box-shadow:
+        0 .2em .8em rgba(31, 38, 135, 0.1),
+        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button.is-shadow-never {
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.GlassButton.el-button.is-shadow-never:hover {
+    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
 }
 
 // default 按钮的样式
@@ -109,10 +177,10 @@ defineEmits<{
 
 .GlassButton.is-text,
 .GlassButton.is-link {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none ;
+    -webkit-backdrop-filter: none ;
     box-shadow: none !important;
-    border: none !important;
+    border: none ;
 }
 
 

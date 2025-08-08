@@ -140,7 +140,6 @@ onMounted(async () => {
 </script>
 <template>
     <GlassCard shadow="never" class="container">
-
         <div class="group">
             <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasSteam }, `card`]">
                 <div class="title">Steam</div>
@@ -175,7 +174,8 @@ onMounted(async () => {
 @use "sass:color";
 
 .container {
-
+    width: 100%;
+    height: 100%;
 
     .group {
         position: absolute;

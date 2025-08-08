@@ -12,6 +12,10 @@ export default class BackupAndRecoveryService {
         return await BackupAndRecoveryRepository.queryAll();
     }
 
+    static async getPageData(currentPage: number, pageSize: number): Promise<BackupAndRecovery[]> {
+        return (await BackupAndRecoveryRepository.queryPageData(currentPage, pageSize))
+            .filter((item): item is BackupAndRecovery => item !== null);
+    }
 
     /**
      * 获取指定备份和恢复数据
@@ -22,5 +26,11 @@ export default class BackupAndRecoveryService {
         return await BackupAndRecoveryRepository.queryOneById(id);
     }
 
-
+    /**
+     * 获取备份和恢复数据总数
+     * @returns 备份和恢复数据总数
+     */
+    static getDataCount(): number | PromiseLike<number> {
+        return BackupAndRecoveryRepository.getDataCount();
+    }
 }

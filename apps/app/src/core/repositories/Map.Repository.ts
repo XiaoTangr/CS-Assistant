@@ -26,19 +26,19 @@ export default class MapRepository {
     static async insert(data: Map[]): Promise<number> {
         // 使用转换器将应用结构转换为数据库结构
         const dbData = data.map(item => toDb(item));
-        return await baseCRUD.insertRows(this.TABLE_NAME, dbData);
+        return (await baseCRUD.insertRows(this.TABLE_NAME, dbData)).rowsAffected;
     }
 
     // 删除指定 key 的数据
     static async deleteOneByKeyName(keyName: string): Promise<number> {
-        return await baseCRUD.deleteRow(this.TABLE_NAME, { key: keyName });
+        return (await baseCRUD.deleteRow(this.TABLE_NAME, { key: keyName })).rowsAffected;
     }
 
     // 更新指定 key 的数据
     static async updateByKey(data: Partial<Map>, keyName: string): Promise<number> {
         // 使用转换器将应用结构转换为数据库结构
         const dbData = toDb(data);
-        return await baseCRUD.updateWhere(this.TABLE_NAME, dbData, { key: keyName });
+        return (await baseCRUD.updateWhere(this.TABLE_NAME, dbData, { key: keyName })).rowsAffected;
     }
 
     // 获取总数量

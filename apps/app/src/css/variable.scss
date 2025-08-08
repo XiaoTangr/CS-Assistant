@@ -43,8 +43,6 @@ $color-bg-overlay: rgba(255, 255, 255, 1.0);
 $color-transparent: transparent;
 
 
-
-
 $primary-color: rgba(64, 158, 255, 1.0);
 $success-color: rgba(103, 194, 58, 1.0);
 $warning-color: rgba(230, 162, 60, 1.0);
@@ -94,6 +92,12 @@ $simpe-blur: blur($simpe-blur-value);
 // shadow
 $simple-box-shadow: rgba(152, 152, 152, 0.6) .25em .25em 2em 2px;
 
+//global-command
+$global-command-padding: $globe-margin;
+$global-command-height: calc(40px + 2 * $global-command-padding);
+
+// content
+$content-fill-hight: calc(100vh - $global-command-height);
 
 // scrollbar
 $scrollbar-width: 8px;

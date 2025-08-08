@@ -1,4 +1,4 @@
-import { t_Map, t_Settings } from "@/core/database/models";
+import { t_Map, t_Settings, t_BackupAndRecovery } from "@/core/database/models";
 export const defaultDatabaseData = [
     {
         tableName: "t_Settings",
@@ -160,5 +160,16 @@ export const defaultDatabaseData = [
                 c_value: "test2"
             }
         ] as t_Map[]
+    }, {
+        tableName: "t_BackupAndRecovery",
+        Structure: [
+            { name: "c_id", type: "number", nullable: false },
+            { name: "c_nickName", type: "text", nullable: false },
+            { name: "c_friendId", type: "text", nullable: false },
+            { name: "c_description", type: "text", nullable: true },
+            { name: "c_createdAt", type: "text", nullable: false },
+            { name: "c_folderPath", type: "text", nullable: false }
+        ],
+        defaultData: [] as t_BackupAndRecovery[]
     }
 ]

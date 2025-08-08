@@ -7,15 +7,15 @@
                     SQL ExecuteRaw
                 </template>
                 <template #default>
-                    <el-button type="primary" @click="executeSQL">执行 SQL</el-button>
+                    <GlassButton round type="primary" @click="executeSQL">执行 SQL</GlassButton>
 
-                    <el-space style="width: 100%;" fill>
-                        <!-- sql输入框  -->
-                        <el-input v-model="sqlInput" type="textarea" :rows="10" placeholder="输入 SQL 语句"></el-input>
-                        <!-- 输出结果 -->
-                        <el-input v-model="sqlOutput" type="textarea" :rows="10" placeholder="输出结果..."
-                            readonly></el-input>
-                    </el-space>
+                        <el-space style="width: 100%;" fill>
+                            <!-- sql输入框  -->
+                            <el-input v-model="sqlInput" type="textarea" :rows="10" placeholder="输入 SQL 语句"></el-input>
+                            <!-- 输出结果 -->
+                            <el-input v-model="sqlOutput" type="textarea" :rows="10" placeholder="输出结果..."
+                                readonly></el-input>
+                        </el-space>
 
 
                 </template>
@@ -54,13 +54,13 @@
                                     <el-input v-model="e.value" />
                                 </el-form-item>
                                 <el-form-item>
-                                    <el-button @click.prevent="delSettingsOption(e)" type="warning">删除选项</el-button>
+                                    <GlassButton @click.prevent="delSettingsOption(e)" type="warning">删除选项</GlassButton>
                                 </el-form-item>
                             </el-form>
 
                         </el-form-item>
                         <el-form-item>
-                            <el-button @click="addSettingsOption" type="primary">添加选项</el-button>
+                            <GlassButton @click="addSettingsOption" type="primary">添加选项</GlassButton>
                         </el-form-item>
                     </div>
 
@@ -71,12 +71,12 @@
                         <el-input v-model.number="dbsettings.groupIndex" />
                     </el-form-item>
                     <el-form-item label="操作">
-                        <el-button type="info" @click="generateSettingsdbSQL">生成 SQL</el-button>
-                        <el-button type="success" @click="querySettingsRowByKey">查询 by key</el-button>
-                        <el-button type="success" @click="querySettingsRowByText">查询 by text</el-button>
-                        <el-button type="primary" @click="insertSettingsRowtodb">插入</el-button>
-                        <el-button type="warning" @click="updateSettingsRow">更新</el-button>
-                        <el-button type="danger" @click="deleteSettingsRow">删除</el-button>
+                        <GlassButton plain round type="info" @click="generateSettingsdbSQL">生成 SQL</GlassButton>
+                        <GlassButton plain round type="success" @click="querySettingsRowByKey">查询 by key</GlassButton>
+                        <GlassButton plain round type="success" @click="querySettingsRowByText">查询 by text</GlassButton>
+                        <GlassButton plain round type="primary" @click="insertSettingsRowtodb">插入</GlassButton>
+                        <GlassButton plain round type="warning" @click="updateSettingsRow">更新</GlassButton>
+                        <GlassButton plain round type="danger" @click="deleteSettingsRow">删除</GlassButton>
                     </el-form-item>
                 </el-form>
                 <el-input v-model="dbsettingsSQLout" :rows="15" type="textarea" placeholder="SQL Output..."></el-input>
@@ -101,6 +101,7 @@ import LogServices from "@/core/services/Log.services";
 import GlassCard from '@/components/Common/GlassCard.vue';
 import ComponentTest from '@/components/views/DevTools/ComponentTest.vue';
 import { desVal } from '@/core/utils';
+import GlassButton from '@/components/Common/GlassButton.vue';
 
 const dbformRef = ref<FormInstance>();
 
@@ -198,8 +199,8 @@ const generateSettingsdbSQL = async () => {
     }
 
     const sql = `
-INSERT INTO Settings (
-    key, text, description, type, selected, options, groupName, groupIndex
+INSERT INTO t_Settings (
+    c_key, c_text, c_description, c_type, c_selected, c_options, c_groupName, c_groupIndex
 ) VALUES (
     '${escapeSQLString(dbsettings.key ?? '')}',
     '${escapeSQLString(dbsettings.text ?? '')}',

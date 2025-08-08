@@ -39,7 +39,7 @@ const openSourceData = ref([
         "name": "Tauri",
         "version": "^2",
         "url": "https://github.com/tauri-apps/tauri",
-        "iconUrl": "https://github.com/Tauri",
+        "iconUrl": "https://github.com/tauri.png",
         "license": "MIT OR Apache-2.0"
     }, {
         "name": "Vue",

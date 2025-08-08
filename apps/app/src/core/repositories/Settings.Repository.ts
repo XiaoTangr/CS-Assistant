@@ -50,7 +50,7 @@ export default class SettingsRepository {
      */
     static async updateRow(row: Settings): Promise<number> {
         // 使用转换器将应用结构转换为数据库结构
-        return await baseCRUD.updateWhere(this.TABLE_NAME, toDb(row), { c_key: row.key });
+        return (await baseCRUD.updateWhere(this.TABLE_NAME, toDb(row), { c_key: row.key })).rowsAffected;
     }
 
     /**
@@ -76,12 +76,12 @@ export default class SettingsRepository {
     static async insertRows(rows: Settings[]): Promise<number> {
         // 使用转换器将应用结构转换为数据库结构
         const dbRows = rows.map(row => toDb(row));
-        return await baseCRUD.insertRows(this.TABLE_NAME, dbRows);
+        return (await baseCRUD.insertRows(this.TABLE_NAME, dbRows)).rowsAffected;
     }
 
     // 删除指定 key 的记录
     static async deleteRow(key: string): Promise<number | PromiseLike<number>> {
-        return await baseCRUD.deleteRow(this.TABLE_NAME, { c_key: key });
+        return (await baseCRUD.deleteRow(this.TABLE_NAME, { c_key: key })).rowsAffected;
     }
     /**
      * 使用默认数据（待实现）

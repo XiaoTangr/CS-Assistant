@@ -1,18 +1,20 @@
 <template>
-    <CommSpace direction="horizontal">
-        <GlassButtonGroup size="large">
-            <el-tooltip content="后退">
-                <GlassButton @click="back" round :icon="ArrowLeftBold" />
-            </el-tooltip>
-            <el-tooltip content="前进">
-                <GlassButton @click="next" round :icon="ArrowRightBold" />
-            </el-tooltip>
-        </GlassButtonGroup>
-        <GlassButtonGroup size="large" style="-webkit-app-region: drag">
-            <el-tooltip content="移动窗口">
-                <GlassButton round :icon="Rank" />
-            </el-tooltip>
-        </GlassButtonGroup>
+    <div class="container">
+        <CommSpace class="left">
+            <GlassButtonGroup size="large">
+                <el-tooltip content="后退">
+                    <GlassButton @click="back" round :icon="ArrowLeftBold" />
+                </el-tooltip>
+                <el-tooltip content="前进">
+                    <GlassButton @click="next" round :icon="ArrowRightBold" />
+                </el-tooltip>
+            </GlassButtonGroup>
+            <GlassButtonGroup size="large" style="-webkit-app-region: drag">
+                <el-tooltip content="移动窗口">
+                    <GlassButton round :icon="Rank" />
+                </el-tooltip>
+            </GlassButtonGroup>
+        </CommSpace>
         <CommSpace class="right" direction="horizontal">
             <GlassButtonGroup size="large">
                 <el-tooltip content="回到顶部">
@@ -20,7 +22,7 @@
                 </el-tooltip>
             </GlassButtonGroup>
         </CommSpace>
-    </CommSpace>
+    </div>
 
 </template>
 
@@ -54,9 +56,19 @@ const backUp = () => {
 </script>
 
 <style scoped lang="scss">
-.right {
-    position: absolute;
-    top: 1em;
-    right: 1em;
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: $global-command-height;
+    padding: $global-command-padding 0;
+
+    .left {
+        flex: 1;
+    }
+
+    .right {
+        padding-right: $global-command-padding ;
+    }
 }
 </style>

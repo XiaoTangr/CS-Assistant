@@ -1,6 +1,13 @@
 import { LogServices } from "../services";
 import { connecter } from "./";
 
+interface sqlResult {
+    rowsAffected: number;
+    lastInsertId?: number;
+    success: boolean;
+    data?: any;
+}
+
 class DBBaseCRUD {
     private static instance: DBBaseCRUD;
 
@@ -13,30 +20,87 @@ class DBBaseCRUD {
         return DBBaseCRUD.instance;
     }
 
-    private log(message: string) {
-        LogServices.log(`[DBBaseCRUD] ${message}`);
-    }
-
-    private validateTableName(tableName: string): void {
+    /**
+     * 验证表名
+     * @param tableName 表名
+     */
+    private _validateTableName(tableName: string): void {
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(tableName)) {
             throw new Error(`Invalid table name: ${tableName}`);
         }
     }
 
-    private validateColumnName(columnName: string): void {
+    /**
+     * 验证列名
+     * @param columnName 列名
+     */
+    private _validateColumnName(columnName: string): void {
         if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(columnName)) {
             throw new Error(`Invalid column name: ${columnName}`);
         }
     }
+
+    /**
+     * 构建安全的SQL片段
+     * @param values 值数组
+     * @param startIndex 参数起始索引
+     * @returns [sql片段, params]
+     */
+    private _buildSafeValues(values: any[], startIndex: number = 1): [string, any[]] {
+        const placeholders: string[] = [];
+        const params: any[] = [];
+
+        values.forEach((value, i) => {
+            placeholders.push(`$${startIndex + i}`);
+            params.push(value);
+        });
+
+        return [placeholders.join(', '), params];
+    }
+
+    /**
+     * 构建安全的WHERE条件
+     * @param where 条件对象
+     * @param startIndex 参数起始索引
+     * @returns [whereClause, params]
+     */
+    private _buildSafeWhere(where: Record<string, any>, startIndex: number = 1): [string, any[]] {
+        const conditions: string[] = [];
+        const params: any[] = [];
+
+        for (const [key, value] of Object.entries(where)) {
+            this._validateColumnName(key);
+            if (Array.isArray(value)) {
+                // 处理IN条件
+                const [placeholders, inParams] = this._buildSafeValues(value, startIndex);
+                conditions.push(`"${key}" IN (${placeholders})`);
+                params.push(...inParams);
+                startIndex += value.length;
+            } else if (value === null || value === undefined) {
+                conditions.push(`"${key}" IS NULL`);
+            } else {
+                conditions.push(`"${key}" = $${startIndex}`);
+                params.push(value);
+                startIndex++;
+            }
+        }
+
+        return [conditions.join(' AND '), params];
+    }
+
     /**
      * 封装 SELECT 查询
      * @param sql sql语句
      * @param params sql占位符对应值
-     * @returns 
+     * @returns
      */
     private async _select<T>(sql: string, params: any[] = []): Promise<T[]> {
         const db = await connecter.getConnection();
-        this.log(`Executing query: ${sql}`);
+        LogServices.log(`[DBBaseCRUD._select]\n\r`,
+            `Executing query SQL:\n\r`,
+            `${sql}\n\r`,
+            `params:\n\r`,
+            params);
         try {
             return await db.select(sql, params);
         } catch (error: any) {
@@ -48,29 +112,30 @@ class DBBaseCRUD {
                 timestamp: new Date().toISOString(),
                 stack: error.stack
             });
-            throw error; // 保留原始错误对象
+            throw error;
         }
     }
+
     /**
      * 执行sql
      * @param sql sql语句
      * @param params sql占位符对应值
-     * @returns 执行结果对象，包含受影响行数和其他执行信息
+     * @returns 执行结果
      */
-    private async _execute(sql: string, params: any[] = []): Promise<{
-        rowsAffected: number;
-        lastInsertId?: number;
-        success: boolean;
-        data?: any;
-    }> {
+    private async _execute(sql: string, params: any[] = []): Promise<sqlResult> {
         const db = await connecter.getConnection();
-        this.log(`Executing execute: ${sql}`);
+        LogServices.log(`[DBBaseCRUD._execute]\n\r`,
+            `Executing execute SQL:\n\r`,
+            `${sql}\n\r`,
+            `params:\n\r`,
+            params);
         try {
             const result = await db.execute(sql, params);
             return {
                 rowsAffected: result.rowsAffected,
                 lastInsertId: result.lastInsertId,
-                success: true
+                success: true,
+                data: result
             };
         } catch (error: any) {
             const errorMessage = `Execute failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
@@ -81,45 +146,72 @@ class DBBaseCRUD {
                 timestamp: new Date().toISOString(),
                 stack: error.stack
             });
-            throw error; // 仅抛出原始错误，不包装
+            return {
+                rowsAffected: 0,
+                success: false,
+                data: null
+            };
         }
     }
 
     /**
-     * 插入多条记录 (SQLite 版本 - 数组参数兼容版)
+     * 插入多条记录
      * @param tableName 表名
      * @param data 数据数组
-     * @returns 受影响行数
+     * @returns 执行结果
      */
     public async insertRows<T extends Record<string, any>>(
         tableName: string,
         data: T[]
-    ): Promise<number> {
-        this.validateTableName(tableName);
+    ): Promise<sqlResult> {
+        this._validateTableName(tableName);
 
-        if (data.length === 0) return 0;
+        if (data.length === 0) {
+            return {
+                rowsAffected: 0,
+                success: true,
+                data: null
+            };
+        }
 
         const columns = Object.keys(data[0]).filter(Boolean);
-        if (columns.length === 0) return 0;
+        if (columns.length === 0) {
+            return {
+                rowsAffected: 0,
+                success: true,
+                data: null
+            };
+        }
 
-        // SQLite 占位符格式 (使用数组参数时可以用 ? 或 $n)
-        const placeholders = columns.map((_) => `?`).join(", ");
+        // 验证所有列名
+        columns.forEach(col => this._validateColumnName(col));
+
+        const [placeholders] = this._buildSafeValues(columns, 1);
         const columnList = columns.map(col => `"${col}"`).join(", ");
         const sql = `INSERT INTO "${tableName}" (${columnList}) VALUES (${placeholders})`;
 
         let rowsAffected = 0;
+        const lastInsertIds: number[] = [];
 
         try {
-            // 使用事务提升批量插入性能
             await this._execute("BEGIN TRANSACTION");
 
             for (const item of data) {
-                // 将对象值按列顺序转换为数组
                 const values = columns.map(col => item[col] ?? null);
-                rowsAffected += (await this._execute(sql, values)).rowsAffected; // 传入数组
+                const result = await this._execute(sql, values);
+                rowsAffected += result.rowsAffected;
+                if (result.lastInsertId) {
+                    lastInsertIds.push(result.lastInsertId);
+                }
             }
 
             await this._execute("COMMIT");
+            return {
+                rowsAffected,
+                lastInsertId: lastInsertIds.length > 0 ? Math.max(...lastInsertIds) : undefined,
+                success: true,
+                data: { insertedCount: rowsAffected, lastInsertIds }
+            };
         } catch (e: any) {
             await this._execute("ROLLBACK");
             LogServices.error(`[SQLite insertRows] 失败`, {
@@ -127,32 +219,33 @@ class DBBaseCRUD {
                 sql,
                 lastParams: data[data.length - 1]
             });
-            throw e;
+            return {
+                rowsAffected: 0,
+                success: false,
+                data: null
+            };
         }
-
-        return rowsAffected;
     }
 
     /**
-     * 使用 WHERE 条件查询数据
-     * @param tableName 表名
-     * @param where WHERE 条件对象（如 { id: 1 }）
-     * @returns 查询结果数组
-     */
+         * 使用 WHERE 条件查询数据
+         * @param tableName 表名
+         * @param where WHERE 条件对象
+         * @returns 查询结果数组
+         */
     public async queryWhere<T>(
         tableName: string,
         where: Record<string, any>
     ): Promise<T[]> {
-        this.validateTableName(tableName);
+        this._validateTableName(tableName);
 
         if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
             throw new Error(`Invalid WHERE clause provided for query`);
         }
 
-        const whereKey = Object.keys(where)[0];
-        const whereValue = Object.values(where)[0];
-        const sql = `SELECT * FROM ${tableName} WHERE ${whereKey} = $1`;
-        return await this._select<T>(sql, [whereValue]);
+        const [whereClause, params] = this._buildSafeWhere(where);
+        const sql = `SELECT * FROM "${tableName}" WHERE ${whereClause}`;
+        return await this._select<T>(sql, params);
     }
 
     /**
@@ -160,68 +253,86 @@ class DBBaseCRUD {
      * @param tableName 表名
      * @returns 查询结果数组
      */
-    public async queryAll<T>(tableName: string): Promise<T[] | null> {
-        this.validateTableName(tableName);
-        const sql = `SELECT * FROM ${tableName};`;
-        let r = await this._select<T>(sql);
-        return r ? r : [];
+    public async queryAll<T>(tableName: string): Promise<T[]> {
+        this._validateTableName(tableName);
+        const sql = `SELECT * FROM "${tableName}"`;
+        return await this._select<T>(sql) ?? [];
     }
-
 
     /**
      * 条件更新
      * @param tableName 表名
-     * @param data 更新的数据对象，键为字段名，值为字段值
-     * @param where WHERE 条件对象，格式为 { column: value }
-     * @returns 受影响行数
+     * @param data 更新的数据对象
+     * @param where WHERE 条件对象
+     * @returns 执行结果
      */
     public async updateWhere<T extends Record<string, any>>(
         tableName: string,
         data: T,
         where: Record<string, any>
-    ): Promise<number> {
-        this.validateTableName(tableName);
+    ): Promise<sqlResult> {
+        this._validateTableName(tableName);
 
         if (typeof data !== 'object' || data === null) {
-            throw new TypeError(`Invalid data provided for update`);
+            return {
+                rowsAffected: 0,
+                success: false,
+                data: null
+            };
         }
 
         if (Object.keys(where).length === 0) {
-            throw new Error(`WHERE clause is required for update operation`);
+            return {
+                rowsAffected: 0,
+                success: false,
+                data: null
+            };
         }
 
+        // 构建SET子句
+        const setClauses: string[] = [];
+        const setParams: any[] = [];
+        let paramIndex = 1;
 
-        const setClauses = Object.keys(data).map((col, i) => `\`${col}\` = $${i + 1}`).join(', ');
-        const whereKey = Object.keys(where)[0];
-        const whereValue = Object.values(where)[0];
+        for (const [key, value] of Object.entries(data)) {
+            this._validateColumnName(key);
+            setClauses.push(`"${key}" = $${paramIndex}`);
+            setParams.push(value);
+            paramIndex++;
+        }
 
-        const sql = `UPDATE ${tableName} SET ${setClauses} WHERE ${whereKey} = $${Object.keys(data).length + 1} `;
-        const params = [...Object.values(data), whereValue];
+        // 构建WHERE子句
+        const [whereClause, whereParams] = this._buildSafeWhere(where, paramIndex);
 
-        return (await this._execute(sql, params)).rowsAffected;
+        const sql = `UPDATE "${tableName}" SET ${setClauses.join(', ')} WHERE ${whereClause}`;
+        const params = [...setParams, ...whereParams];
+
+        return await this._execute(sql, params);
     }
 
     /**
      * 根据字段删除
      * @param tableName 表名
-     * @param where 删除条件对象（如 { id: 1 }）
-     * @returns 受影响行数
+     * @param where 删除条件对象
+     * @returns 执行结果
      */
     public async deleteRow(
         tableName: string,
         where: Record<string, any>
-    ): Promise<number> {
-        this.validateTableName(tableName);
+    ): Promise<sqlResult> {
+        this._validateTableName(tableName);
 
         if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
-            throw new Error(`Invalid WHERE clause provided for delete`);
+            return {
+                rowsAffected: 0,
+                success: false,
+                data: null
+            };
         }
 
-        const whereKey = Object.keys(where)[0];
-        const whereValue = Object.values(where)[0];
-        this.validateColumnName(whereKey);
-        const sql = `DELETE FROM ${tableName} WHERE ${whereKey} = $1`;
-        return (await this._execute(sql, [whereValue])).rowsAffected;
+        const [whereClause, params] = this._buildSafeWhere(where);
+        const sql = `DELETE FROM "${tableName}" WHERE ${whereClause}`;
+        return await this._execute(sql, params);
     }
 
     /**
@@ -230,24 +341,91 @@ class DBBaseCRUD {
      * @returns 总记录数
      */
     public async count(tableName: string): Promise<number> {
-        this.validateTableName(tableName);
-        const sql = `SELECT COUNT(*) as count FROM ${tableName} `;
+        this._validateTableName(tableName);
+        const sql = `SELECT COUNT(*) as count FROM "${tableName}"`;
         const result = await this._select<{ count: number }>(sql);
         return result[0]?.count || 0;
     }
 
     /**
-     * 执行原始 SQL 查询
+     * 执行原始 SQL
      * @param sql 原始 SQL 语句
      * @param params SQL 占位符参数
-     * @returns 受影响行数
+     * @returns 执行结果
      */
     public async executeRaw(sql: string, ...params: any[]): Promise<any> {
-        // 需要判断使用Execute还是select
-        if (sql.toLowerCase().startsWith('select')) {
+        // 安全验证 - 防止直接执行危险操作
+        const lowerSql = sql.toLowerCase().trim();
+        if (lowerSql.startsWith('drop ') ||
+            lowerSql.startsWith('alter ') ||
+            lowerSql.startsWith('grant ')) {
+            throw new Error('Potentially dangerous SQL operation blocked');
+        }
+
+        if (lowerSql.startsWith('select')) {
             return await this._select(sql, params);
         }
         return await this._execute(sql, params);
+    }
+
+    /**
+         * 基于游标的分页查询
+         * @param tableName 表名
+         * @param cursor 游标值
+         * @param pageSize 每页数量
+         * @param orderBy 排序字段
+         * @param orderDirection 排序方向
+         */
+    public async queryWithCursor<T>(
+        tableName: string,
+        cursor: number | string | null,
+        pageSize: number = 10,
+        orderBy: string = 'id',
+        orderDirection: 'ASC' | 'DESC' = 'ASC'
+    ): Promise<T[]> {
+        this._validateTableName(tableName);
+        this._validateColumnName(orderBy);
+
+        let sql = `SELECT * FROM "${tableName}"`;
+        const params: any[] = [];
+
+        if (cursor !== null) {
+            sql += ` WHERE "${orderBy}" ${orderDirection === 'ASC' ? '>' : '<'} $1`;
+            params.push(cursor);
+        }
+
+        sql += ` ORDER BY "${orderBy}" ${orderDirection} LIMIT $${params.length + 1}`;
+        params.push(pageSize);
+
+        return await this._select<T>(sql, params) ?? [];
+    }
+
+    /**
+ * 基于偏移量的分页查询
+ * @param tableName 表名
+ * @param page 页码（从 1 开始）
+ * @param pageSize 每页数量
+ * @param orderBy 排序字段
+ * @param orderDirection 排序方向
+ */
+    public async queryWithOffset<T>(
+        tableName: string,
+        page: number,
+        pageSize: number = 10,
+        orderBy: string = 'id',
+        orderDirection: 'ASC' | 'DESC' = 'ASC'
+    ): Promise<T[]> {
+        this._validateTableName(tableName);
+        this._validateColumnName(orderBy);
+
+        const offset = (page - 1) * pageSize;
+        const sql = `
+            SELECT * FROM "${tableName}"
+            ORDER BY "${orderBy}" ${orderDirection}
+            LIMIT $1 OFFSET $2
+        `;
+
+        return await this._select<T>(sql, [pageSize, offset]) ?? [];
     }
 }
 

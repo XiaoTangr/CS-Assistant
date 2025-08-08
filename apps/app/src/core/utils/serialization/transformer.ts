@@ -2,9 +2,6 @@
  * 通用数据库结构与应用结构之间的转换工具
  * 用于在数据库结构（以 t_ 前缀命名的接口，字段以 c_ 前缀）和应用结构（普通命名接口和字段）之间进行转换
  */
-
-import LogServices from "@/core/services/Log.services";
-
 /**
  * 通用转换函数：将数据库结构对象转换为应用结构对象
  * @param dbObj 数据库结构对象
@@ -35,8 +32,6 @@ export function fromDb<T extends Record<string, any>>(dbObj: T): any {
                 }
             }
         }
-        LogServices.info('[transformer.fromDb dbObj] ', dbObj)
-        LogServices.info('[transformer.fromDb result] ', result)
         return result;
     }
 
@@ -69,8 +64,6 @@ export function toDb<T extends Record<string, any>>(obj: T): any {
                 result[newKey] = obj[key];
             }
         }
-        LogServices.info('[transformer.fromDb Obj] ', obj)
-        LogServices.info('[transformer.fromDb result] ', result)
         return result;
     }
 
