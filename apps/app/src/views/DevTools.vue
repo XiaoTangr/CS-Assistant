@@ -9,13 +9,13 @@
                 <template #default>
                     <GlassButton round type="primary" @click="executeSQL">执行 SQL</GlassButton>
 
-                        <el-space style="width: 100%;" fill>
-                            <!-- sql输入框  -->
-                            <el-input v-model="sqlInput" type="textarea" :rows="10" placeholder="输入 SQL 语句"></el-input>
-                            <!-- 输出结果 -->
-                            <el-input v-model="sqlOutput" type="textarea" :rows="10" placeholder="输出结果..."
-                                readonly></el-input>
-                        </el-space>
+                    <el-space style="width: 100%;" fill>
+                        <!-- sql输入框  -->
+                        <el-input v-model="sqlInput" type="textarea" :rows="10" placeholder="输入 SQL 语句"></el-input>
+                        <!-- 输出结果 -->
+                        <el-input v-model="sqlOutput" type="textarea" :rows="10" placeholder="输出结果..."
+                            readonly></el-input>
+                    </el-space>
 
 
                 </template>
@@ -237,7 +237,7 @@ const updateSettingsRow = async () => {
 
     const payload = JSON.parse(JSON.stringify(dbsettings));
     try {
-        const res = await SettingsRepository.updateRow(payload);
+        const res = await SettingsRepository.updateOne(payload);
         if (res > 0) {
             ElNotification.success(`更新成功`);
             resetForm();
@@ -257,7 +257,7 @@ const querySettingsRowByKey = async () => {
     }
 
     try {
-        let res = (await SettingsRepository.queryWhere({ c_key: dbsettings.key }))[0];
+        let res = await SettingsRepository.findOne({ c_key: dbsettings.key });
 
         if (res) {
             res = desVal(res);
@@ -279,7 +279,7 @@ const querySettingsRowByText = async () => {
     }
 
     try {
-        let res = (await SettingsRepository.queryWhere({ c_text: dbsettings.text }))[0];
+        let res = await SettingsRepository.findOne({ c_text: dbsettings.text });
 
         if (res) {
             res = desVal(res);
@@ -302,7 +302,7 @@ const deleteSettingsRow = async () => {
     }
 
     try {
-        const res = await SettingsRepository.deleteRow(dbsettings.key);
+        const res = await SettingsRepository.deleteOne({ c_key: dbsettings.key });
         if (res > 0) {
             ElNotification.success(`删除成功`);
             resetForm();

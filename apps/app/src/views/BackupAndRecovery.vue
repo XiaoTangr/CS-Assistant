@@ -28,8 +28,12 @@
                     </template>
                 </el-table-column>
                 <el-table-column width="140" class-name="list-action" fixed="right" align="center" label="操作">
-                    <GlassButton class="list-action-item" plain size="small" type="success">还原</GlassButton>
-                    <GlassButton class="list-action-item" plain size="small" type="danger">删除</GlassButton>
+                    <template #default="scope">
+                        <GlassButton class="list-action-item" @click="setRestoreBackupIdHandler(scope.row.id)" plain
+                            size="small" type="success">还原</GlassButton>
+                        <GlassButton class="list-action-item" @click="setDeleteBackupIdhandler(scope.row.id)" plain
+                            size="small" type="danger">删除</GlassButton>
+                    </template>
                 </el-table-column>
             </el-table>
             <div class="list-pagination">
@@ -37,6 +41,7 @@
                     @size-change="handleSizeChange" @current-change="handleCurrentChange"
                     layout="prev,pager,next,sizes,total" :page-sizes="PAGE_SIZES" :total="dataCount" />
             </div>
+            <!-- 新建备份的对话框 -->
             <GlassDialog v-model="showNewBackup">
                 <template #header>
                     新建备份
@@ -68,6 +73,29 @@
                     <GlassButton plain round>取消</GlassButton>
                 </template>
             </GlassDialog>
+
+            <!-- 恢复备份的对话框 -->
+            <GlassDialog @closed="resetRestoreBackupId" :destroy-on-close="true" v-model="showRestoreBackup">
+                <template #header>
+                    恢复备份: {{ RestoreBackupId }}
+                </template>
+                <template #default>
+                    {{ confirmRestoreData }}
+                </template>
+                <template #footer>
+                    <GlassButton plain round type="primary">确认</GlassButton>
+                    <GlassButton plain round>取消</GlassButton>
+                </template>
+            </GlassDialog>
+            <!-- 删除备份的对话框 -->
+            <GlassDialog @closed="resetDeleteBackupId" :destroy-on-close="true" v-model="showDeleteBackup">
+                <template #header>
+                    删除备份: {{ DeleteBackupId }}
+                </template>
+                <template #default>
+                    {{ confirmDeleteData }}
+                </template>
+            </GlassDialog>
         </template>
         <template #footer>
             <GlassButton plain round type="primary" @click="showNewBackup = true">新建备份</GlassButton>
@@ -83,7 +111,7 @@ import { BackupAndRecovery } from '@/core/models';
 import { formatTimestamp } from '@/core/utils';
 import { useBackupAndRecoveryStore } from '@/store/BackupAndRecoveryStore';
 import { storeToRefs } from 'pinia';
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 const PAGE_SIZES = [10, 20, 50, 100];
 const BARStore = useBackupAndRecoveryStore();
 const { viewData, pageSize, currentPage, dataCount, backupFolderPathStr } = storeToRefs(BARStore);
@@ -102,8 +130,8 @@ const handleCurrentChange = async (val: number) => {
 }
 
 
-// ---------------------------------
-const showNewBackup = ref(true);
+// ——————————————— 新建备份 ————————————————————
+const showNewBackup = ref(false);
 
 const newData = ref<BackupAndRecovery>({
     id: 0,
@@ -113,6 +141,50 @@ const newData = ref<BackupAndRecovery>({
     folderPath: '',
     createdAt: 0
 })
+
+// ——————————————— 恢复备份 ————————————————————
+
+// 恢复备份ID
+const RestoreBackupId = ref(-1);
+// 是否显示恢复备份对话框
+const showRestoreBackup = computed(() => {
+    return RestoreBackupId.value > 0;
+});
+// 操作数据
+const confirmRestoreData = computed<BackupAndRecovery | null>(() => {
+    return viewData.value.find(item => item.id === RestoreBackupId.value) ?? null;
+});
+
+// 设置恢复备份ID
+const setRestoreBackupIdHandler = async (id: number) => {
+    RestoreBackupId.value = id;
+}
+// 重置恢复备份ID
+const resetRestoreBackupId = () => {
+    RestoreBackupId.value = -1;
+}
+
+
+
+// ——————————————— 删除备份 ————————————————————
+// 删除备份ID
+const DeleteBackupId = ref(-1);
+// 是否显示删除备份对话框
+const showDeleteBackup = computed(() => {
+    return DeleteBackupId.value > 0;
+});
+// 操作数据
+const confirmDeleteData = computed<BackupAndRecovery | null>(() => {
+    return viewData.value.find(item => item.id === DeleteBackupId.value) ?? null;
+});
+// 设置删除备份ID
+const setDeleteBackupIdhandler = async (id: number) => {
+    DeleteBackupId.value = id;
+}
+// 重置删除备份ID
+const resetDeleteBackupId = () => {
+    DeleteBackupId.value = -1;
+}
 
 </script>
 

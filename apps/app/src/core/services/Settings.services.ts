@@ -9,7 +9,7 @@ export default class SettingsService {
      * @returns 返回设置对象数组
      */
     static async getAllSettings(): Promise<Settings[]> {
-        return desVal(await SettingsRepository.queryAll());
+        return desVal(await SettingsRepository.findAll());
     }
     /**
      * 根据 key 获取单个设置
@@ -17,7 +17,7 @@ export default class SettingsService {
      * @returns 返回匹配的 Settings 对象或 null
      */
     static async getSettingByKey(key: string): Promise<Settings | null> {
-        return await SettingsRepository.queryOneByKey(key);
+        return await SettingsRepository.findOne({ c_key: key });
     }
 
     /**
@@ -28,7 +28,7 @@ export default class SettingsService {
     static async updateSettings(setting: Settings): Promise<number> {
 
         let v = serVal(setting)
-        return await SettingsRepository.updateRow(v);
+        return await SettingsRepository.updateOne(v);
     }
 
     /**
@@ -37,7 +37,7 @@ export default class SettingsService {
      * @returns 受影响行数
      */
     static async updateAllSettings(settings: Settings[]): Promise<number> {
-        return await SettingsRepository.updateRows(settings);
+        return await SettingsRepository.bulkUpdate(settings);
     }
 
     /**
@@ -45,8 +45,8 @@ export default class SettingsService {
      * @param settings - Settings 对象数组
      * @returns 受影响行数
      */
-    static async addSettingsItem(settings: Settings): Promise<number> {
-        return await SettingsRepository.insertRows([settings]);
+    static async addSettingsItem(settings: Settings[]): Promise<number> {
+        return await SettingsRepository.bulkCreate(settings);
     }
 
     /**
@@ -55,7 +55,7 @@ export default class SettingsService {
      * @returns 受影响行数
      */
     static async deleteSetting(key: string): Promise<number> {
-        return await SettingsRepository.deleteRow(key);
+        return await SettingsRepository.deleteOne({ c_key: key });
     }
 
     /**

@@ -9,11 +9,11 @@ export default class BackupAndRecoveryService {
      * @returns 返回备份和恢复对象数组
      */
     static async getAllBackupAndRecovery(): Promise<BackupAndRecovery[]> {
-        return await BackupAndRecoveryRepository.queryAll();
+        return await BackupAndRecoveryRepository.findAll();
     }
 
     static async getPageData(currentPage: number, pageSize: number): Promise<BackupAndRecovery[]> {
-        return (await BackupAndRecoveryRepository.queryPageData(currentPage, pageSize))
+        return (await BackupAndRecoveryRepository.findPaginated(currentPage, pageSize))
             .filter((item): item is BackupAndRecovery => item !== null);
     }
 
@@ -23,7 +23,7 @@ export default class BackupAndRecoveryService {
      * @returns 指定备份和恢复对象
      */
     static async getBackupAndRecoveryById(id: number): Promise<BackupAndRecovery | null> {
-        return await BackupAndRecoveryRepository.queryOneById(id);
+        return await BackupAndRecoveryRepository.findOne({ c_id: id });
     }
 
     /**
@@ -31,6 +31,6 @@ export default class BackupAndRecoveryService {
      * @returns 备份和恢复数据总数
      */
     static getDataCount(): number | PromiseLike<number> {
-        return BackupAndRecoveryRepository.getDataCount();
+        return BackupAndRecoveryRepository.count();
     }
 }

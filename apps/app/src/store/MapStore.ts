@@ -8,7 +8,7 @@ export const useMapStore = defineStore("MapStore", () => {
     const viewData = ref<Map[]>([]);
 
     const fetchData = async () => {
-        const res = await MapRepository.queryAll(); // Map[] | null
+        const res = await MapRepository.findAll(); // Map[] | null
         // 过滤 null 值并保持类型正确
         dbData.value = res.filter((item): item is Map => item !== null);
         // 深拷贝

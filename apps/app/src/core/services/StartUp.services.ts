@@ -1,12 +1,11 @@
 import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
 import { useMapStore } from "@/store/MapStore";
 import { useSettingsStore } from "@/store/SettingsStore";
-import { baseCRUD, runMigrations } from "@/core/database";
+import { runMigrations } from "@/core/database";
 import LogServices from "@/core/services/Log.services";
 import { MainRouter } from "@/router/Router";
-import { t_Settings } from "../database/models";
-import { fromDb } from "../utils";
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
+import { SettingsRepository } from "../repositories";
 export default class StartUp {
 
     /**
@@ -36,11 +35,9 @@ export default class StartUp {
      */
     static async initConfig(): Promise<void> {
         // 初始化LogServices();
-        let dblogLevel = (await baseCRUD.queryWhere<t_Settings>(
-            "t_settings",
-            { c_key: "defaultLogLevel" }
-        ));
-        let logLevel = fromDb(dblogLevel[0]).selected;
+        let dblogLevel = await SettingsRepository.findOne({ c_key: "defaultLogLevel" })
+        let logLevel = dblogLevel?.selected ?? "0";
+
         LogServices.debug('[StartUp.initConfig(static)]', 'dblogLevel:', logLevel)
         LogServices.setLogLevel(parseInt(logLevel as string));
     }
