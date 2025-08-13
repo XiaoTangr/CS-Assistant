@@ -1,3 +1,30 @@
+<template>
+    <GlassCard shadow="never" class="container">
+        <div class="group">
+            <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasSteam }, `card`]">
+                <div class="title">Steam</div>
+                <div v-if="hasSteam" class="content">
+                    位于:<br>
+                    <CopyText :value="steamInstallPathStr as string" />
+                </div>
+                <div v-else class="content">
+                    <GlassButton type="primary" size="large" round plain @click="setPath">指定Steam安装位置</GlassButton>
+                </div>
+            </GlassCard>
+            <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasCS }, `card`]">
+                <div class="title">Counter Strike</div>
+                <div v-if="hasCS" class="content">
+                    位于:<br>
+                    <CopyText :value="cs2InstallPathStr as string" />
+                </div>
+                <div v-else class="content">
+                    指定Steam路径后自动识别!
+                </div>
+            </GlassCard>
+        </div>
+    </GlassCard>
+
+</template>
 <script setup lang="ts">
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
 import { useSettingsStore } from '@/store/SettingsStore';
@@ -138,38 +165,7 @@ onMounted(async () => {
 });
 
 </script>
-<template>
-    <GlassCard shadow="never" class="container">
-        <div class="group">
-            <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasSteam }, `card`]">
-                <div class="title">Steam</div>
-                <div v-if="hasSteam" class="content">
-                    位于:<br>
-                    <CopyText :text="steamInstallPathStr as string" />
-                </div>
-                <div v-else class="content">
-                    <GlassButton type="primary" size="large" round plain @click="setPath">指定Steam安装位置</GlassButton>
-                </div>
-            </GlassCard>
-            <GlassCard body-class="item-body" shadow="hover" :class="[{ 'not-install': !hasCS }, `card`]">
-                <div class="title">Counter Strike</div>
-                <div v-if="hasCS" class="content">
-                    位于:<br>
-                    <CopyText :text="cs2InstallPathStr as string">
-                        {{ cs2InstallPathStr }}
-                    </CopyText>
-                </div>
-                <div v-else class="content">
-                    指定Steam路径后自动识别!
-                </div>
-            </GlassCard>
-        </div>
 
-
-
-    </GlassCard>
-
-</template>
 <style scoped lang="scss">
 @use "sass:color";
 

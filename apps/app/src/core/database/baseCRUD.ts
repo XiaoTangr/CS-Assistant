@@ -2,9 +2,13 @@ import { LogServices } from "../services";
 import { connecter } from "./";
 
 interface sqlResult {
+    // 受影响的行数
     rowsAffected: number;
+    // 最后插入的ID
     lastInsertId?: number;
+    // 执行结果
     success: boolean;
+    // 返回的数据
     data?: any;
 }
 
@@ -199,7 +203,7 @@ class DBBaseCRUD {
             for (const item of data) {
                 const values = columns.map(col => item[col] ?? null);
                 const result = await this._execute(sql, values);
-                rowsAffected += result.rowsAffected;
+                rowsAffected += result.rowsAffected ?? 0;
                 if (result.lastInsertId) {
                     lastInsertIds.push(result.lastInsertId);
                 }
@@ -362,10 +366,32 @@ class DBBaseCRUD {
             throw new Error('Potentially dangerous SQL operation blocked');
         }
 
+        let returnData: sqlResult = {
+            rowsAffected: 0,
+            lastInsertId: undefined,
+            success: false,
+            data: null
+        };
+
+
         if (lowerSql.startsWith('select')) {
-            return await this._select(sql, params);
+            let d = await this._select(sql, params);
+            returnData = {
+                rowsAffected: 0,
+                success: true,
+                data: d
+            };
+        } else {
+            let d = await this._execute(sql, params)
+            returnData = {
+                rowsAffected: d.rowsAffected,
+                lastInsertId: d.lastInsertId,
+                success: d.success,
+                data: d.data
+            };
         }
-        return await this._execute(sql, params);
+
+        return returnData;
     }
 
     /**

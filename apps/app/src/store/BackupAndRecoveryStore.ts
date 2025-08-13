@@ -1,10 +1,15 @@
 import { BackupAndRecovery } from "@/core/models";
 import { BackupAndRecoveryService, SettingsService } from "@/core/services";
 import { deepParseString, serializeObject } from "@/core/utils";
-import { defineStore } from "pinia";
+import { defineStore, storeToRefs } from "pinia";
 import { ref } from "vue";
+import { useLoginedSteamUserStore } from "./LoginedSteamUserStore";
 
 export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", () => {
+
+    const LoginedSteamUserStore = useLoginedSteamUserStore();
+
+    const { data: loginedSteamUserData } = storeToRefs(LoginedSteamUserStore);
 
     const backupFolderPathStr = ref<string | null>("");
 
@@ -31,5 +36,5 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
     }
 
 
-    return { viewData, dataCount, currentPage, pageSize, backupFolderPathStr, fetchData, fetchPageData };
+    return { loginedSteamUserData, viewData, dataCount, currentPage, pageSize, backupFolderPathStr, fetchData, fetchPageData };
 })

@@ -18,7 +18,8 @@ fn main() {
             fs::is_file_exists,
             fs::write_file,
             fs::read_file,
-            fs::copy_directory,
+            fs::copy_file_or_directory,
+            fs::remove_file_or_directory,
             fs::read_file_as_base64
         ])
         .run(tauri::generate_context!())

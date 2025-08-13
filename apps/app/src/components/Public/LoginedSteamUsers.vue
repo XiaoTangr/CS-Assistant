@@ -6,29 +6,17 @@
         </template>
         <template #default>
             <el-space wrap alignment="stretch" :fill-ratio="0" class="users-container">
-                <GlassCard body-class="user-container-body" shadow="hover" class="user-container"
-                    v-for="(v) in data as any">
+                <GlassCard v-for="(v) in data as any" :key="v.steamId" body-class="user-container-body" shadow="hover"
+                    class="user-container">
                     <div class="user-container-inner">
                         <div class="l">
                             <el-avatar class="avatar" shape="square" :src="v.avatarBase64" />
                         </div>
                         <div class="r select-text">
-                            <div class="text">
-                                用户昵称:
-                                <CopyText :text="v.PersonaName" />
-                            </div>
-                            <div class="text">
-                                用户名称:
-                                <CopyText :text="v.AccountName" />
-                            </div>
-                            <div class="text">
-                                SteamID:
-                                <CopyText :text="v.steamId" />
-                            </div>
-                            <div class="text">
-                                FriendID:
-                                <CopyText :text="v.FriendId" />
-                            </div>
+                            <CopyText class="text" prefix="用户昵称: " :value="v.PersonaName" />
+                            <CopyText class="text" prefix="用户名称: " :value="v.AccountName" />
+                            <CopyText class="text" prefix="SteamID: " :value="v.steamId" />
+                            <CopyText class="text" prefix="FriendID: " :value="v.FriendId" />
                         </div>
                     </div>
                 </GlassCard>

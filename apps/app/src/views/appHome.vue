@@ -7,20 +7,6 @@
         </div>
         <LoginedSteamUsers class="container-item bottom" />
     </CommSpace>
-    <!-- <div class="container">
-
-        <div class="ot">
-            <div class="il">
-                <GameCheck />
-            </div>
-            <div class="ir">
-                <Notice />
-            </div>
-        </div>
-        <div class="ob">
-            <LoginedSteamUsers />
-        </div>
-    </div> -->
 </template>
 
 <script setup lang="ts">

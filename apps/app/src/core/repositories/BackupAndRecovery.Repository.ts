@@ -1,6 +1,6 @@
 import { baseCRUD } from "@/core/database";
 import { BackupAndRecovery } from "../models";
-import { fromDb } from "../utils";
+import { fromDb, toDb } from "../utils";
 
 export default class BackupAndRecoveryRepository {
 
@@ -16,7 +16,7 @@ export default class BackupAndRecoveryRepository {
             this.TABLE_NAME,
             filter,
         );
-        return results.length > 0 ? results[0] : null;
+        return results.length > 0 ? fromDb(results[0]) : null;
     }
 
     /**
@@ -55,7 +55,7 @@ export default class BackupAndRecoveryRepository {
      * @returns 受影响的行数
      */
     static async bulkCreate(payloads: BackupAndRecovery[]): Promise<number> {
-        return (await baseCRUD.insertRows(this.TABLE_NAME, payloads)).rowsAffected;
+        return (await baseCRUD.insertRows(this.TABLE_NAME, toDb(payloads))).rowsAffected;
     }
 
     /**

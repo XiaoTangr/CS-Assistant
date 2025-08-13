@@ -118,12 +118,12 @@ export const searchFilesByName = async (
             const isMatch = caseSensitive
                 ? node.name === fileName
                 : node.name.toLowerCase() === fileName.toLowerCase();
-            
+
             if (isMatch) {
                 result.push(node.path);
             }
         }
-        
+
         if (node.children && (depth === -1 || currentDepth < depth)) {
             node.children.forEach(child => findFiles(child, currentDepth + 1));
         }
@@ -133,3 +133,24 @@ export const searchFilesByName = async (
     return result;
 };
 
+/**
+ * @description 复制文件或目录
+ * @param from 源路径
+ * @param to 目标路径
+ * @param recursive 是否递归复制目录，默认true
+ * @returns Promise
+ */
+export const cp = async (from: string, to: string, recursive: boolean = true): Promise<void> => {
+    return await invoke("copy_file_or_directory", { from: from, to: to, recursive: recursive });
+}
+
+
+/**
+ * @description 删除文件或目录
+ * @param path 要删除的文件或目录路径
+ * @param recursive 是否递归删除目录，默认true
+ * @returns Promise
+ */
+export const rm = async (path: string, recursive: boolean = true): Promise<void> => {
+    return await invoke("remove_file_or_directory", { path: path, recursive: recursive });
+}

@@ -82,7 +82,7 @@ withDefaults(defineProps<LiquidDialogProps>(), {
     closeOnPressEscape: true,
     showClose: true,
     beforeClose: undefined,
-    draggable: false,
+    draggable: true,
     overflow: false,
     center: false,
     alignCenter: true,

@@ -4,7 +4,7 @@ export interface BackupAndRecovery {
     // 所属用户昵称
     nickName: string;
     // 所属用户好友ID
-    friendId: string;
+    friendId: number;
     // 描述
     description?: string;
     // 创建日期

@@ -6,6 +6,13 @@
         <template #default>
             <el-table class="table" :data="viewData">
                 <el-table-column width="160" :formatter="dateFormatter" property="createdAt" label="创建日期" />
+                <el-table-column width="120" label="好友Id">
+                    <template #default="scope">
+                        <el-text truncated line-clamp="1">
+                            {{ scope.row.friendId }}
+                        </el-text>
+                    </template>
+                </el-table-column>
                 <el-table-column width="120" label="所属账号">
                     <template #default="scope">
                         <el-text truncated line-clamp="1">
@@ -13,11 +20,10 @@
                         </el-text>
                     </template>
                 </el-table-column>
+
                 <el-table-column width="180" label="保存路径">
                     <template #default="scope">
-                        <el-text truncated line-clamp="1">
-                            {{ backupFolderPathStr + scope.row.folderPath }}
-                        </el-text>
+                        <CopyText :line-clamp="1" :value="scope.row.folderPath" style="width: 100%;" />
                     </template>
                 </el-table-column>
                 <el-table-column label="用户备注">
@@ -47,79 +53,103 @@
                     新建备份
                 </template>
                 <template #default>
-                    <el-form v-model="newData">
+                    <el-form v-model="confirmNewBackupData">
                         <el-form-item label="唯一标识">
-                            <el-input disabled v-model="newData.id" placeholder="请输入所属账号..." />
+                            <el-input disabled v-model="confirmNewBackupData.id" placeholder="请输入所属账号..." />
                         </el-form-item>
                         <el-form-item label="所属账号">
-                            <!-- !:应该使用下拉框从LogedSteamUserStore中获取 -->
-                            <el-input v-model="newData.nickName" placeholder="请输入所属账号..." />
+                            <el-select v-model="confirmNewBackupData.nickName" placeholder="选择一个目标为其创建备份..."
+                                @change="nickNameChangeHandler">
+                                <el-option v-for="item in loginedSteamUserData" :key="item.PersonaName"
+                                    :label="item.PersonaName" :value="item.PersonaName" />
+                            </el-select>
                         </el-form-item>
                         <el-form-item label="FriendID">
-                            <!-- !:自动匹配LogedSteamUserStore -->
-                            <el-input disabled v-model="newData.friendId" placeholder="请输入所属好友ID..." />
+                            <el-input disabled v-model="confirmNewBackupData.friendId" placeholder="请输入所属好友ID..." />
                         </el-form-item>
                         <el-form-item label="保存路径">
-                            <el-input disabled v-model="newData.folderPath" placeholder="请输入保存路径..." />
+                            <el-input disabled v-model="confirmNewBackupData.folderPath" placeholder="请输入保存路径..." />
                         </el-form-item>
                         <el-form-item label="输入备注">
-                            <el-input type="textarea" v-model="newData.description" placeholder="请输入用户备注..." />
+                            <el-input type="textarea" v-model="confirmNewBackupData.description"
+                                placeholder="请输入用户备注..." />
                         </el-form-item>
 
                     </el-form>
                 </template>
                 <template #footer>
-                    <GlassButton plain round type="primary">保存</GlassButton>
-                    <GlassButton plain round>取消</GlassButton>
+                    <GlassButton plain round @click="confirmCreateHandler" type="primary">确定</GlassButton>
+                    <GlassButton plain round @click="cancelCreateHandler">取消</GlassButton>
                 </template>
             </GlassDialog>
 
             <!-- 恢复备份的对话框 -->
             <GlassDialog @closed="resetRestoreBackupId" :destroy-on-close="true" v-model="showRestoreBackup">
                 <template #header>
-                    恢复备份: {{ RestoreBackupId }}
+                    恢复 {{ confirmRestoreData?.nickName }} 的备份
                 </template>
                 <template #default>
-                    {{ confirmRestoreData }}
+                    创建于: {{ formatTimestamp(confirmRestoreData?.createdAt ?? 0) }}
+                    <br>
+                    <CopyText prefix="保存于: " :value="confirmRestoreData?.folderPath" />
+                    <br>
+                    <span v-if="confirmRestoreData?.description">
+                        描述: {{ confirmRestoreData?.description }}
+                        <br>
+                    </span>
+                    <el-checkbox v-model="keepBackUpWhenRestore" label="恢复时保留备份数据" />
                 </template>
                 <template #footer>
-                    <GlassButton plain round type="primary">确认</GlassButton>
-                    <GlassButton plain round>取消</GlassButton>
+                    <GlassButton plain round @click="confirmRestoreHandler" type="primary">确认</GlassButton>
+                    <GlassButton plain round @click="cancelRestoreHandler">取消</GlassButton>
                 </template>
             </GlassDialog>
             <!-- 删除备份的对话框 -->
             <GlassDialog @closed="resetDeleteBackupId" :destroy-on-close="true" v-model="showDeleteBackup">
                 <template #header>
-                    删除备份: {{ DeleteBackupId }}
+                    删除 {{ confirmDeleteData?.nickName }} 的备份
                 </template>
                 <template #default>
-                    {{ confirmDeleteData }}
+                    创建于: {{ formatTimestamp(confirmDeleteData?.createdAt ?? 0) }}
+                    <br>
+                    <CopyText prefix="保存于: " :value="confirmDeleteData?.folderPath" />
+                    <br>
+                    <span v-if="confirmDeleteData?.description">
+                        描述: {{ confirmDeleteData?.description }}
+                    </span>
+                </template>
+                <template #footer>
+                    <GlassButton plain round @click="confirmDeleteHandler" type="danger">确认</GlassButton>
+                    <GlassButton plain round @click="cancelDeleteHandler">取消</GlassButton>
                 </template>
             </GlassDialog>
         </template>
         <template #footer>
-            <GlassButton plain round type="primary" @click="showNewBackup = true">新建备份</GlassButton>
+            <GlassButton plain round type="primary" @click='setconfirmNewBackupDataIdHandler'>新建备份
+            </GlassButton>
         </template>
     </GlassCard>
 </template>
 
 <script setup lang="ts">
+import CopyText from '@/components/Common/CopyText.vue';
 import GlassButton from '@/components/Common/GlassButton.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import { BackupAndRecovery } from '@/core/models';
-import { formatTimestamp } from '@/core/utils';
+import { BackupAndRecoveryService } from '@/core/services';
+import { formatTimestamp, getCurrentTimestamp, timestampToFolderName } from '@/core/utils';
 import { useBackupAndRecoveryStore } from '@/store/BackupAndRecoveryStore';
+import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 const PAGE_SIZES = [10, 20, 50, 100];
 const BARStore = useBackupAndRecoveryStore();
-const { viewData, pageSize, currentPage, dataCount, backupFolderPathStr } = storeToRefs(BARStore);
+const { loginedSteamUserData, viewData, pageSize, currentPage, dataCount, backupFolderPathStr } = storeToRefs(BARStore);
 
 const dateFormatter = (cellValue: BackupAndRecovery) => {
     return formatTimestamp(cellValue.createdAt as number)
 }
-
 const handleSizeChange = async (val: number) => {
     pageSize.value = val;
     await BARStore.fetchPageData();
@@ -131,21 +161,79 @@ const handleCurrentChange = async (val: number) => {
 
 
 // ——————————————— 新建备份 ————————————————————
-const showNewBackup = ref(false);
 
-const newData = ref<BackupAndRecovery>({
-    id: 0,
+const confirmNewBackupData = ref<BackupAndRecovery>({
+    id: -1,
     nickName: '',
-    friendId: '',
+    friendId: 0,
     description: '',
     folderPath: '',
     createdAt: 0
 })
 
+const setconfirmNewBackupDataIdHandler = () => {
+
+    let id = getCurrentTimestamp();
+    confirmNewBackupData.value.id = id;
+    confirmNewBackupData.value.createdAt = id;
+
+}
+
+const pathGenerator = (fid: number, timePath: string) => {
+    return `${backupFolderPathStr.value}\\${fid}\\${timePath}\\730`;
+}
+
+const showNewBackup = computed(() => {
+    return confirmNewBackupData.value.id > 0;
+});
+
+const nickNameChangeHandler = (val: string) => {
+    let fid: number = (loginedSteamUserData.value ?? []).find(item => item.PersonaName === val)?.FriendId as unknown as number;
+    confirmNewBackupData.value.friendId = fid;
+    confirmNewBackupData.value.folderPath = pathGenerator(fid, timestampToFolderName(confirmNewBackupData.value.createdAt));
+}
+
+
+const confirmCreateHandler = async () => {
+    try {
+        await BackupAndRecoveryService.createBackup(confirmNewBackupData.value).then(() => {
+            ElNotification({
+                title: '成功',
+                message: '备份创建成功',
+                type: 'success',
+                duration: 5000
+            });
+            BARStore.fetchPageData();
+            cancelCreateHandler();
+        });
+    } catch (error) {
+        ElNotification({
+            title: '错误',
+            message: (error as Error).message,
+            type: 'error',
+            duration: 5000
+        });
+        return;
+    }
+
+}
+const cancelCreateHandler = () => {
+    confirmNewBackupData.value = {
+        id: -1,
+        nickName: '',
+        friendId: 0,
+        description: '',
+        folderPath: '',
+        createdAt: 0
+    };
+}
 // ——————————————— 恢复备份 ————————————————————
 
 // 恢复备份ID
 const RestoreBackupId = ref(-1);
+// 是否保留备份数据
+const keepBackUpWhenRestore = ref(true);
+
 // 是否显示恢复备份对话框
 const showRestoreBackup = computed(() => {
     return RestoreBackupId.value > 0;
@@ -163,8 +251,27 @@ const setRestoreBackupIdHandler = async (id: number) => {
 const resetRestoreBackupId = () => {
     RestoreBackupId.value = -1;
 }
-
-
+const confirmRestoreHandler = () => {
+    BackupAndRecoveryService.restoreBackUp(confirmRestoreData.value!.id, keepBackUpWhenRestore.value).then(() => {
+        resetRestoreBackupId();
+        BARStore.fetchPageData();
+        ElNotification({
+            title: '成功',
+            message: '备份恢复成功',
+            type: 'success',
+            duration: 5000
+        });
+    }).catch((error: Error) => {
+        ElNotification.error({
+            title: '错误',
+            message: `备份恢复失败: ${error.message}`,
+            duration: 5000
+        });
+    });
+}
+const cancelRestoreHandler = () => {
+    resetRestoreBackupId();
+}
 
 // ——————————————— 删除备份 ————————————————————
 // 删除备份ID
@@ -185,7 +292,29 @@ const setDeleteBackupIdhandler = async (id: number) => {
 const resetDeleteBackupId = () => {
     DeleteBackupId.value = -1;
 }
+const confirmDeleteHandler = () => {
+    BackupAndRecoveryService.deleteBackup(confirmDeleteData.value!.id).then(() => {
+        resetDeleteBackupId();
+        BARStore.fetchPageData();
+        ElNotification({
+            title: '成功',
+            message: '备份删除成功',
+            type: 'success',
+            duration: 5000
+        });
+    }).catch((error: Error) => {
+        ElNotification.error({
+            title: '错误',
+            message: error.message,
+            type: 'error',
+            duration: 5000
+        });
+    });
 
+}
+const cancelDeleteHandler = () => {
+    resetDeleteBackupId();
+}
 </script>
 
 <style scoped lang="scss">
