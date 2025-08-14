@@ -140,8 +140,8 @@ export const searchFilesByName = async (
  * @param recursive 是否递归复制目录，默认true
  * @returns Promise
  */
-export const cp = async (from: string, to: string, recursive: boolean = true): Promise<void> => {
-    return await invoke("copy_file_or_directory", { from: from, to: to, recursive: recursive });
+export const cp = async (from: string, to: string, recursive: boolean = true): Promise<number> => {
+    return await invoke("copy_file_or_directory", { from: from, to: to, recursive: recursive })
 }
 
 
@@ -151,6 +151,6 @@ export const cp = async (from: string, to: string, recursive: boolean = true): P
  * @param recursive 是否递归删除目录，默认true
  * @returns Promise
  */
-export const rm = async (path: string, recursive: boolean = true): Promise<void> => {
+export const rm = async (path: string, recursive: boolean = true): Promise<number> => {
     return await invoke("remove_file_or_directory", { path: path, recursive: recursive });
 }

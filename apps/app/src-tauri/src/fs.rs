@@ -86,7 +86,8 @@ pub fn write_file(path: PathBuf, data: Vec<u8>) -> Result<(), String> {
  * @param from 源路径
  * @param to 目标路径
  * @param recursive 是否递归复制目录，默认true
- * @returns 0:copy成功 1:源路径不存在 2:其他错误
+ * @returns Result<(), String> Ok:复制成功，Err:复制失败及错误信息
+ * @throws Error
  */
 #[tauri::command]
 pub fn copy_file_or_directory(from: &str, to: &str, recursive: Option<bool>) -> Result<(), String> {
@@ -147,7 +148,8 @@ pub fn copy_file_or_directory(from: &str, to: &str, recursive: Option<bool>) -> 
  * @description 删除文件或目录
  * @param path 要删除的文件或目录路径
  * @param recursive 是否递归删除目录，默认true
- * @returns Promise
+ * @returns Result<(), String> Ok:删除成功，Err:删除失败及错误信息
+ * @throws Error
  */
 #[tauri::command]
 pub fn remove_file_or_directory(path: &str, recursive: Option<bool>) -> Result<(), String> {

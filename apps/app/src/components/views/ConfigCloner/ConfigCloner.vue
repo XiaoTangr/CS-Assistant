@@ -6,26 +6,24 @@
                 <el-space class="selecter" direction="vertical" fill>
                     <div class="l">
                         <p>复制源</p>
-                        <el-select clearable v-model="CopyOriginSelected" placeholder="选择复制源" style="flex: 1;"
-                            @change="asOrigintSelerterChangeHandler">
-                            <el-option v-for="item in userSettingsArr" :disabled="!item.asOrigin" :key="item.folderName"
-                                :label="item.userName" :value="item.folderName" />
+                        <el-select clearable v-model="cloneFrom" placeholder="选择复制源" style="flex: 1;"
+                            @change="cloneFromSelecterChangeHandler">
+                            <el-option v-for="item in selectList" :disabled="!item.asOrigin" :key="item.folderName"
+                                :label="item.userName" :value="item.folderName?.toString()" />
                         </el-select>
                     </div>
                     <div class="r">
                         <p>目标(可多选)</p>
-
-                        <el-select clearable v-model="CopyTargetSelected" multiple placeholder="选择复制目标"
-                            style="flex: 1;">
-                            <el-option v-for="item in userSettingsArr" :disabled="!item.asTarget" :key="item.folderName"
-                                :label="item.userName" :value="item.folderName" />
+                        <el-select clearable v-model="cloneTo" multiple placeholder="选择复制目标" style="flex: 1;">
+                            <el-option v-for="item in selectList" :disabled="!item.asTarget" :key="item.folderName"
+                                :label="item.userName" :value="item.folderName?.toString()" />
                         </el-select>
                     </div>
                 </el-space>
 
                 <el-space class="operaters">
                     <el-checkbox v-model="backupUserSettings" label="备份目标的配置文件" />
-                    <GlassButton round type="primary" @click="copyHandler">确定</GlassButton>
+                    <GlassButton round type="primary" @click="confirmCloneHandler">确定</GlassButton>
                 </el-space>
             </div>
         </template>
@@ -36,104 +34,106 @@
 
 import GlassButton from '@/components/Common/GlassButton.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
-import { Settings } from '@/core/models';
+import { ConfigCloneService } from '@/core/services';
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
-import { useSettingsStore } from '@/store/SettingsStore';
 import { ElNotification } from 'element-plus';
+
 import { storeToRefs } from 'pinia';
 import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router';
-// import { invoke } from '@tauri-apps/api/core';
 
-const router = useRouter();
-
-const SettingsStore = useSettingsStore();
 
 interface SettingsArrItem {
-    userName: string,
-    folderName: string,
+    userName: string | undefined,
+    folderName: number | undefined,
     asOrigin: boolean,
     asTarget: boolean,
 }
+
 const backupUserSettings = ref(true)
 const LoginedSteamUserStore = useLoginedSteamUserStore();
 
+const { data: LoginedSteamUsers } = storeToRefs(LoginedSteamUserStore);
 
-const backupFolderPath = ref<string>();
+// 选择列表
+const selectList = ref<SettingsArrItem[]>();
 
-const { data } = storeToRefs(LoginedSteamUserStore);
-const userSettingsArr = ref<Array<SettingsArrItem>>();
+// 复制源
+const cloneFrom = ref<number>();
+
+// 目标列表
+const cloneTo = ref<number[]>([]);
+
+
+const cloneFromSelecterChangeHandler = (value: number) => {
+    cloneTo.value = cloneTo.value.filter((item: number) => item !== value);
+    selectList.value?.forEach((item: SettingsArrItem) => {
+
+        if (item.folderName == value) {
+            item.asOrigin = false;
+            item.asTarget = false;
+        } else {
+            item.asOrigin = true;
+            item.asTarget = true;
+        }
+    })
+}
 
 onMounted(() => {
-    if (data.value) {
-        userSettingsArr.value = data.value.map((item) => ({
-            userName: item.PersonaName ?? "Unknown",
-            folderName: item.FriendId ?? "",
+    if (LoginedSteamUsers.value) {
+        selectList.value = LoginedSteamUsers.value.map((item) => ({
+            userName: item.PersonaName ?? undefined,
+            folderName: item.FriendId ?? undefined,
             asOrigin: true,
             asTarget: true
         }));
     }
 })
 
-const CopyOriginSelected = ref<string | undefined>();
-const CopyTargetSelected = ref<string[]>([]);
-
-const asOrigintSelerterChangeHandler = (value: string) => {
-    if (CopyTargetSelected.value.includes(value)) {
-        CopyTargetSelected.value = CopyTargetSelected.value.filter((item) => item !== value);
-    }
-    userSettingsArr.value?.forEach((item) => {
-        if (item.folderName === value) {
-            item.asTarget = false;
-        } else {
-            item.asTarget = true;
-        }
-    })
-}
-const getBackupFolderPath = (): Promise<string> => {
-    return new Promise((resolve, reject) => {
-        let r = SettingsStore.getViewDataItemByKey("backupFolderPath") as Settings;
-        if (!r || !r.selected || r.selected === '') {
-            reject("The value of backupFolderPath is empty or illegal! ");
-        }
-        resolve(r.selected as string);
-    })
-}
-
-const copyHandler = async () => {
-    const SELECT_ORIGIN_AND_TARGET = '请选择复制源和目标';
-    if (!CopyOriginSelected.value || CopyTargetSelected.value.length === 0) {
-        ElNotification.error({ message: SELECT_ORIGIN_AND_TARGET });
+const confirmCloneHandler = async () => {
+    if (!cloneFrom.value || cloneTo.value.length === 0) {
+        ElNotification.error({
+            title: '错误',
+            message: '未指定复制源或目标',
+            type: 'error',
+            duration: 3000,
+        });
         return;
     }
-
-    for (const item of CopyTargetSelected.value) {
-        // 每个 item 单独判断是否启用备份
-        if (backupUserSettings.value) {
-            try {
-                const path = await getBackupFolderPath();
-                if (!path) {
-                    throw new Error('获取备份路径失败');
-                }
-                // 下面的路径在此基础上追击以YYMMDD_HHmmSS的文件夹作为备份路径
-                backupFolderPath.value = path;
-
-
-
-
-                ElNotification.info({ message: `正在备份目标项：${item}` });
-                // 执行备份操作（具体实现暂不提供）
-            } catch (e: any) {
-                ElNotification.error({ message: `错误：${e.message}，请前往设置页设置备份文件夹路径。` });
-                router.push({ path: '/settings' });
-                return;
-            }
-        }
-
-        // ElNotification.success({ message: `开始复制配置至：${item}` });
-        // 执行复制操作（具体实现暂不提供）
+    if (cloneTo.value.includes(cloneFrom.value)) {
+        ElNotification.error({
+            title: '错误',
+            message: '目标列表中不能包含复制源',
+            type: 'error',
+            duration: 3000,
+        });
+        return;
     }
-};
+    await ConfigCloneService.cloneConfig(cloneFrom.value, cloneTo.value).then(() => {
+        ElNotification.success({
+            title: '成功',
+            message: '配置克隆成功',
+            type: 'success',
+            duration: 3000,
+        });
+        // 清空选择
+        cloneFrom.value = undefined;
+        cloneTo.value = [];
+        selectList.value?.forEach((item) => {
+            item.asOrigin = true;
+            item.asTarget = true;
+        });
+    }).catch((error: Error) => {
+        ElNotification.error({
+            title: '错误',
+            message: error.message,
+            type: 'error',
+            duration: 5000
+        });
+    });
+}
+
+
+
 </script>
 
 <style lang="scss" scoped>

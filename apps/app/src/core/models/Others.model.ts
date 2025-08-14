@@ -18,8 +18,8 @@ export interface SteamLoginUser {
 export interface BasicSteamLoginUser {
     AccountName: string | null;
     PersonaName: string | null;
-    steamId: string | null;
-    FriendId: string | null;
+    steamId: number | null;
+    FriendId: number | null;
     avatarBase64: string | null;
 }
 

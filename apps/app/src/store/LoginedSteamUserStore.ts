@@ -39,7 +39,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         return res;
     }
 
-    const _matchAccountIdAndFriendId = async (targetPersonaName: string): Promise<string | null> => {
+    const _matchAccountIdAndFriendId = async (targetPersonaName: string): Promise<number | null> => {
         if (!_localVdfsPathArr.value) return null;
 
         for (const item of _localVdfsPathArr.value) {
@@ -57,7 +57,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
 
                     const userId = match[1];
                     LogServices.info(`[LoginedSteamUserStore._matchAccountIdAndFriendId] `, `match result: ${targetPersonaName} -> ${userId}`)
-                    return userId;
+                    return parseInt(userId);
                 }
             } catch (error) {
                 LogServices.error(`Error processing file ${item}:`, error);
@@ -77,14 +77,17 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         }
         let preData = (await getVdfObjectByFilePath(vdfPath)).users
         let resultdata: BasicSteamLoginUser[] = await Promise.all(Object.keys(preData).map(async accountID => {
-            let user = preData[accountID]
-            return {
+            let user = preData[accountID.toString()]
+
+            let res: BasicSteamLoginUser = {
                 AccountName: user.AccountName,
                 PersonaName: user.PersonaName,
-                steamId: accountID,
+                steamId: parseInt(accountID),
                 FriendId: await _matchAccountIdAndFriendId(user.PersonaName),
-                avatarBase64: (await _getAvatarDataUrl(accountID)),
+                avatarBase64: (await _getAvatarDataUrl(accountID))
             }
+
+            return res;
         }))
         LogServices.info('[LoginedSteamUserStore._buildData]', resultdata)
         return resultdata;
@@ -106,5 +109,62 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
         return { steamInstallPath: steamInstallPathData, cs2InstallPath: cs2InstallPathData };
     }
 
-    return { data, fetchData, steamInstallPath, cs2InstallPath, steamInstallPathStr, cs2InstallPathStr }
+
+    /**
+    * 根据任意提供信息获取该用户的其他信息
+    * @param { personaName,steamId,accountName,friendId} - 用户的任一信息,均为可选，但必须提供至少一个
+    * @returns 返回一个包含用户信息的对象
+    */
+    const getLogedSteamUser = async ({
+        personaName,
+        steamId,
+        accountName,
+        friendId
+    }: {
+        personaName?: string;
+        steamId?: number;
+        accountName?: string;
+        friendId?: number;
+    }): Promise<BasicSteamLoginUser | null> => {
+        // 确保至少提供一个参数
+        if (!personaName && !steamId && !accountName && (friendId === undefined || friendId === null)) {
+            LogServices.warn('[LoginedSteamUserStore.getLogedSteamUser] 至少需要提供一个用户信息参数');
+            return null;
+        }
+
+        // 确保数据已加载
+        if (!data.value) {
+            await fetchData();
+        }
+
+        // 如果仍然没有数据，返回null
+        if (!data.value) {
+            return null;
+        }
+
+        // 根据提供的参数查找用户
+        const user = data.value.find(u => {
+            // 检查PersonaName
+            if (personaName && u.PersonaName == personaName) {
+                return true;
+            }
+            // 检查steamId
+            if (steamId && u.steamId == steamId) {
+                return true;
+            }
+            // 检查AccountName
+            if (accountName && u.AccountName == accountName) {
+                return true;
+            }
+            // 检查FriendId
+            if (friendId !== undefined && friendId !== null && u.FriendId == friendId) {
+                return true;
+            }
+            return false;
+        });
+        LogServices.debug('[LoginedSteamUserStore.getLogedSteamUser]', user)
+        return user || null;
+    }
+
+    return { data, steamInstallPath, cs2InstallPath, steamInstallPathStr, cs2InstallPathStr, fetchData, getLogedSteamUser }
 })

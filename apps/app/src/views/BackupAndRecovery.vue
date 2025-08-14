@@ -20,10 +20,9 @@
                         </el-text>
                     </template>
                 </el-table-column>
-
-                <el-table-column width="180" label="保存路径">
+                <el-table-column show-overflow-tooltip width="180" label="保存路径">
                     <template #default="scope">
-                        <CopyText :line-clamp="1" :value="scope.row.folderPath" style="width: 100%;" />
+                        <CopyText :value="scope.row.folderPath" />
                     </template>
                 </el-table-column>
                 <el-table-column label="用户备注">
@@ -48,7 +47,7 @@
                     layout="prev,pager,next,sizes,total" :page-sizes="PAGE_SIZES" :total="dataCount" />
             </div>
             <!-- 新建备份的对话框 -->
-            <GlassDialog v-model="showNewBackup">
+            <GlassDialog @closed="cancelCreateHandler" v-model="showNewBackup">
                 <template #header>
                     新建备份
                 </template>

@@ -18,20 +18,20 @@ import { ref, computed } from 'vue'
 
 interface Props {
     /** 双向绑定的值，使用 v-model */
-    modelValue?: string
+    modelValue?: unknown
     /** 单向绑定的值，使用 :value */
-    value?: string
+    value?: unknown
     /** 前缀内容（不包含在复制文本中） */
     prefix?: string
     /** 后缀内容（不包含在复制文本中） */
     suffix?: string
     /** 行数限制，超过该行数显示省略号 */
-    lineClamp?: number | string
+    lineClamp?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
-    modelValue: '',
-    value: '',
+    modelValue: undefined,
+    value: undefined,
     prefix: '',
     suffix: '',
     lineClamp: undefined
@@ -81,7 +81,7 @@ const tooltipContent = computed(() => {
  */
 const getPureContent = (): string => {
     // 优先使用绑定的值
-    if (displayValue.value) return displayValue.value.trim()
+    if (displayValue.value) return (displayValue.value).toString().trim()
 
     // 从 slot 获取内容并去除前后缀
     if (containerRef.value) {
@@ -120,7 +120,6 @@ const handleCopy = async () => {
     }
 }
 </script>
-
 <style lang="scss" scoped>
 .copy-container {
     cursor: pointer;
@@ -132,14 +131,13 @@ const handleCopy = async () => {
     word-break: break-all;
 }
 
-.prefix,
-.suffix {
-    opacity: 0.7;
-    flex-shrink: 0;
-}
+// .prefix,
+// .suffix {
+//     opacity: 0.7;
+//     flex-shrink: 0;
+// }
 
 .text-content {
-    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
