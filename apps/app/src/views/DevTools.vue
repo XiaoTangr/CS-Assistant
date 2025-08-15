@@ -4,6 +4,14 @@
             <el-text class="item" v-for="n in 3" :key="n" type="danger" size="large">这些功能仅供开发者使用!<br /></el-text>
             <GlassCard class="item">
                 <template #header>
+                    操作
+                </template>
+                <template #default>
+                    none
+                </template>
+            </GlassCard>
+            <GlassCard class="item">
+                <template #header>
                     SQL ExecuteRaw
                 </template>
                 <template #default>
@@ -102,7 +110,6 @@ import GlassCard from '@/components/Common/GlassCard.vue';
 import ComponentTest from '@/components/views/DevTools/ComponentTest.vue';
 import { desVal } from '@/core/utils';
 import GlassButton from '@/components/Common/GlassButton.vue';
-
 const dbformRef = ref<FormInstance>();
 
 const dbsettingsType = ['Input', 'Boolean', 'Select', 'PathInput'];

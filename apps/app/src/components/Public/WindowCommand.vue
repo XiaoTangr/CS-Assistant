@@ -49,7 +49,7 @@
 import { Window } from '@tauri-apps/api/window';
 import AppIcon from '@/assets/icons/app/app-icon.png';
 import CommSpace from '../Common/CommSpace.vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import GlassButton from '../Common/GlassButton.vue';
 import GlassDialog from '../Common/GlassDialog.vue';
 const appWindow = new Window('main');
@@ -57,7 +57,7 @@ const appWindow = new Window('main');
 const centerDialogVisible = ref(false)
 
 
-const isFocused = ref(false);
+const isFocused = ref(true);
 const isLoading = ref(false);
 
 // 主动刷新焦点状态
@@ -75,13 +75,17 @@ appWindow.listen('tauri://blur', () => {
     isFocused.value = false;
 });
 
-// 首次加载获取状态
-refreshFocus();
+
 const CloseWindow = () => {
     appWindow.close()
 };
 const toggleMaximizeWindow = () => appWindow.toggleMaximize()
 const MinimizeWindow = () => appWindow.minimize()
+
+onMounted(() => {
+    // 首次加载获取状态
+    refreshFocus();
+});
 
 </script>
 
