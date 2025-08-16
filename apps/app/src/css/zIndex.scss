@@ -1,0 +1,23 @@
+.app-background {
+    z-index: -1;
+}
+
+.container-bg::before {
+    z-index: 0;
+}
+
+.container-bg {
+    z-index: 200;
+}
+
+.window-command-container {
+    z-index: 800;
+}
+
+.global-command-container {
+    z-index: 400;
+}
+
+.Meida-masker {
+    z-index: 400;
+}
