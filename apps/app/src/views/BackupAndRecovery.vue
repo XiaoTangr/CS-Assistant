@@ -5,15 +5,19 @@
         </template>
         <template #default>
             <el-table class="table" :data="viewData">
-                <el-table-column width="160" :formatter="dateFormatter" property="createdAt" label="创建日期" />
-                <el-table-column width="120" label="好友Id">
+                <el-table-column width="160" property="createdAt" label="创建日期">
+                    <template #default="scope">
+                        {{ formatTimestamp(scope.row.createdAt) }}
+                    </template>
+                </el-table-column>
+                <el-table-column width="120" label="所属用户FID">
                     <template #default="scope">
                         <el-text truncated line-clamp="1">
                             {{ scope.row.friendId }}
                         </el-text>
                     </template>
                 </el-table-column>
-                <el-table-column width="120" label="所属账号">
+                <el-table-column width="120" label="所属用户昵称">
                     <template #default="scope">
                         <el-text truncated line-clamp="1">
                             {{ scope.row.nickName }}
@@ -25,7 +29,7 @@
                         <CopyText :value="scope.row.folderPath" />
                     </template>
                 </el-table-column>
-                <el-table-column label="用户备注">
+                <el-table-column label="备注">
                     <template #default="scope">
                         <el-text truncated line-clamp="1">
                             {{ scope.row.description }}
@@ -52,27 +56,27 @@
                     新建备份
                 </template>
                 <template #default>
-                    <el-form v-model="confirmNewBackupData">
-                        <el-form-item label="唯一标识">
-                            <el-input disabled v-model="confirmNewBackupData.id" placeholder="请输入所属账号..." />
-                        </el-form-item>
+                    <el-form v-model="confirmCreateBackupData">
                         <el-form-item label="所属账号">
-                            <el-select v-model="confirmNewBackupData.nickName" placeholder="选择一个目标为其创建备份..."
-                                @change="nickNameChangeHandler">
+                            <el-select v-model="confirmCreateBackupData.nickName" placeholder="选择一个目标为其创建备份...">
                                 <el-option v-for="item in loginedSteamUserData" :key="item.PersonaName"
                                     :label="item.PersonaName" :value="item.PersonaName" />
                             </el-select>
                         </el-form-item>
+                        <el-form-item label="输入备注">
+                            <el-input type="textarea" v-model="confirmCreateBackupData.description"
+                                placeholder="请输入用户备注..." style="max-height: 20vh;overflow-y: auto ;" />
+                        </el-form-item>
+                        <el-form-item label="唯一标识">
+                            <el-input disabled v-model="confirmCreateBackupData.id" placeholder="自动识别" />
+                        </el-form-item>
                         <el-form-item label="FriendID">
-                            <el-input disabled v-model="confirmNewBackupData.friendId" placeholder="请输入所属好友ID..." />
+                            <el-input disabled v-model="confirmCreateBackupData.friendId" placeholder="选择目标后自动识别" />
                         </el-form-item>
                         <el-form-item label="保存路径">
-                            <el-input disabled v-model="confirmNewBackupData.folderPath" placeholder="请输入保存路径..." />
+                            <el-input disabled v-model="confirmCreateBackupData.folderPath" placeholder="选择目标后自动生成" />
                         </el-form-item>
-                        <el-form-item label="输入备注">
-                            <el-input type="textarea" v-model="confirmNewBackupData.description"
-                                placeholder="请输入用户备注..." />
-                        </el-form-item>
+
 
                     </el-form>
                 </template>
@@ -124,7 +128,7 @@
             </GlassDialog>
         </template>
         <template #footer>
-            <GlassButton plain round type="primary" @click='setconfirmNewBackupDataIdHandler'>新建备份
+            <GlassButton plain round type="primary" @click='setconfirmCreateBackupDataIdHandler'>新建备份
             </GlassButton>
         </template>
     </GlassCard>
@@ -137,18 +141,15 @@ import GlassCard from '@/components/Common/GlassCard.vue';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import { BackupAndRecovery } from '@/core/models';
 import { BackupAndRecoveryService } from '@/core/services';
-import { formatTimestamp, getCurrentTimestamp, timestampToFolderName } from '@/core/utils';
+import { formatTimestamp } from '@/core/utils';
 import { useBackupAndRecoveryStore } from '@/store/BackupAndRecoveryStore';
 import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';
 const PAGE_SIZES = [10, 20, 50, 100];
 const BARStore = useBackupAndRecoveryStore();
-const { loginedSteamUserData, viewData, pageSize, currentPage, dataCount, backupFolderPathStr } = storeToRefs(BARStore);
+const { loginedSteamUserData, viewData, pageSize, currentPage, dataCount } = storeToRefs(BARStore);
 
-const dateFormatter = (cellValue: BackupAndRecovery) => {
-    return formatTimestamp(cellValue.createdAt as number)
-}
 const handleSizeChange = async (val: number) => {
     pageSize.value = val;
     await BARStore.fetchPageData();
@@ -161,70 +162,41 @@ const handleCurrentChange = async (val: number) => {
 
 // ——————————————— 新建备份 ————————————————————
 
-const confirmNewBackupData = ref<BackupAndRecovery>({
-    id: -1,
-    nickName: '',
-    friendId: 0,
-    description: '',
-    folderPath: '',
-    createdAt: 0
-})
+const { confirmCreateBackupData } = storeToRefs(BARStore);
 
-const setconfirmNewBackupDataIdHandler = () => {
 
-    let id = getCurrentTimestamp();
-    confirmNewBackupData.value.id = id;
-    confirmNewBackupData.value.createdAt = id;
-
-}
-
-const pathGenerator = (fid: number, timePath: string) => {
-    return `${backupFolderPathStr.value}\\${fid}\\${timePath}\\730`;
+const setconfirmCreateBackupDataIdHandler = () => {
+    BARStore.setConfirmCreateBackupData();
 }
 
 const showNewBackup = computed(() => {
-    return confirmNewBackupData.value.id > 0;
+    return confirmCreateBackupData.value.id > 0;
 });
 
-const nickNameChangeHandler = (val: string) => {
-    let fid: number = (loginedSteamUserData.value ?? []).find(item => item.PersonaName === val)?.FriendId as unknown as number;
-    confirmNewBackupData.value.friendId = fid;
-    confirmNewBackupData.value.folderPath = pathGenerator(fid, timestampToFolderName(confirmNewBackupData.value.createdAt));
-}
-
-
 const confirmCreateHandler = async () => {
-    try {
-        await BackupAndRecoveryService.createBackup(confirmNewBackupData.value).then(() => {
-            ElNotification({
+    await BARStore.createBackup()
+        .then((res) => {
+            ElNotification.success({
                 title: '成功',
-                message: '备份创建成功',
                 type: 'success',
-                duration: 5000
-            });
-            BARStore.fetchPageData();
-            cancelCreateHandler();
-        });
-    } catch (error) {
-        ElNotification({
-            title: '错误',
-            message: (error as Error).message,
-            type: 'error',
-            duration: 5000
-        });
-        return;
-    }
+                message: `备份成功: ${res} `,
+                duration: 3000,
+            })
+        })
+        .catch((err) => {
+            ElNotification.error({
+                title: '失败',
+                type: 'error',
+                message: `备份失败: ${err = -1 ? "未指定备份目标" : err} `,
+                duration: 3000,
+            })
+        })
+    BARStore.setConfirmCreateBackupData({ reset: true });
+    BARStore.fetchData()
 
 }
 const cancelCreateHandler = () => {
-    confirmNewBackupData.value = {
-        id: -1,
-        nickName: '',
-        friendId: 0,
-        description: '',
-        folderPath: '',
-        createdAt: 0
-    };
+    BARStore.setConfirmCreateBackupData({ reset: true });
 }
 // ——————————————— 恢复备份 ————————————————————
 
@@ -250,10 +222,8 @@ const setRestoreBackupIdHandler = async (id: number) => {
 const resetRestoreBackupId = () => {
     RestoreBackupId.value = -1;
 }
-const confirmRestoreHandler = () => {
-    BackupAndRecoveryService.restoreBackUp(confirmRestoreData.value!.id, keepBackUpWhenRestore.value).then(() => {
-        resetRestoreBackupId();
-        BARStore.fetchPageData();
+const confirmRestoreHandler = async () => {
+    await BackupAndRecoveryService.restoreBackUp(confirmRestoreData.value!.id, keepBackUpWhenRestore.value).then(() => {
         ElNotification({
             title: '成功',
             message: '备份恢复成功',
@@ -267,6 +237,8 @@ const confirmRestoreHandler = () => {
             duration: 5000
         });
     });
+    resetRestoreBackupId();
+    BARStore.fetchPageData();
 }
 const cancelRestoreHandler = () => {
     resetRestoreBackupId();
@@ -291,10 +263,9 @@ const setDeleteBackupIdhandler = async (id: number) => {
 const resetDeleteBackupId = () => {
     DeleteBackupId.value = -1;
 }
-const confirmDeleteHandler = () => {
-    BackupAndRecoveryService.deleteBackup(confirmDeleteData.value!.id).then(() => {
-        resetDeleteBackupId();
-        BARStore.fetchPageData();
+const confirmDeleteHandler = async () => {
+    await BackupAndRecoveryService.deleteBackup(confirmDeleteData.value!.id).then(() => {
+
         ElNotification({
             title: '成功',
             message: '备份删除成功',
@@ -309,7 +280,8 @@ const confirmDeleteHandler = () => {
             duration: 5000
         });
     });
-
+    resetDeleteBackupId();
+    BARStore.fetchPageData();
 }
 const cancelDeleteHandler = () => {
     resetDeleteBackupId();

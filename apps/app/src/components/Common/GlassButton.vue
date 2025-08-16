@@ -78,92 +78,93 @@ defineEmits<{
     backdrop-filter: blur(16px) saturate(150%);
     -webkit-backdrop-filter: blur(16px) saturate(150%);
 
-    /* 基础颜色变量 */
-    --el-color-primary: #40a0ff88;
-    --el-color-success: #67c23a88;
-    --el-color-warning: #e6a23c88;
-    --el-color-danger: #f56c6c88;
-    --el-color-info: #90939988;
+    --el-fill-color-light: #f5f7fa80;
+    --el-fill-color-blank: #f5f7fa80;
 
-    --el-fill-color-light: #f5f7fa66;
-    --el-fill-color-blank: #f5f7fa66;
-    /* Primary 浅色/深色 */
-    --el-color-primary-light-3: #79BBFF66;
-    --el-color-primary-light-5: #A0CFFF66;
-    --el-color-primary-light-7: #C6E2FF66;
-    --el-color-primary-light-9: #ECF5FF66;
-    --el-color-primary-dark-2: #337dcc90;
-
-    /* Success 浅色/深色 */
-    --el-color-success-light-3: #85CE6166;
-    --el-color-success-light-5: #A4DA8966;
-    --el-color-success-light-7: #C2E7B066;
-    --el-color-success-light-9: #E1F3D866;
-    --el-color-success-dark-2: #529B2E90;
-
-    /* Warning 浅色/深色 */
-    --el-color-warning-light-3: #EBB56366;
-    --el-color-warning-light-5: #F0C78A66;
-    --el-color-warning-light-7: #F5DAB166;
-    --el-color-warning-light-9: #FAECD866;
-    --el-color-warning-dark-2: #B8823090;
-
-    /* Danger 浅色/深色 */
-    --el-color-danger-light-3: #F7898966;
-    --el-color-danger-light-5: #F9A7A766;
-    --el-color-danger-light-7: #FBC4C466;
-    --el-color-danger-light-9: #FDE2E266;
-    --el-color-danger-dark-2: #C4565690;
-
-    /* Info 浅色/深色 */
-    --el-color-info-light-3: #A6A9AD66;
-    --el-color-info-light-5: #BBBFC466;
-    --el-color-info-light-7: #D3D4D666;
-    --el-color-info-light-9: #E9E9EB66;
-    --el-color-info-dark-2: #73767A90;
-
+    --el-color-primary: #40a0ff80;
+    --el-color-primary-light-3: #79bbff80;
+    --el-color-primary-light-5: #a0cfff80;
+    --el-color-primary-light-7: #c6e2ff80;
+    --el-color-primary-light-8: #d9ecff80;
+    --el-color-primary-light-9: #ecf5ff80;
+    --el-color-primary-dark-2: #337ecc80;
+    --el-color-success: #67c23a80;
+    --el-color-success-light-3: #95d47580;
+    --el-color-success-light-5: #b3e19d80;
+    --el-color-success-light-7: #d1edc480;
+    --el-color-success-light-8: #e1f3d880;
+    --el-color-success-light-9: #f0f9eb80;
+    --el-color-success-dark-2: #529b2e80;
+    --el-color-warning: #e6a23c80;
+    --el-color-warning-light-3: #eebe7780;
+    --el-color-warning-light-5: #f3d19e80;
+    --el-color-warning-light-7: #f8e3c805;
+    --el-color-warning-light-8: #faecd880;
+    --el-color-warning-light-9: #fdf6ec80;
+    --el-color-warning-dark-2: #b8823080;
+    --el-color-danger: #f56c6c80;
+    --el-color-danger-light-3: #f8989880;
+    --el-color-danger-light-5: #fab6b680;
+    --el-color-danger-light-7: #fcd3d380;
+    --el-color-danger-light-8: #fde2e280;
+    --el-color-danger-light-9: #fef0f080;
+    --el-color-danger-dark-2: #c4565680;
+    --el-color-error: #f56c6c80;
+    --el-color-error-light-3: #f8989880;
+    --el-color-error-light-5: #fab6b680;
+    --el-color-error-light-7: #fcd3d380;
+    --el-color-error-light-8: #fde2e280;
+    --el-color-error-light-9: #fef0f080;
+    --el-color-error-dark-2: #c4565680;
+    --el-color-info: #90939980;
+    --el-color-info-light-3: #b1b3b880;
+    --el-color-info-light-5: #c8c9cc80;
+    --el-color-info-light-7: #dedfe080;
+    --el-color-info-light-8: #e9e9eb80;
+    --el-color-info-light-9: #f4f4f805;
+    --el-color-info-dark-2: #73767a80;
 }
 
 .GlassButton.el-button {
     box-shadow:
         0 .2em .8em rgba(0, 0, 0, 0.08),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button:hover {
     box-shadow:
         0 .2em .8em rgba(31, 38, 135, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-always {
     box-shadow:
         0 .2em .8em rgba(31, 38, 135, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-always:hover {
     box-shadow:
         0 .2em .8em rgba(31, 38, 135, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-hover {
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-hover:hover {
     box-shadow:
         0 .2em .8em rgba(31, 38, 135, 0.1),
-        inset 0 1px 2px rgba(255, 255, 255, 0.6);
+        inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-never {
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-never:hover {
-    box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.6);
+    box-shadow: inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 // default 按钮的样式
@@ -177,10 +178,10 @@ defineEmits<{
 
 .GlassButton.is-text,
 .GlassButton.is-link {
-    backdrop-filter: none ;
-    -webkit-backdrop-filter: none ;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
     box-shadow: none !important;
-    border: none ;
+    border: none;
 }
 
 
@@ -219,5 +220,14 @@ defineEmits<{
 .GlassButton.el-button--info.is-plain {
     --el-button-hover-text-color: var(--el-color-info);
     --el-button-hover-bg-color: var(--el-color-info-light-7);
+}
+
+
+.GlassButton.el-button.is-link {
+    --el-color-primary-light-5: var(--el-color-primary-dark-2);
+    --el-color-success-light-5: var(--el-color-success-dark-2);
+    --el-color-warning-light-5: var(--el-color-warning-dark-2);
+    --el-color-danger-light-5: var(--el-color-danger-dark-2);
+    --el-color-info-light-5: var(--el-color-info-dark-2);
 }
 </style>

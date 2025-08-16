@@ -9,9 +9,9 @@
                     <GlassButton @click="next" round :icon="ArrowRightBold" />
                 </el-tooltip>
             </GlassButtonGroup>
-            <GlassButtonGroup size="large" style="-webkit-app-region: drag">
+            <GlassButtonGroup id="WindowMover" size="large" style="-webkit-app-region: drag">
                 <el-tooltip content="移动窗口">
-                    <GlassButton round :icon="Rank" />
+                    <GlassButton  round :icon="Rank" />
                 </el-tooltip>
             </GlassButtonGroup>
         </CommSpace>

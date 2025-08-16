@@ -3,7 +3,6 @@ import { BackupAndRecovery } from "../models";
 import { cp, getCurrentTimestamp, isFileExists, rm, timestampToFolderName } from "../utils";
 import LogServices from "./Log.services";
 import SettingsService from "./Settings.services";
-import { storeToRefs } from "pinia";
 import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
 import BackupAndRecoveryService from "./BackupAndRecovery.services";
 
@@ -32,7 +31,7 @@ export default class ConfigCloneService {
      * @param backUp - 是否在复制前进行备份，默认为 true
      * @returns Promise<number[]> - 返回成功复制的目标账号 ID 数组
      */
-    static async cloneConfig(fromId: number, toId: number[], backUp: boolean = true): Promise<number[]> {
+    static async cloneConfig(fromId: number, toId: number[], config?: { backUp?: boolean }): Promise<number[]> {
         let successList: number[] = [];
         try {
             let fromPath = await this.get730Path(fromId);
@@ -41,12 +40,11 @@ export default class ConfigCloneService {
                     let toPath = await this.get730Path(item);
 
                     // 如果需要备份，先备份目标路径
-                    if (backUp) {
+                    if (config?.backUp) {
                         try {
-                            const BARStore = useBackupAndRecoveryStore();
-                            const { backupFolderPathStr } = storeToRefs(BARStore);
                             let createdAt = getCurrentTimestamp();
-                            let folderPath = `${backupFolderPathStr.value}\\${item}\\${timestampToFolderName(createdAt)}\\730`;
+                            let p = await BackupAndRecoveryService.getBackupFolderPath();
+                            let folderPath = `${p}\\${item}\\${timestampToFolderName(createdAt)}\\730`;
 
                             let loginedSteamUserStore = useLoginedSteamUserStore();
                             let nickName = (await loginedSteamUserStore.getLogedSteamUser({ friendId: item }))?.PersonaName || "未知用户";
@@ -62,6 +60,21 @@ export default class ConfigCloneService {
                             await BackupAndRecoveryService.createBackup(bpPayload);
                             const BackupAndRecoveryStore = useBackupAndRecoveryStore();
                             BackupAndRecoveryStore.fetchData();
+
+
+
+                            // let loginedSteamUserStore = useLoginedSteamUserStore();
+                            // let nickName = (await loginedSteamUserStore.getLogedSteamUser({ friendId: item }))?.PersonaName || "未知用户";
+
+                            // const BARStore = useBackupAndRecoveryStore();
+                            // const { confirmCreateBackupData } = storeToRefs(BARStore);
+                            // BARStore.setConfirmCreateBackupData();
+                            // confirmCreateBackupData.value.nickName = nickName;
+                            // confirmCreateBackupData.value.description = `在克隆前的备份: ${fromId} -> ${item}`;
+                            // LogServices.debug(confirmCreateBackupData)
+                            // await BARStore.createBackup();
+                            // BARStore.setConfirmCreateBackupData({ reset: true });
+                            // BARStore.fetchData();
                         } catch (backupError) {
                             LogServices.warn(`[ConfigCloneService.cloneConfig] 为账号 ${item} 创建备份失败:`, backupError);
                             // 即使备份失败，也继续执行复制操作

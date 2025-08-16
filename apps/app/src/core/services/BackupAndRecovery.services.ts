@@ -5,7 +5,6 @@ import SettingsService from "./Settings.services";
 import { cp, isFileExists, rm } from "../utils";
 import LogServices from "./Log.services";
 
-
 export default class BackupAndRecoveryService {
 
 
@@ -39,11 +38,18 @@ export default class BackupAndRecoveryService {
         return BackupAndRecoveryRepository.count();
     }
 
+    static async getBackupFolderPath() {
+        return (await SettingsService.getSettingByKey('backupFolderPath'))?.selected as string ?? null;
+    }
 
-
+    /**
+     * 新建备份
+     * @param payload 负载数据
+     * @returns
+     */
     static async createBackup(payload: BackupAndRecovery): Promise<number> {
         // 还要进行文件系统的备份操作
-
+        LogServices.error('正在备份文件系统...', payload)
         let dbSteamInstallPath = await SettingsService.getSettingByKey('steamInstallPath');
 
         let streamInstallPath = dbSteamInstallPath?.selected
@@ -53,10 +59,10 @@ export default class BackupAndRecoveryService {
         try {
             await cp(fromPath, toPath, true);
             await BackupAndRecoveryRepository.bulkCreate([payload])
-            return 0;
+            return payload.friendId;
         } catch (error: any) {
             LogServices.error(error);
-            throw error.message;
+            throw error;
         }
     }
 
@@ -71,7 +77,10 @@ export default class BackupAndRecoveryService {
         let payload = await BackupAndRecoveryRepository.findOne({ 'c_id': id });
 
         if (!payload) {
-            throw '备份和恢复数据不存在';
+            throw new Error('备份和恢复数据不存在');
+        }
+        if (!await isFileExists(payload.folderPath)) {
+            throw new Error(`无法在本地磁盘中找到: ${payload.folderPath}`);
         }
         let dbSteamInstallPath = await SettingsService.getSettingByKey('steamInstallPath');
 

@@ -108,7 +108,7 @@ const confirmCloneHandler = async () => {
         });
         return;
     }
-    await ConfigCloneService.cloneConfig(cloneFrom.value, cloneTo.value).then(() => {
+    await ConfigCloneService.cloneConfig(cloneFrom.value, cloneTo.value, { backUp: backupUserSettings.value }).then(() => {
         ElNotification.success({
             title: '成功',
             message: '配置克隆成功',

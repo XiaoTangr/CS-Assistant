@@ -115,7 +115,7 @@ defineEmits<{
     box-shadow:
         0 8px 32px rgba(31, 38, 135, 0.08),
         inset 0 1px 2px rgba(255, 255, 255, 0.6) !important;
-    border-radius: 1em !important;
+    border-radius: 8px !important;
 }
 
 .liquid-dialog-modal {
