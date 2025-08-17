@@ -2,14 +2,11 @@ name: Build Dev Branch Applications
 
 on:
     push:
-        branches: [dev]
+        branches: [Dev]
 
 env:
     PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
-permissions:
-    contents: read
-    pages: write
-    id-token: write
+
 jobs:
     setup:
         name: Setup environment
@@ -116,13 +113,13 @@ jobs:
               with:
                   name: msi-installer
                   path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
-                  compression-level: 0
+
             - name: Upload NSIS Installer
               uses: actions/upload-artifact@v4
               with:
                   name: nsis-installer
                   path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
-                  compression-level: 0
+
     buildDoc:
         name: Build Documentation
         needs: setup
