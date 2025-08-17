@@ -1,0 +1,47 @@
+name: Deploy Document Site
+
+on:
+    push:
+        branches: [dev]
+permissions:
+    contents: read
+    pages: write
+    id-token: write
+jobs:
+    Deploy:
+        name: Build and Deploy Documentation
+        runs-on: Ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: Install doc dependencies
+              shell: bash # Corrected from 'shell' to 'bash'
+              run: pnpm install --no-frozen-lockfile --filter doc...
+
+            - name: Configure PATH
+              shell: pwsh # Use PowerShell Core (cross-platform)
+              run: |
+                  # 添加必要的路径到系统 PATH
+                  $env:PATH = "$env:GITHUB_WORKSPACE/node_modules/.bin:$env:PATH" # Fixed path separator for Unix-based systems
+                  $env:PATH = "${{ env.PNPM_STORE_PATH }}:$env:PATH"
+                  $env:PATH = "$env:APPDATA/npm:$env:PATH"
+
+                  # 验证路径设置
+                  Write-Output "Current PATH: $env:PATH"
+                  Get-Command tauri -ErrorAction SilentlyContinue
+
+            - name: Build Documentation
+              shell: bash # Corrected from 'shell' to 'bash'
+              run: pnpm exec turbo run build --filter=doc
+
+            - name: Deploy for Pages
+              uses: JamesIves/github-pages-deploy-action@v4.4.1
+              with:
+                  branch: gh-pages
+                  folder: ./apps/doc/dist
+                  single-commit: true
+                  clean: true
