@@ -5,7 +5,10 @@
             (部分账号再次登录可能需要授权)
         </template>
         <template #default>
-            <el-space wrap alignment="stretch" :fill-ratio="0" class="users-container">
+            <el-empty :description="description" v-if="!data || data.length === 0">
+                <GlassButton type="primary" circle :icon="RefreshRight" @click="refreshHandler" />
+            </el-empty>
+            <el-space v-else wrap alignment="stretch" :fill-ratio="0" class="users-container">
                 <GlassCard v-for="(v) in data as any" :key="v.steamId" body-class="user-container-body" shadow="hover"
                     class="user-container">
                     <div class="user-container-inner">
@@ -20,9 +23,6 @@
                         </div>
                     </div>
                 </GlassCard>
-                <el-empty :description="description" v-if="data === undefined">
-                    <GlassButton type="primary" :icon="RefreshRight" @click="getSteamLoginUsers" />
-                </el-empty>
             </el-space>
         </template>
     </GlassCard>
@@ -38,14 +38,19 @@ import GlassCard from '../Common/GlassCard.vue';
 import GlassButton from '../Common/GlassButton.vue';
 const LoginedSteamUserStore = useLoginedSteamUserStore();
 
-const { data } = storeToRefs(LoginedSteamUserStore);
+const { data, steamInstallPathStr } = storeToRefs(LoginedSteamUserStore);
 
 const description = computed(() => {
-    return data.value === undefined ? '无法获取Steam登录用户信息,检查Steam安装路径是否正确设置' : '似乎Steam还未登录过用户,请先登录';
+    if (!steamInstallPathStr.value) {
+        return '未指定steam安装目录,无法获取Steam登录用户信息';
+    }
+    if (!data.value || data.value.length === 0) {
+        return '无法获取Steam登录用户信息,是否登录过至少一个用户?';
+    }
 })
 
 
-const getSteamLoginUsers = async () => {
+const refreshHandler = async () => {
     LoginedSteamUserStore.fetchData();
 }
 

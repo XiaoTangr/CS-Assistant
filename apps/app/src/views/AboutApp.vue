@@ -62,6 +62,7 @@ import { useMapStore } from '@/store/MapStore';
 import GlassButton from '@/components/Common/GlassButton.vue';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import LICENSE from '@/assets/LICENSE.txt?raw';
+import { getVersion } from '@tauri-apps/api/app';
 const mapStore = useMapStore();
 const appVersion = ref('');
 const appInBuild = ref('');
@@ -69,8 +70,7 @@ const appGithub = ref('');
 const show_license = ref(false);
 
 onMounted(async () => {
-    appVersion.value = (await mapStore.getOneByKey('App_Version'))?.value ?? '';
-    appInBuild.value = (await mapStore.getOneByKey('App_InBuild'))?.value ?? '';
+    appVersion.value = await getVersion();
     appGithub.value = (await mapStore.getOneByKey('App_Github'))?.value ?? '';
 })
 

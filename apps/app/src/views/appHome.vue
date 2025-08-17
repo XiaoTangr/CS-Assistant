@@ -17,6 +17,8 @@ import CommSpace from '@/components/Common/CommSpace.vue';
 </script>
 <style scoped lang="scss">
 .container {
+    width: 100%;
+
     .container-item {
         width: 100%;
     }

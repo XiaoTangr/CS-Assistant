@@ -6,10 +6,10 @@
         </template>
         <template #default>
             <el-timeline>
-                <el-timeline-item v-for="(activity, index) in data" :key="index" :timestamp="activity.publishDate"
-                    placement="top">
+                <el-timeline-item class="timeline" v-for="(activity, index) in data" :key="index"
+                    :timestamp="activity.publishDate" placement="top">
                     <CommSpace direction="vertical" :size="4">
-                        <el-text v-html="activity.publishContent" truncated line-clamp="2" />
+                        <el-text line-clamp="2" v-html="htmlGenerater(activity.publishContent as string)" />
                         <el-link type="primary" @click="setIndex(index)">详情</el-link>
                     </CommSpace>
                 </el-timeline-item>
@@ -20,7 +20,7 @@
                         {{ NoticeDetail?.publishTitle }}
                     </div>
                 </template>
-                <p v-html="NoticeDetail?.publishContent" />
+                <el-text v-html="htmlGenerater(NoticeDetail?.publishContent as string)" />
                 <template #footer>
                     <el-text>
                         {{ NoticeDetail?.publishDate }}
@@ -41,7 +41,7 @@ import GlassCard from '@/components/Common/GlassCard.vue';
 import { LogServices } from '@/core/services';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import { ApiService } from '@/core/api';
-const data = ref<Array<Notice> | null>();
+const data = ref<Array<Notice>>();
 
 
 const showDetail = ref(-1)
@@ -57,8 +57,19 @@ const setIndex = (index: number) => {
     showDetail.value = index
 }
 
+/**
+ * 将字符串转为html
+ * @param string 目标字符串
+ */
+const htmlGenerater = (string: string) => {
+    if (!string) return '';
+    return string
+        .replace(/\n/g, '<br/>')
+        .replace(/\r\n/g, '<br/>');
+};
+
 onMounted(async () => {
-    data.value = (await ApiService.getNotice()).data;
+    data.value = (await ApiService.getNotice()).data ?? [];
 })
 
 
@@ -91,11 +102,7 @@ onMounted(async () => {
     :deep(.notice-body) {
         padding: $globe-padding !important;
         overflow-y: auto;
-
-
     }
-
-
 }
 
 .Notice-dialog-header {
@@ -104,5 +111,9 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.timeline {
+    overflow-x: hidden;
 }
 </style>

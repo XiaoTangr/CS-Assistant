@@ -5,6 +5,7 @@ import { Settings, BasicSteamLoginUser } from "@/core/models";
 import { getVdfObjectByFilePath } from "@/core/utils/VdfUtils";
 import LogServices from "@/core/services/Log.services";
 import { isFileExists, readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";
+import { watch } from "vue";
 export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () => {
     const SettingsStore = useSettingsStore();
 
@@ -26,6 +27,9 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _loginedUsersVdfPath = `\\config\\loginusers.vdf`
     const _avatarsPath = `\\config\\avatarcache`
 
+    watch(cs2InstallPathStr, () => {
+        fetchData();
+    })
 
     const fetchData = async () => {
         ({ steamInstallPath: steamInstallPath.value, cs2InstallPath: cs2InstallPath.value } = await _getViewData());
