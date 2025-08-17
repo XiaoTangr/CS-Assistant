@@ -2,7 +2,7 @@ name: Build Dev Branch Applications
 
 on:
     push:
-        branches: [Dev]
+        branches: [dev]
 
 env:
     PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
