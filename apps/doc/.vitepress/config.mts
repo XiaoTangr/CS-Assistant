@@ -5,7 +5,7 @@ export default defineConfig({
   title: "CS Assistant Document",
   description: "CS Assistant Document",
   srcDir: 'src',
-  base: '/csa/',
+  base: '/CS-Assistant/',
   outDir: "dist",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
