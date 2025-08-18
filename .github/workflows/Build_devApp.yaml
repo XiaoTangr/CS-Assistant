@@ -53,4 +53,4 @@ jobs:
             - name: Upload assets
               env:
                   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-              run: node scripts/updater.mjs
+              run: node ./apps/app/scripts/updater.mjs
