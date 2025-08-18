@@ -63,13 +63,12 @@ export default class MapRepository {
     /**
      * 更新指定记录
      * @param payload 要更新的数据
-     * @param recordValue 唯一标识符的值:c_key
      * @returns 受影响的行数
      */
-    static async updateOne(payload: Partial<Map>, recordValue: string): Promise<number> {
+    static async updateOne(payload: Map): Promise<number> {
         // 使用转换器将应用结构转换为数据库结构
         const dbData = toDb(payload);
-        return (await baseCRUD.updateWhere(this.TABLE_NAME, dbData, { c_key: recordValue })).rowsAffected;
+        return (await baseCRUD.updateWhere(this.TABLE_NAME, dbData, { c_key: payload.key })).rowsAffected;
     }
 
     /**

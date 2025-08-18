@@ -2,9 +2,11 @@
 
 import { baseCRUD } from '@/core/database';
 import { defaultDatabaseData } from '@/core/database/defaultData';
+import { updateData } from '@/core/database/updateData';
 import { MigrationResult } from '@/core/models';
-import { LogServices } from '../services';
-
+import { LogServices, MapService } from '../services';
+import { getVersion } from '@tauri-apps/api/app';
+import { versionComparator } from '../utils';
 /**
  * 初始化数据库表结构和默认数据
  * @returns 返回迁移结果对象
@@ -48,6 +50,32 @@ export const runMigrations = async (): Promise<MigrationResult> => {
                     success: insertSuccess
                 });
             }
+
+            // 更新数据
+            // 获取当前app版本 (确保 getVersion 函数存在且返回正确)
+            let currentappVersion = await getVersion();
+            // 获取数据库适配版本(该版本要求app至少为此版本才能正常工作)
+            let needAppVersion = updateData.needAppVersion;
+            // 数据库要求app至少为此版本才能正常工作
+            let setDBVersion = updateData.setDBVersion;
+            // 获取当前数据库版本 (确保 getValueByKey 函数能够正确返回)
+            let currentDBVersion = await MapService.getValueByKey("DB_Version");
+
+            // 检查是否需要更新数据库
+            if (versionComparator(setDBVersion, currentDBVersion) > -1) {
+                // 如果当前 App 版本 >= 所需版本，则允许更新
+                if (versionComparator(currentappVersion, needAppVersion) >= 0) {
+                    // 需要更新数据库
+                    LogServices.debug("Database update required.");
+                    // 执行更新逻辑...
+                } else {
+                    LogServices.debug("Current app version is too low for database update.");
+                }
+            } else {
+                LogServices.debug("Database is already up to date.");
+            }
+
+
         }
 
         LogServices.log('[DB runMigrations] Database initialized successfully.');

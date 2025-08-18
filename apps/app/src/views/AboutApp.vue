@@ -11,7 +11,6 @@
 
                 <div class="appinfo-item version-container">
                     <span class="appinfo-inneritem appVersion ">Release Version: {{ appVersion }}</span>
-                    <span class="appinfo-inneritem appInBuild ">Build Version: {{ appInBuild }}</span>
                 </div>
 
                 <div class="appinfo-item">
@@ -65,7 +64,6 @@ import LICENSE from '@/assets/LICENSE.txt?raw';
 import { getVersion } from '@tauri-apps/api/app';
 const mapStore = useMapStore();
 const appVersion = ref('');
-const appInBuild = ref('');
 const appGithub = ref('');
 const show_license = ref(false);
 
