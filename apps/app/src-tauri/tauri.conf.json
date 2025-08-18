@@ -12,6 +12,12 @@
     "plugins": {
         "allowlist": {
             "all": true
+        },
+        "updater": {
+            "pubkey": "CONTENT FROM PUBLICKEY.PEM",
+            "endpoints": [
+                "https://github.com/XiaoTangr/CS-Assistant/releases/download/latest.json"
+            ]
         }
     },
     "app": {
@@ -33,7 +39,9 @@
                 "fs",
                 "sql",
                 "url",
-                "http"
+                "http",
+                "updater",
+                "process"
             ],
             "assetProtocol": {
                 "enable": true,
@@ -44,6 +52,7 @@
     },
     "bundle": {
         "active": true,
+        "createUpdaterArtifacts": true,
         "targets": [
             "msi",
             "nsis"

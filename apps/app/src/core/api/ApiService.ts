@@ -19,9 +19,14 @@ export class ApiService {
     ) {
         let baseUrl = (await SettingsService.getSettingByKey("remoteUrlPrefix"))?.selected as string;
         // 构建URL，替换占位符
-        baseUrl = baseUrl.replace('${username}', username)
-            .replace('${reponame}', reponame)
-            .replace('${branchname}', branchname);
+
+        if (baseUrl.includes("javat.cn")) {
+            baseUrl += "remotedata/"
+        } else {
+            baseUrl = baseUrl.replace('${username}', username)
+                .replace('${reponame}', reponame)
+                .replace('${branchname}', branchname);
+        }
         return await get<Notice[]>(`${baseUrl}Notice.json`) ?? [];
     }
 }

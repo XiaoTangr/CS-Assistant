@@ -6,6 +6,7 @@ import LogServices from "@/core/services/Log.services";
 import { MainRouter } from "@/router/Router";
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
 import { SettingsRepository } from "../repositories";
+import { check, Update } from "@tauri-apps/plugin-updater";
 export default class StartUp {
 
     /**
@@ -55,6 +56,14 @@ export default class StartUp {
     }
 
     /**
+     * 检查更新
+     */
+    static async checkUpdate() {
+        // const update = await check();
+        // LogServices.debug(update)
+    }
+
+    /**
      * 启动程序
      */
     static async startUp(): Promise<void> {
@@ -62,6 +71,7 @@ export default class StartUp {
         await this.installDB();
         await this.fetchDatas();
         await this.initRoutes();
+        await this.checkUpdate();
     }
 }
 

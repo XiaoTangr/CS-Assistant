@@ -1,164 +1,196 @@
 name: Build Dev Branch Applications
 
 on:
-  push:
-    branches: [Dev]
-
+    push:
+        branches: [dev]
 env:
-  PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+    PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
 
 jobs:
-  setup:
-    name: Setup environment
-    runs-on: windows-latest
-    outputs:
-      pkg_changed: ${{ steps.check-package-json.outputs.changed }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    setup:
+        name: Setup environment
+        runs-on: windows-latest
+        outputs:
+            pkg_changed: ${{ steps.check-package-json.outputs.changed }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
-      - name: Detect package.json changes
-        id: check-package-json
-        shell: pwsh
-        run: |
-          $changedFiles = git diff --name-only HEAD^ HEAD
-          if ($changedFiles -match "package.json") {
-            Write-Output "changed=true" >> $env:GITHUB_OUTPUT
-          } else {
-            Write-Output "changed=false" >> $env:GITHUB_OUTPUT
-          }
+            - name: Detect package.json changes
+              id: check-package-json
+              shell: pwsh
+              run: |
+                  $changedFiles = git diff --name-only HEAD^ HEAD
+                  if ($changedFiles -match "package.json") {
+                    Write-Output "changed=true" >> $env:GITHUB_OUTPUT
+                  } else {
+                    Write-Output "changed=false" >> $env:GITHUB_OUTPUT
+                  }
 
-      - name: Configure pnpm
-        uses: pnpm/action-setup@v4
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
 
-      - name: Restore pnpm cache
-        uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: |
-            ${{ env.PNPM_STORE_PATH }}
-            node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+            - name: Restore pnpm cache
+              uses: actions/cache@v4
+              id: pnpm-cache
+              with:
+                  path: |
+                      ${{ env.PNPM_STORE_PATH }}
+                      node_modules
+                  key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-
 
-      - name: Install dependencies (if needed)
-        if: steps.check-package-json.outputs.changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
-        shell: pwsh
-        run: |
-          pnpm fetch
-          pnpm install --no-frozen-lockfile
+            - name: Install dependencies (if needed)
+              if: steps.check-package-json.outputs.changed == 'true' || steps.pnpm-cache.outputs.cache-hit != 'true'
+              shell: pwsh
+              run: |
+                  pnpm fetch
+                  pnpm install --no-frozen-lockfile
 
-  buildApp:
-    name: Build Application
-    needs: setup
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+    buildApp:
+        name: Build Application
+        needs: setup
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Configure pnpm
-        uses: pnpm/action-setup@v4
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
 
-      - name: Restore pnpm cache
-        uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: |
-            ${{ env.PNPM_STORE_PATH }}
-            node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+            - name: Restore pnpm cache
+              uses: actions/cache@v4
+              id: pnpm-cache
+              with:
+                  path: |
+                      ${{ env.PNPM_STORE_PATH }}
+                      node_modules
+                  key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-
 
-      - name: Install Tauri dependencies
-        shell: pwsh
-        run: |
-          # 确保 Rust 工具链已安装
-          rustup update
-          rustup default stable
+            - name: Install Tauri dependencies
+              shell: pwsh
+              run: |
+                  # 确保 Rust 工具链已安装
+                  rustup update
+                  rustup default stable
 
-          # 安装 Tauri CLI 全局依赖
-          pnpm add -g @tauri-apps/cli
+                  # 安装 Tauri CLI 全局依赖
+                  pnpm add -g @tauri-apps/cli
 
-          # 安装应用特定依赖
-          pnpm install --no-frozen-lockfile --filter app...
+                  # 安装应用特定依赖
+                  pnpm install --no-frozen-lockfile --filter app...
 
-      - name: Configure PATH
-        shell: pwsh
-        run: |
-          # 添加必要的路径到系统 PATH
-          $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
-          $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
-          $env:PATH = "$env:APPDATA\npm;$env:PATH"
+            - name: Configure PATH
+              shell: pwsh
+              run: |
+                  # 添加必要的路径到系统 PATH
+                  $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
+                  $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
+                  $env:PATH = "$env:APPDATA\npm;$env:PATH"
 
-          # 验证路径设置
-          Write-Output "Current PATH: $env:PATH"
-          Get-Command tauri -ErrorAction SilentlyContinue
+                  # 验证路径设置
+                  Write-Output "Current PATH: $env:PATH"
+                  Get-Command tauri -ErrorAction SilentlyContinue
 
-      - name: Build Tauri application
-        shell: pwsh
-        run: |
-          # 明确使用 pnpm 运行构建
-          pnpm exec turbo run build --filter=app
+            # - name: Build Tauri application
+            #   shell: pwsh
+            #   run: |
+            #       # 明确使用 pnpm 运行构建
+            #       pnpm exec turbo run build --filter=app
 
-          # 备用构建方法：直接进入目录构建
-          # cd apps/app
-          # pnpm run build
+            #       # 备用构建方法：直接进入目录构建
+            #       # cd apps/app
+            #       # pnpm run build
 
-      - name: Upload MSI Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: msi-installer
-          path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
+            - name: Build the app
+              id: build
+              uses: tauri-apps/tauri-action@v0
 
-      - name: Upload NSIS Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: nsis-installer
-          path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+                  # 使用之前配置的私钥
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  # 使用之前配置的私钥密码
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+              with:
+                  tagName: ${{ github.ref_name }}
+                  releaseName: "ComfyUI Startup v__VERSION__"
+                  releaseBody: "See the assets to download and install this version."
+                  releaseDraft: true
+                  prerelease: false
+                  projectPath: ./apps/app
+                  pnpm: true
 
-  buildDoc:
-    name: Build Documentation
-    needs: setup
-    runs-on: windows-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+            - name: Upload MSI Installer
+              uses: actions/upload-artifact@v4
+              with:
+                  name: msi-installer
+                  path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
 
-      - name: Configure pnpm
-        uses: pnpm/action-setup@v4
+            - name: Upload NSIS Installer
+              uses: actions/upload-artifact@v4
+              with:
+                  name: nsis-installer
+                  path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
 
-      - name: Restore pnpm cache
-        uses: actions/cache@v4
-        id: pnpm-cache
-        with:
-          path: |
-            ${{ env.PNPM_STORE_PATH }}
-            node_modules
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+            - name: Upload assets
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+              run: node scripts/updater.mjs
+    buildDoc:
+        name: Build Documentation
+        needs: setup
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      - name: Install doc dependencies
-        shell: pwsh
-        run: pnpm install --no-frozen-lockfile --filter doc...
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
 
-      - name: Configure PATH
-        shell: pwsh
-        run: |
-          $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
-          $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
-          $env:PATH = "$env:APPDATA\npm;$env:PATH"
+            - name: Restore pnpm cache
+              uses: actions/cache@v4
+              id: pnpm-cache
+              with:
+                  path: |
+                      ${{ env.PNPM_STORE_PATH }}
+                      node_modules
+                  key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+                  restore-keys: |
+                      ${{ runner.os }}-pnpm-
 
-      - name: Build Documentation
-        shell: pwsh
-        run: pnpm exec turbo run build --filter=doc
+            - name: Install doc dependencies
+              shell: pwsh
+              run: pnpm install --no-frozen-lockfile --filter doc...
 
-      - name: Upload Documentation
-        uses: actions/upload-artifact@v4
-        with:
-          name: doc-dist
-          path: ./apps/doc/dist
+            - name: Configure PATH
+              shell: pwsh
+              run: |
+                  $env:PATH = "$env:GITHUB_WORKSPACE\node_modules\.bin;$env:PATH"
+                  $env:PATH = "${{ env.PNPM_STORE_PATH }};$env:PATH"
+                  $env:PATH = "$env:APPDATA\npm;$env:PATH"
+
+            - name: Build Documentation
+              shell: pwsh
+              run: pnpm exec turbo run build --filter=doc
+
+            - name: Upload Doc Dist
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-dist
+                  path: ./apps/doc/*
+                  compression-level: 0
+
+            - name: Deploy to GitHub Pages
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.PAT_TOKEN }} # 这一步很重要，单独看下面的大步骤，主要是用来给该脚本一些仓库权限
+                  publish_dir: ./apps/doc/dist # 指定该文件夹中的 dist
+                  publish_branch: gh-pages # 推送到关联仓库的 gh-pages 分支
+                  dotfiles: true # 包括在提交中，即使被 .gitignore 文件忽略
+
