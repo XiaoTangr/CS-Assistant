@@ -1,4 +1,4 @@
-name: Build Dev Branch Applications
+name: Build App only on dev Branch
 
 on:
     push:
