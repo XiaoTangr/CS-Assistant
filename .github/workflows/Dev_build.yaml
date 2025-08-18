@@ -3,7 +3,6 @@ name: Build Dev Branch Applications
 on:
     push:
         branches: [dev]
-
 env:
     PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
 
@@ -142,8 +141,6 @@ jobs:
               env:
                   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
               run: node scripts/updater.mjs
-              with:
-                  working-directory: ./
     buildDoc:
         name: Build Documentation
         needs: setup
