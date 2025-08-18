@@ -98,15 +98,33 @@ jobs:
                   Write-Output "Current PATH: $env:PATH"
                   Get-Command tauri -ErrorAction SilentlyContinue
 
-            - name: Build Tauri application
-              shell: pwsh
-              run: |
-                  # 明确使用 pnpm 运行构建
-                  pnpm exec turbo run build --filter=app
+            # - name: Build Tauri application
+            #   shell: pwsh
+            #   run: |
+            #       # 明确使用 pnpm 运行构建
+            #       pnpm exec turbo run build --filter=app
 
-                  # 备用构建方法：直接进入目录构建
-                  # cd apps/app
-                  # pnpm run build
+            #       # 备用构建方法：直接进入目录构建
+            #       # cd apps/app
+            #       # pnpm run build
+
+            - name: Build the app
+              id: build
+              uses: tauri-apps/tauri-action@v0
+
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+                  # 使用之前配置的私钥
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  # 使用之前配置的私钥密码
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+              with:
+                  tagName: ${{ github.ref_name }}
+                  releaseName: "ComfyUI Startup v__VERSION__"
+                  releaseBody: "See the assets to download and install this version."
+                  releaseDraft: true
+                  prerelease: false
+                  working-directory: ./apps/app
 
             - name: Upload MSI Installer
               uses: actions/upload-artifact@v4
@@ -120,6 +138,12 @@ jobs:
                   name: nsis-installer
                   path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
 
+            - name: Upload assets
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+              run: node scripts/updater.mjs
+              with:
+                  working-directory: ./
     buildDoc:
         name: Build Documentation
         needs: setup

@@ -12,6 +12,14 @@
     "plugins": {
         "allowlist": {
             "all": true
+        },
+        "updater": {
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDMkY3RUM2QUZDNDZCQjgKUldTNGE4U3Z4bjR2VExPVGk2ZnJzL0dBTCs3cDVJb3FCL0FTUVNJQVR6MXdDOWJtRytuK05rWDQK",
+            "endpoints": [
+                "https://github.com/XiaoTangr/CS-Assistant/releases/latest/download/latest.json",
+                "https://github.javat.cn/CS-Assistant/releases/latest.json",
+                "https://gh-proxy.com/https://github.com/XiaoTangr/CS-Assistant/releases/download/latest/download/latest.json"
+            ]
         }
     },
     "app": {
@@ -43,6 +51,7 @@
         }
     },
     "bundle": {
+        "createUpdaterArtifacts": true,
         "active": true,
         "targets": [
             "msi",

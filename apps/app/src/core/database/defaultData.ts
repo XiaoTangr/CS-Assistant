@@ -101,12 +101,8 @@ export const defaultDatabaseData = [
         ],
         defaultData: [
             {
-                "c_key": "App_Version",
+                "c_key": "DB_Version",
                 "c_value": "1.0.0"
-            },
-            {
-                "c_key": "App_InBuild",
-                "c_value": "26.0816.4"
             },
             {
                 "c_key": "App_Github",

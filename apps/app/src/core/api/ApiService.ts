@@ -14,15 +14,21 @@ export class ApiService {
      */
     static async getNotice(
         username: string = "XiaoTangr",
-        reponame: string = "CS2H_Data",
-        branchname: string = "main"
+        reponame: string = "CS-Assistant",
+        branchname: string = "gh-pages"
     ) {
+
         let baseUrl = (await SettingsService.getSettingByKey("remoteUrlPrefix"))?.selected as string;
         // 构建URL，替换占位符
-        baseUrl = baseUrl.replace('${username}', username)
-            .replace('${reponame}', reponame)
-            .replace('${branchname}', branchname);
-        return await get<Notice[]>(`${baseUrl}Notice.json`) ?? [];
+
+        if (baseUrl.includes("javat.cn")) {
+            baseUrl += 'remotedata/'
+        } else {
+            baseUrl = baseUrl.replace('${username}', username)
+                .replace('${reponame}', reponame)
+                .replace('${branchname}', branchname);
+        }
+        return await get<Notice[]>(`${baseUrl}/Notice.json`) ?? [];
     }
 }
 
