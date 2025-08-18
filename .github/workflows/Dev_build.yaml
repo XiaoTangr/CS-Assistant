@@ -124,6 +124,7 @@ jobs:
                   releaseDraft: true
                   prerelease: false
                   projectPath: ./apps/app
+                  pnpm: true
 
             - name: Upload MSI Installer
               uses: actions/upload-artifact@v4
