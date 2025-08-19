@@ -1,4 +1,4 @@
-name: Build Dev Branch Applications
+name: Build and Release Dev Branch Applications
 
 on:
     push:
@@ -69,7 +69,7 @@ jobs:
                   includeUpdaterJson: true
                   updaterJsonPreferNsis: true
                   tagName: ${{ github.ref_name }}
-                  releaseName: "Dev__VERSION__"
+                  releaseName: "dev__VERSION__"
                   releaseBody: "See the assets to download and install this version."
                   releaseDraft: true
                   prerelease: false
