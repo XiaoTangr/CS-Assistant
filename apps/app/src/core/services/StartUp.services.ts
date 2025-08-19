@@ -6,8 +6,7 @@ import LogServices from "@/core/services/Log.services";
 import { MainRouter } from "@/router/Router";
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
 import { SettingsRepository } from "../repositories";
-import { check } from "@tauri-apps/plugin-updater";
-import { ElNotification } from "element-plus";
+import { check, Update } from "@tauri-apps/plugin-updater";
 export default class StartUp {
 
     /**
@@ -60,18 +59,8 @@ export default class StartUp {
      * 检查更新
      */
     static async checkUpdate() {
-        const update: any = await check();
-        LogServices.info('[StartUp.checkUpdate]', '检查更新:', update)
-        if (update) {
-            ElNotification.success({
-                title: "更新提示",
-                message: `新版本已发布，请前往下载！${(update.rawJson.platforms['windows-x86_64'])}`,
-                duration: 0,
-                showClose: true,
-                type: "success",
-
-            });
-        }
+        // const update = await check();
+        // LogServices.debug(update)
     }
 
     /**
