@@ -6,7 +6,9 @@ import LogServices from "@/core/services/Log.services";
 import { MainRouter } from "@/router/Router";
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
 import { SettingsRepository } from "../repositories";
-import { check, Update } from "@tauri-apps/plugin-updater";
+import { check } from "@tauri-apps/plugin-updater";
+import { ElNotification } from "element-plus";
+import { openUrl } from "@tauri-apps/plugin-opener";
 export default class StartUp {
 
     /**
@@ -59,8 +61,18 @@ export default class StartUp {
      * 检查更新
      */
     static async checkUpdate() {
-        // const update = await check();
-        // LogServices.debug(update)
+        const update: any = await check();
+        if (update) {
+            ElNotification.info({
+                title: '更新提示',
+                message: `有新版本可用,即将前往下载。`,
+                duration: 0,
+
+            });
+            LogServices.debug("[StartUp.checkUpdate(static)]", "update:", update)
+            let winDownloadLink = update.rawJson.platforms["windows-x86_64"].url;
+            await openUrl(`https://gh-proxy.com/${winDownloadLink}`);
+        }
     }
 
     /**

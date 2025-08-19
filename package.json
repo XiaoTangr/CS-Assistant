@@ -12,6 +12,7 @@
         "test": "turbo run test"
     },
     "devDependencies": {
+        "@actions/github": "^6.0.0",
         "@types/node": "^20.0.0",
         "eslint": "^8.0.0",
         "turbo": "^2.5.4",
