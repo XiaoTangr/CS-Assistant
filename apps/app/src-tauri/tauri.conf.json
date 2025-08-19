@@ -1,7 +1,7 @@
 {
     "$schema": "https://schema.tauri.app/config/2",
     "productName": "CS Assistant",
-    "version": "1.0.2",
+    "version": "1.0.1",
     "identifier": "cn.javat.csassistant",
     "build": {
         "beforeDevCommand": "vite",
@@ -14,11 +14,10 @@
             "all": true
         },
         "updater": {
-            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDRDMkY3RUM2QUZDNDZCQjgKUldTNGE4U3Z4bjR2VExPVGk2ZnJzL0dBTCs3cDVJb3FCL0FTUVNJQVR6MXdDOWJtRytuK05rWDQK",
+            "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEI4ODQ5NDA1RDMwNEM1QzMKUldURHhRVFRCWlNFdU1URkk0eURyMGlheUd4TFdsNk5Fck8zeDczdkpEZzRYdGZISmdzUkRudS8K",
             "endpoints": [
-                "https://github.com/XiaoTangr/CS-Assistant/releases/latest/download/latest.json",
-                "https://github.javat.cn/CS-Assistant/releases/latest.json",
-                "https://gh-proxy.com/https://github.com/XiaoTangr/CS-Assistant/releases/download/latest/download/latest.json"
+                "https://gh-proxy.com/https://github.com/XiaoTangr/CS-Assistant/releases/latest/download/latest.json",
+                "https://github.com/XiaoTangr/CS-Assistant/releases/latest/download/latest.json"
             ]
         }
     },
@@ -55,7 +54,6 @@
     "bundle": {
         "createUpdaterArtifacts": true,
         "active": true,
-        "createUpdaterArtifacts": true,
         "targets": [
             "msi",
             "nsis"
