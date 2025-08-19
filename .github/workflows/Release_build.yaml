@@ -1,79 +1,94 @@
 name: build all app in Release branch
 
 on:
-  push:
-    branches: [Release]
-
+    push:
+        branches: [Release]
+        tags:
+            - v*
 jobs:
-  buildAll:
-    name: Release Release Version
-    runs-on: windows-latest
-    steps:
-      # 🧾 获取源码
-      - name: Checkout code
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # 获取完整历史用于 diff 判断
+    buildApp:
+        name: Build Application
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
 
-      # 🔍 检查变更内容
-      - name: Check if package.json changed
-        id: check-package-json
-        shell: pwsh
-        run: |
-          $changedFiles = git diff --name-only HEAD^ HEAD
-          if ($changedFiles -match "package.json") {
-            echo "::set-output name=changed::true"
-          } else {
-            echo "::set-output name=changed::false"
-          }
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
 
-      # 🧠 恢复缓存
-      - name: Restore pnpm cache
-        uses: actions/cache@v3
-        id: restore-pnpm-cache
-        with:
-          path: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-
+            - name: install frontend dependencies
+              run: pnpm install --no-frozen-lockfile
 
-      # 📦 安装工具链
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          # version: 10.0.0
-          run_install: true
+            # - name: Only Build the app
+            #   id: build
+            #   uses: tauri-apps/tauri-action@v0
 
-      # 🚚 安装依赖包
-      - name: Install dependencies if package.json changed
-        if: steps.check-package-json.outputs.changed == 'true' || steps.restore-pnpm-cache.outputs.cache-hit != 'true'
-        run: pnpm install
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+            #       #   # 使用之前配置的私钥
+            #       #   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+            #       #   # 使用之前配置的私钥密码
+            #       #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+            #   with:
+            #       includeDebug: true
+            #       projectPath: ./apps/app
+            #       tauriScript: pnpm
 
-      # 🛠️ 构建应用
-      - name: Build all application
-        run: pnpm turbo run build
-        working-directory: .
+            # - name: Upload App Dist
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       path: ./apps/app/src-tauri/target/release/bundle/**/*
+            #       compression-level: 0
 
-      # 📤 上传构建产物
-      # 上传 doc 产物
-      - name: Upload apps/doc dist
-        uses: actions/upload-artifact@v4
-        with:
-          name: Doc-dist
-          path: ./apps/doc/dist/*
+            - name: Build and Release the app
+              id: build
+              uses: tauri-apps/tauri-action@v0
 
-      # 📤 上传构建产物
-      # 上传 MSI 安装包
-      - name: Upload MSI Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: msi-installer
-          path: ./apps/app/src-tauri/target/release/bundle/msi/*.msi
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+                  # 使用之前配置的私钥
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  # 使用之前配置的私钥密码
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+              with:
+                  includeDebug: true
+                  includeUpdaterJson: true
+                  updaterJsonPreferNsis: true
+                  tagName: ${{ github.ref_name }}
+                  releaseBody: "See the assets to download and install this version."
+                  releaseDraft: true
+                  prerelease: false
+                  projectPath: ./apps/app
+                  tauriScript: pnpm
 
-      # 📤 上传构建产物
-      # 上传 NSIS 安装包
-      - name: Upload MSI Installer
-        uses: actions/upload-artifact@v4
-        with:
-          name: NSIS-installer
-          path: ./apps/app/src-tauri/target/release/bundle/nsis/*.exe
+    buildDoc:
+        name: Build Documentation
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: install frontend dependencies
+              run: pnpm install --no-frozen-lockfile
+
+            - name: Build Documentation
+              shell: pwsh
+              run: pnpm exec turbo run build --filter=doc
+
+            - name: Upload Doc Dist
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-dist
+                  path: ./apps/doc/*
+                  compression-level: 0
+
+            - name: Deploy to GitHub Pages
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.PAT_TOKEN }} # 这一步很重要，单独看下面的大步骤，主要是用来给该脚本一些仓库权限
+                  publish_dir: ./apps/doc/dist # 指定该文件夹中的 dist
+                  publish_branch: gh-pages # 推送到关联仓库的 gh-pages 分支
+                  dotfiles: true # 包括在提交中，即使被 .gitignore 文件忽略
