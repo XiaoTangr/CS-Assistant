@@ -65,7 +65,7 @@ interface LiquidDialogProps {
 withDefaults(defineProps<LiquidDialogProps>(), {
     modelValue: false,
     title: '',
-    width: '400px',
+    width: '40%',
     fullscreen: false,
     top: '15vh',
     modal: true,

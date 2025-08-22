@@ -14,14 +14,30 @@ export const useMapStore = defineStore("MapStore", () => {
         // 深拷贝
         viewData.value = JSON.parse(JSON.stringify(dbData.value));
     };
-
-    const getOneByKey = async (key: string) => {
-        const res = dbData.value.find((item) => item.key === key);
+    /**
+     * 获取指定 key 的完整数据
+     * @param keyName key name
+     * @returns {key: string, value: any}
+     */
+    const getOneByKey = async (keyName: string) => {
+        const res = dbData.value.find((item) => item.key === keyName);
         if (res) {
             return res;
         }
         return null;
     };
 
-    return { dbData, viewData, getOneByKey, fetchData };
+    /**
+     * 获取指定 key 的数据
+     * @param keyName key name
+     * @returns string of value | null
+     */
+    const getValueByKey = async (key: string) => {
+        const res = dbData.value.find((item) => item.key === key);
+        if (res) {
+            return res.value;
+        }
+        return null;
+    };
+    return { dbData, viewData, getOneByKey, fetchData, getValueByKey };
 })

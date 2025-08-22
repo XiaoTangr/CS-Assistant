@@ -90,6 +90,28 @@ export const defaultDatabaseData = [
                 "c_options": "[{\"text\":\"0: 信息，日志，警告，错误和调试\",\"value\":0},{\"text\":\"1: 日志，警告，错误和调试\",\"value\":1},{\"text\":\"2: 警告，错误和调试\",\"value\":2},{\"text\":\"3: 错误和调试\",\"value\":3}]",
                 "c_groupIndex": 4,
                 "c_groupName": "高级"
+            },
+            {
+                "c_index": 13,
+                "c_key": "showUpdateDialog",
+                "c_text": "显示更新提示",
+                "c_description": "当有更新可用时弹出提示",
+                "c_selected": "true",
+                "c_type": "Boolean",
+                "c_options": "[{\"text\":\"启用\",\"value\":\"true\"},{\"text\":\"禁用\",\"value\":\"false\"}]",
+                "c_groupIndex": 0,
+                "c_groupName": "基本"
+            },
+            {
+                "c_index": 14,
+                "c_key": "getDevVersion",
+                "c_text": "使用测试版",
+                "c_description": "接收测试版更新提醒",
+                "c_selected": "false",
+                "c_type": "Boolean",
+                "c_options": "[{\"text\":\"启用\",\"value\":\"true\"},{\"text\":\"禁用\",\"value\":\"false\"}]",
+                "c_groupIndex": 4,
+                "c_groupName": "高级"
             }
         ] as t_Settings[]
     },
@@ -122,3 +144,27 @@ export const defaultDatabaseData = [
         defaultData: [] as t_BackupAndRecovery[]
     }
 ]
+export const updateDatabaseData = {
+    needAppVersion: '1.0.1',
+    setDBVersion: '1.2.0',
+    payloads: [{
+        tableName: 't_Settings',
+        updateData: []
+    },
+    {
+        tableName: 't_Map',
+        // 以第一个键值对作为filter
+        updateData: [{
+            c_key: 'DB_Version',
+            c_value: '1.2.0'
+        }] as t_Map[],
+    }],
+    dropPayloads: [
+        {
+            tableName: 't_Map',
+            dropData: [{
+                c_key: 'test_update',
+            }]
+        }
+    ],
+};

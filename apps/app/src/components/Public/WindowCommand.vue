@@ -52,6 +52,7 @@ import CommSpace from '../Common/CommSpace.vue';
 import { onMounted, ref } from 'vue';
 import GlassButton from '../Common/GlassButton.vue';
 import GlassDialog from '../Common/GlassDialog.vue';
+import { Plus, Close, Minus, WarningFilled } from '@element-plus/icons-vue';
 const appWindow = new Window('main');
 
 const centerDialogVisible = ref(false)

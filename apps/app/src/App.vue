@@ -1,26 +1,32 @@
 <template>
     <div class="App-Container" @contextmenu.prevent="openMenu()">
-        <NavBar class="nav-Container" />
-        <div class="window-Container-bg">
-            <div class="window-container">
-                <div class="global-command-container">
-                    <GlobalCommand />
-                </div>
-                <div id="content" class="content-container">
-                    <RouterView />
+        <el-config-provider :locale="zhCn">
+            <NavBar class="nav-Container" />
+            <div class="window-Container-bg">
+                <div class="window-container">
+                    <div class="global-command-container">
+                        <GlobalCommand />
+                    </div>
+                    <div id="content" class="content-container">
+                        <RouterView />
+                    </div>
                 </div>
             </div>
-        </div>
-        <ViewCheck />
-        <BackGround />
+            <ViewCheck />
+            <BackGround />
+        </el-config-provider>
+
     </div>
 </template>
 <script setup lang="ts">
+import { zhCn } from 'element-plus/es/locales.mjs';
 import BackGround from './components/Layouts/BackGround.vue';
 import NavBar from './components/Layouts/NavBar.vue';
 import ViewCheck from './components/Layouts/ViewCheck.vue';
 import GlobalCommand from './components/Public/GlobalCommand.vue';
 import LogServices from '@/core/services/Log.services';
+
+
 const openMenu = () => {
     LogServices.info('User try open contextmenu!')
 }
@@ -51,7 +57,6 @@ const openMenu = () => {
         .window-container {
             overflow-y: auto;
             height: 100vh;
-            margin-right: calc($globe-margin /2);
 
             .global-command-container {
                 position: sticky;
@@ -60,10 +65,10 @@ const openMenu = () => {
             }
 
             .content-container {
-                padding: $globe-padding;
+                padding-bottom: $globe-padding;
+                padding-right: $globe-padding;
                 padding-left: 0;
                 padding-top: 0;
-                padding-right: 1em;
                 overflow-y: auto;
                 width: 100%;
             }

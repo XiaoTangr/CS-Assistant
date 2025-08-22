@@ -1,8 +1,7 @@
 // src/core/database/migrations.ts
 
 import { baseCRUD } from '@/core/database';
-import { defaultDatabaseData } from '@/core/database/defaultData';
-import { updateData } from '@/core/database/updateData';
+import { defaultDatabaseData, updateDatabaseData } from '@/core/database/dbData';
 import { MigrationResult } from '@/core/models';
 import { LogServices, MapService } from '../services';
 import { getVersion } from '@tauri-apps/api/app';
@@ -55,26 +54,45 @@ export const runMigrations = async (): Promise<MigrationResult> => {
             // 获取当前app版本 (确保 getVersion 函数存在且返回正确)
             let currentappVersion = await getVersion();
             // 获取数据库适配版本(该版本要求app至少为此版本才能正常工作)
-            let needAppVersion = updateData.needAppVersion;
+            let needAppVersion = updateDatabaseData.needAppVersion;
             // 数据库要求app至少为此版本才能正常工作
-            let setDBVersion = updateData.setDBVersion;
-            // 获取当前数据库版本 (确保 getValueByKey 函数能够正确返回)
+            let setDBVersion = updateDatabaseData.setDBVersion;
             let currentDBVersion = await MapService.getValueByKey("DB_Version");
 
             // 检查是否需要更新数据库
-            if (versionComparator(setDBVersion, currentDBVersion) > -1) {
+            if (versionComparator(setDBVersion, currentDBVersion) > 0) {
                 // 如果当前 App 版本 >= 所需版本，则允许更新
                 if (versionComparator(currentappVersion, needAppVersion) >= 0) {
                     // 需要更新数据库
-                    LogServices.debug("Database update required.");
-                    // 执行更新逻辑...
+                    LogServices.log("[DB runMigrations] Database update required.");
+                    let dataArr = updateDatabaseData.payloads.length > 0 ? updateDatabaseData.payloads : null;
+
+                    let dropDataArr = updateDatabaseData.dropPayloads.length > 0 ? updateDatabaseData.dropPayloads : null;
+
+                    if (dataArr) {
+                        dataArr.forEach(async (tableItem) => {
+                            let tableName = tableItem.tableName;
+                            let updateData = tableItem.updateData;
+                            await updatePartialData(tableName, updateData);
+                        })
+                    } else {
+                        LogServices.log("[DB runMigrations] No Rows need to update.");
+                    }
+                    if (dropDataArr) {
+                        dropDataArr.forEach(async (tableItem) => {
+                            let tableName = tableItem.tableName;
+                            let dropData = tableItem.dropData;
+                            await dropRows(tableName, dropData);
+                        })
+                    } else {
+                        LogServices.log("[DB runMigrations] No Rows need to delete.");
+                    }
                 } else {
-                    LogServices.debug("Current app version is too low for database update.");
+                    LogServices.log("[DB runMigrations] Current app version is too low for database update.");
                 }
             } else {
-                LogServices.debug("Database is already up to date.");
+                LogServices.log("[DB runMigrations] Database is already up to date.");
             }
-
 
         }
 
@@ -116,28 +134,126 @@ const mapType = (jsType: string): string => {
  */
 const insertDefaultData = async (tableName: string, defaultData: any[]): Promise<boolean> => {
     try {
-        const count = await baseCRUD.count(tableName);
+        // 使用 Promise.all 并行处理所有数据插入操作
+        const insertPromises = defaultData.map(async (data) => {
+            const firstField = Object.keys(data)[0];
+            const firstValue = data[firstField];
 
-        if (count === 0) {
-            LogServices.log(`[DB insertDefaultData] Inserting default data into ${tableName}`);
-
-            // 确保传入的是真实的数据数组
-            const dataToInsert = defaultData;
-
-            // 增加校验：确保数组非空且第一个元素是对象
-            if (!Array.isArray(dataToInsert) || dataToInsert.length === 0 || typeof dataToInsert[0] !== 'object') {
-                LogServices.error(`[DB insertDefaultData] Invalid default data for table ${tableName}:`, dataToInsert);
-                return false;
+            // 查询表中是否存在具有相同第一个字段值的记录
+            const existsQuery = await baseCRUD.queryWhere(tableName, { [firstField]: firstValue });
+            if (!existsQuery || existsQuery.length === 0) {
+                LogServices.log(`[DB insertDefaultData] Inserting data into ${tableName} with first field '${firstField}' and value '${firstValue}'`);
+                return (await baseCRUD.insertRows(tableName, [data])).rowsAffected;
             }
+            return 0; // 如果数据已存在，则返回受影响的行数为 0
+        });
 
-            const rowsAffected = (await baseCRUD.insertRows(tableName, dataToInsert)).rowsAffected;
-            LogServices.log(`[DB insertDefaultData] Inserted ${rowsAffected} rows into ${tableName}`);
-            return rowsAffected > 0;
-        }
+        // 等待所有插入操作完成
+        const results = await Promise.all(insertPromises);
+        const rowsAffected = results.reduce((sum, current) => sum + current, 0);
 
-        return true; // 表中已有数据，无需插入
+        LogServices.log(`[DB insertDefaultData] Inserted ${rowsAffected} rows into ${tableName}`);
+        return true; // 所有数据处理完成
     } catch (error) {
         LogServices.error(`[DB insertDefaultData] Failed to insert default data into ${tableName}:`, error);
         return false;
     }
 }
+
+
+/**
+ * 更新部分数据
+ * @param tableName 表名
+ * @param updateData 需要更新的数据数组 any[]
+ * @returns 成功更新的条数
+ */
+const updatePartialData = async (tableName: string, updateData: any[]): Promise<number> => {
+    try {
+        // 使用 Promise.all 并行处理所有更新操作
+        const updatePromises = updateData.map(async (item) => {
+            try {
+                // 使用item的第一个键值对作为where条件
+                const firstKey = Object.keys(item)[0];
+                if (!firstKey) {
+                    throw new Error(`无法构建 where 条件: item.where 不包含任何列`);
+                }
+
+                const whereCondition = { [firstKey]: item[firstKey] };
+                const result = await baseCRUD.updatePartial(tableName, item, whereCondition);
+
+                if (result.success) {
+                    LogServices.log(`[updatePartialData] Successfully updated data in table ${tableName}:`, {
+                        data: item,
+                        where: whereCondition
+                    });
+                    return true; // 更新成功
+                } else {
+                    throw new Error(`更新操作返回失败结果`);
+                }
+            } catch (error) {
+                LogServices.error(`[updatePartialData] Failed to update data in table ${tableName}:`, {
+                    data: item,
+                    error: error
+                });
+                return false; // 更新失败
+            }
+        });
+
+        // 等待所有更新操作完成
+        const results = await Promise.all(updatePromises);
+
+        // 计算成功更新的条数
+        const successCount = results.filter(result => result).length;
+
+        LogServices.log(`[updatePartialData] Update operation completed for table ${tableName}. Success: ${successCount}, Failed: ${results.length - successCount}`);
+
+        return successCount;
+    } catch (error) {
+        LogServices.error(`[updatePartialData] Error occurred while updating data in table ${tableName}:`, error);
+        return 0; // 发生异常时返回0
+    }
+}
+
+/**
+ * 删除数据
+ * @param tableName 表名
+ * @param dropRow 删除的行
+ * @returns Promise<number> - 返回删除的行数
+ */
+const dropRows = async (tableName: string, dropRow: any[]): Promise<number> => {
+    try {
+        // 使用 Promise.all 并行处理所有删除操作
+        const deletePromises = dropRow.map(async (element) => {
+            try {
+                LogServices.log(`[dropRows] Deleting row from table ${tableName}: ${JSON.stringify(element)}`);
+                const result = await baseCRUD.deleteRow(tableName, element);
+
+                if (result.success) {
+                    LogServices.log(`[dropRows] Successfully deleted row from table ${tableName}: ${JSON.stringify(element)}`);
+                    return result.rowsAffected || 0; // 返回受影响的行数
+                } else {
+                    throw new Error(`删除操作返回失败结果`);
+                }
+            } catch (error) {
+                LogServices.error(`[dropRows] Failed to delete row from table ${tableName}:`, {
+                    element: element,
+                    error: error
+                });
+                return 0; // 删除失败时返回0
+            }
+        });
+
+        // 等待所有删除操作完成
+        const results = await Promise.all(deletePromises);
+
+        // 计算总的影响行数
+        const totalRowsAffected = results.reduce((sum, rowsAffected) => sum + rowsAffected, 0);
+
+        LogServices.log(`[dropRows] Delete operation completed for table ${tableName}. Total rows affected: ${totalRowsAffected}`);
+
+        return totalRowsAffected;
+    } catch (error) {
+        LogServices.error(`[dropRows] Error occurred while deleting rows from table ${tableName}:`, error);
+        return 0; // 发生异常时返回0
+    }
+};

@@ -6,9 +6,7 @@ import LogServices from "@/core/services/Log.services";
 import { MainRouter } from "@/router/Router";
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
 import { SettingsRepository } from "../repositories";
-import { check } from "@tauri-apps/plugin-updater";
-import { ElNotification } from "element-plus";
-import { openUrl } from "@tauri-apps/plugin-opener";
+import { useAppStore } from "@/store/AppStore";
 export default class StartUp {
 
     /**
@@ -30,6 +28,7 @@ export default class StartUp {
         await useMapStore().fetchData();
         await useLoginedSteamUserStore().fetchData();
         await useBackupAndRecoveryStore().fetchData();
+        await useAppStore().fetchData();
     }
 
 
@@ -57,23 +56,7 @@ export default class StartUp {
         LogServices.info('[StartUp.initRoutes(static)]', '开发者模式:', devMode)
     }
 
-    /**
-     * 检查更新
-     */
-    static async checkUpdate() {
-        const update: any = await check();
-        if (update) {
-            ElNotification.info({
-                title: '更新提示',
-                message: `有新版本可用,即将前往下载。`,
-                duration: 0,
 
-            });
-            LogServices.debug("[StartUp.checkUpdate(static)]", "update:", update)
-            let winDownloadLink = update.rawJson.platforms["windows-x86_64"].url;
-            await openUrl(`https://gh-proxy.com/${winDownloadLink}`);
-        }
-    }
 
     /**
      * 启动程序
@@ -83,7 +66,6 @@ export default class StartUp {
         await this.installDB();
         await this.fetchDatas();
         await this.initRoutes();
-        await this.checkUpdate();
     }
 }
 

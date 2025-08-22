@@ -1,4 +1,4 @@
 export interface t_Map {
-    c_key: string | null;
-    c_value: any | null;
+    c_key: string;
+    c_value: any;
 }

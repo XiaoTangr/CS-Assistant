@@ -1,4 +1,6 @@
-
+/**
+ * 日志服务
+ */
 class LogServices {
     private static instance: LogServices;
 
@@ -66,7 +68,14 @@ class LogServices {
      */
     log = (msg: any, ...args: any[]) => {
         if (this.shouldLog(0)) { // LOG 级别为 1
-            console.log(`[Log]`, msg, ...args);
+            let message = `[Log]`;
+            // 如果是字符串，则添加到前缀作为message参数，以便正确处理占位符
+            if (typeof msg === 'string') {
+                message = `${message} ${msg}`;
+            } else {
+                args = [msg, ...args];
+            }
+            console.log(message, ...args);
         }
     }
 
@@ -77,7 +86,14 @@ class LogServices {
      */
     info = (msg: any, ...args: any[]) => {
         if (this.shouldLog(1)) { // INFO 级别为 0
-            console.info('[Info]', msg, ...args);
+            let message = `[Info]`;
+            // 如果是字符串，则添加到前缀作为message参数，以便正确处理占位符
+            if (typeof msg === 'string') {
+                message = `${message} ${msg}`;
+            } else {
+                args = [msg, ...args];
+            }
+            console.info(message, ...args);
         }
     }
 
@@ -92,7 +108,14 @@ class LogServices {
      */
     warn = (msg: any, ...args: any[]) => {
         if (this.shouldLog(2)) { // WARN 级别为 2
-            console.warn(`[Warn]`, msg, ...args);
+            let message = `[Warn]`;
+            // 如果是字符串，则添加到前缀作为message参数，以便正确处理占位符
+            if (typeof msg === 'string') {
+                message = `${message} ${msg}`;
+            } else {
+                args = [msg, ...args];
+            }
+            console.warn(message, ...args);
         }
     }
 
@@ -103,7 +126,14 @@ class LogServices {
      */
     error = (msg: any, ...args: any[]) => {
         if (this.shouldLog(3)) { // ERROR 级别为 3
-            console.error('[Error]', msg, ...args);
+            let message = `[Error]`;
+            // 如果是字符串，则添加到前缀作为message参数，以便正确处理占位符
+            if (typeof msg === 'string') {
+                message = `${message} ${msg}`;
+            } else {
+                args = [msg, ...args];
+            }
+            console.error(message, ...args);
         }
     }
 
@@ -114,6 +144,9 @@ class LogServices {
      */
     debug = (msg: any, ...args: any[]) => {
 
+
+
+
         const colors = {
             reset: '\x1b[0m',
             fontYellow: '\x1b[33m',
@@ -121,7 +154,15 @@ class LogServices {
         }
 
         if (process.env.NODE_ENV === 'development') {
-            console.trace(`${colors.bold}${colors.fontYellow}[Debug]`, msg, ...args,);
+
+            let message = `${colors.bold}${colors.fontYellow}[Debug]${colors.reset}`;
+            // 如果是字符串，则添加到前缀作为message参数，以便正确处理占位符
+            if (typeof msg === 'string') {
+                message = `${message} ${msg}`;
+            } else {
+                args = [msg, ...args];
+            }
+            console.trace(message, ...args)
         }
     }
 }

@@ -240,7 +240,7 @@ class DBBaseCRUD {
     public async queryWhere<T>(
         tableName: string,
         where: Record<string, any>
-    ): Promise<T[]> {
+    ): Promise<T[] | null> {
         this._validateTableName(tableName);
 
         if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
@@ -249,7 +249,8 @@ class DBBaseCRUD {
 
         const [whereClause, params] = this._buildSafeWhere(where);
         const sql = `SELECT * FROM "${tableName}" WHERE ${whereClause}`;
-        return await this._select<T>(sql, params);
+        let res = await this._select<T>(sql, params);
+        return res.length > 0 ? res : null;
     }
 
     /**
@@ -313,6 +314,49 @@ class DBBaseCRUD {
 
         return await this._execute(sql, params);
     }
+
+
+    /**
+     * 更新部分字段
+     * @param tableName 表名 String
+     * @param data 要更新的字段和值 { 字段名: 值,...}
+     * @param where 查询条件 { 字段名: 值}
+     * @returns 执行结果 Promise<sqlResult>
+     */
+    public async updatePartial(tableName: string, data: Record<string, any>, where: Record<string, any>): Promise<sqlResult> {
+        // 验证表名是否合法
+        this._validateTableName(tableName);
+
+        try {
+            // 验证并构建 SET 子句
+            const setClause = Object.keys(data)
+                .map((key) => {
+                    this._validateColumnName(key); // 验证字段名是否合法
+                    return `"${key}" = ?`;
+                })
+                .join(", ");
+
+            // 验证并构建 WHERE 子句
+            const whereClause = Object.keys(where)
+                .map((key) => {
+                    this._validateColumnName(key); // 验证字段名是否合法
+                    return `"${key}" = ?`;
+                })
+                .join(" AND ");
+
+            // 构建 SQL 查询语句
+            const sql = `UPDATE "${tableName}" SET ${setClause} WHERE ${whereClause}`;
+            const values = [...Object.values(data), ...Object.values(where)];
+
+            // 执行 SQL 查询
+            const result = await this._execute(sql, values);
+            return result;
+        } catch (error) {
+            LogServices.error(`[DB updatePartial] Failed to update partial fields in table ${tableName}:`, error);
+            throw error; // 抛出错误以便调用者处理
+        }
+    }
+
 
     /**
      * 根据字段删除

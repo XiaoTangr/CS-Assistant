@@ -6,7 +6,7 @@ export interface t_BackupAndRecovery {
     // 所属用户好友ID
     c_friendId: string;
     // 描述
-    c_description?: string;
+    c_description: string;
     // 创建日期
     c_createdAt: number;
     // 文件夹路径

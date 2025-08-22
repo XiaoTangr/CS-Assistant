@@ -1,11 +1,18 @@
 import { get } from './request';
 import { SettingsService } from '../services';
 import { Notice } from '../models';
+import { check } from '@tauri-apps/plugin-updater';
 
 /**
  * API管理类 - 集中管理所有API请求
  */
 export class ApiService {
+
+
+    static GITHUB_USERNAME = "XiaoTangr";
+    static GITHUB_REPONAME = "CS-Assistant";
+
+
     /**
      * 获取公告列表
      * @param username GitHub用户名
@@ -13,8 +20,8 @@ export class ApiService {
      * @param branchname 分支名
      */
     static async getNotice(
-        username: string = "XiaoTangr",
-        reponame: string = "CS-Assistant",
+        username: string = this.GITHUB_USERNAME,
+        reponame: string = this.GITHUB_REPONAME,
         branchname: string = "gh-pages"
     ) {
 
@@ -29,6 +36,11 @@ export class ApiService {
                 .replace('${branchname}', branchname);
         }
         return await get<Notice[]>(`${baseUrl}/Notice.json`) ?? [];
+    }
+
+
+    static async getUpdateCheck() {
+        return await check();
     }
 }
 
