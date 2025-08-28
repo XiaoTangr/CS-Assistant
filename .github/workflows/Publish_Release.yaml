@@ -1,0 +1,108 @@
+name: build on tag v*
+
+on:
+    push:
+        tags:
+            - v*
+jobs:
+    buildDoc:
+        name: Build Documentation
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: install frontend dependencies
+              run: pnpm install --no-frozen-lockfile
+
+            - name: Build Documentation
+              shell: pwsh
+              run: pnpm exec turbo run build --filter=doc
+
+            - name: Upload Doc Dist
+              uses: actions/upload-artifact@v4
+              with:
+                  name: doc-dist
+                  path: ./apps/doc/*
+                  compression-level: 0
+
+            - name: Deploy to GitHub Pages
+              uses: peaceiris/actions-gh-pages@v3
+              with:
+                  github_token: ${{ secrets.PAT_TOKEN }} # 这一步很重要，单独看下面的大步骤，主要是用来给该脚本一些仓库权限
+                  publish_dir: ./apps/doc/dist # 指定该文件夹中的 dist
+                  publish_branch: gh-pages # 推送到关联仓库的 gh-pages 分支
+                  dotfiles: true # 包括在提交中，即使被 .gitignore 文件忽略
+
+    buildApp:
+        name: Build Application
+        needs: "buildDoc"
+        runs-on: windows-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Configure pnpm
+              uses: pnpm/action-setup@v4
+
+            - name: install frontend dependencies
+              run: pnpm install --no-frozen-lockfile
+
+            # - name: Only Build the app
+            #   id: build
+            #   uses: tauri-apps/tauri-action@v0
+
+            #   env:
+            #       GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+            #       #   # 使用之前配置的私钥
+            #       #   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+            #       #   # 使用之前配置的私钥密码
+            #       #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+            #   with:
+            #       includeDebug: true
+            #       projectPath: ./apps/app
+            #       tauriScript: pnpm
+
+            # - name: Upload App Dist
+            #   uses: actions/upload-artifact@v4
+            #   with:
+            #       path: ./apps/app/src-tauri/target/release/bundle/**/*
+            #       compression-level: 0
+
+            - name: Build and Release the app
+              id: build
+              uses: tauri-apps/tauri-action@v0
+
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+                  # 使用之前配置的私钥
+                  TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+                  # 使用之前配置的私钥密码
+                  TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
+              with:
+                  includeDebug: true
+                  includeUpdaterJson: true
+                  updaterJsonPreferNsis: true
+                  tagName: ${{ github.ref_name }}
+                  releaseName: "v__VERSION__"
+                  releaseBody: "稍后补充更新内容"
+                  releaseDraft: true
+                  prerelease: false
+                  projectPath: ./apps/app
+                  tauriScript: pnpm
+
+            - name: Upload assets
+              env:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+              run: node apps/app/scripts/publish.mjs
+
+            - name: Post latest.json to gh-pages
+              uses: JamesIves/github-pages-deploy-action@v4
+              with:
+                  GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+                  BRANCH: gh-pages
+                  publish_dir: ./publish
+                  keep_files: true

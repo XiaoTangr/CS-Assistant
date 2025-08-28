@@ -1,8 +1,8 @@
-name: build on tag dev*
+name: only build App , build and publish Doc
 
 on:
     push:
-        tags: [dev*]
+        branches: [main]
 
 env:
     PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
@@ -54,7 +54,7 @@ jobs:
             - name: install frontend dependencies
               run: pnpm install --no-frozen-lockfile
 
-            - name: Build and Release the app Dev version
+            - name: Only Build the app
               id: build
               uses: tauri-apps/tauri-action@v0
 
@@ -66,12 +66,11 @@ jobs:
                   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
               with:
                   includeDebug: true
-                  includeUpdaterJson: true
-                  updaterJsonPreferNsis: true
-                  tagName: ${{ github.ref_name }}
-                  releaseName: "dev__VERSION__"
-                  releaseBody: "See the assets to download and install this version."
-                  releaseDraft: true
-                  prerelease: false
                   projectPath: ./apps/app
                   tauriScript: pnpm
+
+            - name: Upload App Dist
+              uses: actions/upload-artifact@v4
+              with:
+                  path: ./apps/app/src-tauri/target/release/bundle/**/*
+                  compression-level: 0

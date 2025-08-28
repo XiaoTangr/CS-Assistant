@@ -1,9 +1,12 @@
-name: build on tag v*
+name: build on tag dev*
 
 on:
     push:
-        tags:
-            - v*
+        tags: [dev*]
+
+env:
+    PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
+
 jobs:
     buildDoc:
         name: Build Documentation
@@ -51,28 +54,7 @@ jobs:
             - name: install frontend dependencies
               run: pnpm install --no-frozen-lockfile
 
-            # - name: Only Build the app
-            #   id: build
-            #   uses: tauri-apps/tauri-action@v0
-
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-            #       #   # 使用之前配置的私钥
-            #       #   TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-            #       #   # 使用之前配置的私钥密码
-            #       #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_PRIVATE_KEY_PASSWORD }}
-            #   with:
-            #       includeDebug: true
-            #       projectPath: ./apps/app
-            #       tauriScript: pnpm
-
-            # - name: Upload App Dist
-            #   uses: actions/upload-artifact@v4
-            #   with:
-            #       path: ./apps/app/src-tauri/target/release/bundle/**/*
-            #       compression-level: 0
-
-            - name: Build and Release the app
+            - name: Build and Release the app Dev version
               id: build
               uses: tauri-apps/tauri-action@v0
 
@@ -87,17 +69,16 @@ jobs:
                   includeUpdaterJson: true
                   updaterJsonPreferNsis: true
                   tagName: ${{ github.ref_name }}
-                  releaseName: "v__VERSION__"
-                  releaseBody: "稍后补充更新内容"
+                  releaseName: "dev__VERSION__"
+                  releaseBody: "See the assets to download and install this version."
                   releaseDraft: true
                   prerelease: false
                   projectPath: ./apps/app
                   tauriScript: pnpm
-
             - name: Upload assets
               env:
                   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-              run: node scripts/publish.mjs
+              run: node apps/app/scripts/publish.mjs
 
             - name: Post latest.json to gh-pages
               uses: JamesIves/github-pages-deploy-action@v4
