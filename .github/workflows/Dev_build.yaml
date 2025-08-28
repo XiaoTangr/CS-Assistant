@@ -2,7 +2,7 @@ name: only build App , build and publish Doc
 
 on:
     push:
-        branches: [dev]
+        branches: [main]
 
 env:
     PNPM_STORE_PATH: C:\Users\runneradmin\AppData\Local\pnpm\store\v3
