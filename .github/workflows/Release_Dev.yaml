@@ -1,4 +1,4 @@
-name: Build and Release Dev Branch Applications
+name: build on tag dev*
 
 on:
     push:

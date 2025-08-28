@@ -1,4 +1,4 @@
-name: build all app in Release branch
+name: build on tag v*
 
 on:
     push:
