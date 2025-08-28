@@ -1,6 +1,6 @@
-export { default as BackupAndRecoveryService } from "./BackupAndRecovery.services";
-export { default as SettingsService } from "./Settings.services";
-export { default as StartUp } from "./StartUp.services";
-export { default as LogServices } from "./Log.services";
-export { default as ConfigCloneService } from "./ConfigClone.services";
-export { default as MapService } from "./Map.services";
+export { default as BackupAndRecoveryService } from "./BackupAndRecovery.service";
+export { default as SettingsService } from "./Settings.service";
+export { default as StartUp } from "./StartUp.service";
+export { default as LogService } from "./Log.service";
+export { default as ConfigCloneService } from "./ConfigClone.service";
+export { default as MapService } from "./Map.service";

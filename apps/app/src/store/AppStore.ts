@@ -2,7 +2,7 @@ import { ApiService } from "@/core/api";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
 import { useSettingsStore } from "./SettingsStore";
-import { LogServices } from "@/core/services";
+import { LogService } from "@/core/services";
 
 export const useAppStore = defineStore("AppStore", () => {
 
@@ -40,7 +40,7 @@ export const useAppStore = defineStore("AppStore", () => {
             updater_remoteData.value = res;
             updater_isChecked.value = true;
         }).catch(err => {
-            LogServices.error(err.toString());
+            LogService.error(err.toString());
         });
     }
 

@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import GlassButton from '@/components/Common/GlassButton.vue';
 import GlassButtonGroup from '@/components/Common/GlassButtonGroup.vue';
-import { LogServices } from '@/core/services';
+import { LogService } from '@/core/services';
 import { Top } from '@element-plus/icons-vue';
 const backUp = () => {
     // 获取.window-container元素并设置滚动条为起始，使用平滑滚动动画
@@ -20,7 +20,7 @@ const backUp = () => {
             behavior: 'smooth'
         });
     } else {
-        LogServices.error('Element with class .window-container not found');
+        LogService.error('Element with class .window-container not found');
     }
 }
 </script>

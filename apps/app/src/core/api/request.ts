@@ -1,6 +1,6 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import { LogServices } from "../services";
-import { deserializeObject } from "../utils";
+import { LogService } from "../services";
+import { json5 } from "../utils";
 import { ApiResponse, RequestConfig } from "../models";
 
 // 默认请求头
@@ -10,7 +10,7 @@ const defaultHeaders: Record<string, string> = {
 };
 
 // 基础请求方法，带有适当的类型约束
-export const request = async <T extends Record<string, unknown> | Array<unknown>, B = Record<string, unknown>>(
+export const request = async <T extends Record<string, unknown> | unknown[], B = Record<string, unknown>>(
     url: string,
     config: RequestConfig<B> = {}
 ): Promise<ApiResponse<T>> => {
@@ -26,7 +26,7 @@ export const request = async <T extends Record<string, unknown> | Array<unknown>
 
         const responseText = await response.text();
         // 明确类型转换，确保响应数据符合预期类型
-        const responseData = responseText ? deserializeObject(responseText) as T : null;
+        const responseData = json5.deepParse(responseText) as T ?? null;
 
         const result: ApiResponse<T> = {
             data: responseData,
@@ -39,13 +39,13 @@ export const request = async <T extends Record<string, unknown> | Array<unknown>
         };
 
         if (!response.ok) {
-            LogServices.error(`API请求失败: ${result.message}`);
+            LogService.error(`API请求失败: ${result.message}`);
         }
 
         return result;
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : '发生未知错误';
-        LogServices.error(`API请求错误: ${errorMessage}`);
+        LogService.error(`API请求错误: ${errorMessage}`);
 
         return {
             data: null,

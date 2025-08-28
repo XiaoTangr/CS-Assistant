@@ -1,259 +1,218 @@
-// src/core/database/migrations.ts
 
-import { baseCRUD } from '@/core/database';
-import { defaultDatabaseData, updateDatabaseData } from '@/core/database/dbData';
-import { MigrationResult } from '@/core/models';
-import { LogServices, MapService } from '../services';
+import dbData from "./dbData.json5?raw";
+import { LogService } from "../services";
+import { baseCRUD } from "../database";
+import { json5, versionComparator } from "../utils";
 import { getVersion } from '@tauri-apps/api/app';
-import { versionComparator } from '../utils';
-/**
- * 初始化数据库表结构和默认数据
- * @returns 返回迁移结果对象
- */
-export const runMigrations = async (): Promise<MigrationResult> => {
-    const result: MigrationResult = {
-        success: true,
-        createdTables: [],
-        insertedDataResults: []
-    };
-
-    try {
-        for (const table of defaultDatabaseData) {
-            const tableName = table.tableName;
-            const columns = table.Structure;
-
-
-            // 构建 CREATE TABLE SQL
-            const columnDefs = columns.map((col, index) => {
-                let def = ` "${col.name}" ${mapType(col.type)}`;
-                if (index === 0) {
-                    def += ' PRIMARY KEY'; // 第一个字段为主键
-                }
-                if (!col.nullable) {
-                    def += ' NOT NULL';
-                }
-                return def;
-            });
-
-            const createTableSql = `CREATE TABLE IF NOT EXISTS "${tableName}" (${columnDefs.join(', ')});`;
-
-            await baseCRUD.executeRaw(createTableSql);
-
-            result.createdTables.push(tableName);
-
-            // 插入默认数据（如果存在）
-            if (table.defaultData && table.defaultData.length > 0) {
-                const insertSuccess = await insertDefaultData(tableName, table.defaultData);
-                result.insertedDataResults.push({
-                    table: tableName,
-                    success: insertSuccess
-                });
-            }
-
-            // 更新数据
-            // 获取当前app版本 (确保 getVersion 函数存在且返回正确)
-            let currentappVersion = await getVersion();
-            // 获取数据库适配版本(该版本要求app至少为此版本才能正常工作)
-            let needAppVersion = updateDatabaseData.needAppVersion;
-            // 数据库要求app至少为此版本才能正常工作
-            let setDBVersion = updateDatabaseData.setDBVersion;
-            let currentDBVersion = await MapService.getValueByKey("DB_Version");
-
-            // 检查是否需要更新数据库
-            if (versionComparator(setDBVersion, currentDBVersion) > 0) {
-                // 如果当前 App 版本 >= 所需版本，则允许更新
-                if (versionComparator(currentappVersion, needAppVersion) >= 0) {
-                    // 需要更新数据库
-                    LogServices.log("[DB runMigrations] Database update required.");
-                    let dataArr = updateDatabaseData.payloads.length > 0 ? updateDatabaseData.payloads : null;
-
-                    let dropDataArr = updateDatabaseData.dropPayloads.length > 0 ? updateDatabaseData.dropPayloads : null;
-
-                    if (dataArr) {
-                        dataArr.forEach(async (tableItem) => {
-                            let tableName = tableItem.tableName;
-                            let updateData = tableItem.updateData;
-                            await updatePartialData(tableName, updateData);
-                        })
-                    } else {
-                        LogServices.log("[DB runMigrations] No Rows need to update.");
-                    }
-                    if (dropDataArr) {
-                        dropDataArr.forEach(async (tableItem) => {
-                            let tableName = tableItem.tableName;
-                            let dropData = tableItem.dropData;
-                            await dropRows(tableName, dropData);
-                        })
-                    } else {
-                        LogServices.log("[DB runMigrations] No Rows need to delete.");
-                    }
-                } else {
-                    LogServices.log("[DB runMigrations] Current app version is too low for database update.");
-                }
-            } else {
-                LogServices.log("[DB runMigrations] Database is already up to date.");
-            }
-
-        }
-
-        LogServices.log('[DB runMigrations] Database initialized successfully.');
-        return result;
-    } catch (error) {
-        LogServices.error('[DB runMigrations] Failed to initialize database:', error);
-        result.success = false;
-        result.error = error as Error;
-        return result;
-    }
+import { t_Map } from "./models";
+interface TableColumns {
+    name: string;
+    type: string;
+    primaryKey?: boolean;
+    autoIncrement?: boolean;
+    notNull?: boolean;
+    unique?: boolean;
+    default?: string;
 }
 
-/**
- * 将 JS 类型映射为 SQLite 类型
- */
-const mapType = (jsType: string): string => {
-    switch (jsType) {
-        case 'string':
-        case 'text':
-            return 'TEXT';
-        case 'integer':
-        case 'number':
-            return 'INTEGER';
-        case 'boolean':
-            return 'INTEGER'; // 用 0/1 表示布尔值
-        case 'json':
-            return 'TEXT'; // JSON 存储为字符串
-        default:
-            return 'TEXT';
-    }
-}
 
 /**
- * 插入默认数据（如果表为空）
+ * 创建数据库表Sql语句生成器
  * @param tableName 表名
- * @param defaultData 默认数据数组
- * @returns 成功返回 true，失败返回 false
+ * @param columns 列定义
+ * @param config {}
  */
-const insertDefaultData = async (tableName: string, defaultData: any[]): Promise<boolean> => {
+const buildCreateTableSql = (
+    tableName: string,
+    columns: TableColumns[],
+): string => {
+    // 构建列定义
+    const columnDefinitions = columns.map(column => {
+        let columnDefinition = `${column.name} ${column.type}`;
+        if (column.primaryKey === true) columnDefinition += ' PRIMARY KEY';
+        if (column.notNull !== false) columnDefinition += ' NOT NULL';
+        if (column.unique === true) columnDefinition += ' UNIQUE';
+        if (column.autoIncrement === true) columnDefinition += ' AUTOINCREMENT';
+        if (column.default !== undefined) columnDefinition += ` DEFAULT '${column.default}'`;
+        return columnDefinition;
+    }).join(', ');
+
+    // 构建完整的 SQL 语句
+    const sql = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefinitions});`;
+
+    return sql;
+}
+
+/**
+ * 获取数据库迁移数据
+*/
+const getMigrationData = async () => {
     try {
-        // 使用 Promise.all 并行处理所有数据插入操作
-        const insertPromises = defaultData.map(async (data) => {
-            const firstField = Object.keys(data)[0];
-            const firstValue = data[firstField];
-
-            // 查询表中是否存在具有相同第一个字段值的记录
-            const existsQuery = await baseCRUD.queryWhere(tableName, { [firstField]: firstValue });
-            if (!existsQuery || existsQuery.length === 0) {
-                LogServices.log(`[DB insertDefaultData] Inserting data into ${tableName} with first field '${firstField}' and value '${firstValue}'`);
-                return (await baseCRUD.insertRows(tableName, [data])).rowsAffected;
-            }
-            return 0; // 如果数据已存在，则返回受影响的行数为 0
-        });
-
-        // 等待所有插入操作完成
-        const results = await Promise.all(insertPromises);
-        const rowsAffected = results.reduce((sum, current) => sum + current, 0);
-
-        LogServices.log(`[DB insertDefaultData] Inserted ${rowsAffected} rows into ${tableName}`);
-        return true; // 所有数据处理完成
+        // 获取database数据
+        let data: any = await json5.deepParse(dbData);
+        if (!data) throw new Error('No data found.');
+        return data;
     } catch (error) {
-        LogServices.error(`[DB insertDefaultData] Failed to insert default data into ${tableName}:`, error);
+        LogService.error(error);
+        throw new Error(`[DatabaseService.getMigrationData] 获取数据库迁移数据失败: ${error}`);
+    }
+}
+
+
+
+/**
+ * 检查是否需要执行数据库迁移
+ * @returns true if need migration
+ */
+export const needMigration = async () => {
+    // 获取database数据
+    let data: any = await getMigrationData();
+    let currentAppVersion = await getVersion();
+    let needAppVersion = data.needAppVersion;
+    let setDBVersion = data.setDBVersion;
+    let currentDBVersion = "-1";
+    try {
+        let Rows: any[] = await baseCRUD.queryWhere("t_Map", { c_key: "db_version" })
+        if (Rows && Rows.length > 0) {
+            currentDBVersion = Rows[0]?.c_value ?? "0.0.0";
+        } else {
+            currentDBVersion = "0.0.0";
+        }
+    } catch (error) {
+        LogService.error(error);
+        currentDBVersion = "0.0.0";
+    }
+    // 检查应用版本是否符合要求
+    // 首先判断app版本是否高于needAppVersion，如果是，则判断db版本是否需要更新
+    if (versionComparator(currentAppVersion, needAppVersion) >= 0) {
+        // 检查数据库版本是否需要更新
+        if (versionComparator(currentDBVersion, setDBVersion) < 0) {
+            LogService.log(`[DatabaseService.needMigration] 数据库版本需要更新，当前版本为${currentDBVersion}，需要更新版本为${setDBVersion}`);
+            // 执行更新逻辑
+            return true;
+        } else {
+            LogService.log(`[DatabaseService.needMigration] 数据库版本无需更新，当前版本为${currentDBVersion}`);
+            return false;
+        }
+    } else {
+        LogService.log(`[DatabaseService.needMigration] 应用版本低于需要更新的版本，当前版本为${currentAppVersion}，需要更新版本为${needAppVersion}`);
         return false;
     }
 }
 
-
 /**
- * 更新部分数据
- * @param tableName 表名
- * @param updateData 需要更新的数据数组 any[]
- * @returns 成功更新的条数
+ * 数据库迁移
  */
-const updatePartialData = async (tableName: string, updateData: any[]): Promise<number> => {
+export const runMigrations = async () => {
     try {
-        // 使用 Promise.all 并行处理所有更新操作
-        const updatePromises = updateData.map(async (item) => {
+        // 获取 migration 数据
+        let data: any = await getMigrationData();
+        let tables = data.tables;
+
+        // 使用 Promise.all 并行处理每个表
+        await Promise.all(tables.map(async (tableItem: any) => {
             try {
-                // 使用item的第一个键值对作为where条件
-                const firstKey = Object.keys(item)[0];
-                if (!firstKey) {
-                    throw new Error(`无法构建 where 条件: item.where 不包含任何列`);
+                let tableName = tableItem.name;
+                let columns = tableItem.columns;
+
+                // 1. 检查表是否存在
+                let isTableExist = await baseCRUD.executeRaw('SELECT * FROM sqlite_master WHERE type="table" AND name="' + tableName + '"');
+                LogService.debug('[DatabaseService.installDB] 检查表是否存在:', isTableExist);
+
+                if (isTableExist.data.length === 0) {
+                    // 创建表
+                    let createSqlstr = buildCreateTableSql(tableName, columns);
+                    await baseCRUD.executeRaw(createSqlstr);
+                    LogService.log(`[DatabaseService.installDB] [${tableName}] 创建表成功`);
                 }
 
-                const whereCondition = { [firstKey]: item[firstKey] };
-                const result = await baseCRUD.updatePartial(tableName, item, whereCondition);
+                // 2. 插入默认数据
+                let defData: any[] = tableItem.defData ?? [];
+                if (defData.length > 0) {
+                    // 构造 queryWhereIn 所需的过滤条件
+                    const filterKey = Object.keys(defData[0])[0];
+                    const filterValues = defData.map(dataItem => dataItem[filterKey]);
+                    const filters = { [filterKey]: filterValues };
 
-                if (result.success) {
-                    LogServices.log(`[updatePartialData] Successfully updated data in table ${tableName}:`, {
-                        data: item,
-                        where: whereCondition
+                    // 批量查询现有数据
+                    const existingRows = await baseCRUD.queryWhereIn(tableName, filters);
+
+                    // 筛选出需要插入的数据项
+                    const rowsToInsert = defData.filter(dataItem => {
+                        const filterValue = dataItem[filterKey];
+                        return !existingRows.some((row: any) => row[filterKey] === filterValue);
                     });
-                    return true; // 更新成功
-                } else {
-                    throw new Error(`更新操作返回失败结果`);
+
+                    if (rowsToInsert.length > 0) {
+                        const insertRows = rowsToInsert.map(dataItem => json5.deserializeValues(dataItem));
+                        await baseCRUD.insertRows(tableName, insertRows); // 批量插入
+                        LogService.log(`[DatabaseService.installDB] [${tableName}] 批量插入 ${rowsToInsert.length} 条数据成功`);
+                    }
+                    LogService.log(`[DatabaseService.installDB] [${tableName}] 插入全部默认数据成功`);
                 }
+
+                // 3. 更新数据 和 插入新数据
+                let updateData: any[] = tableItem.updateData ?? [];
+                if (updateData.length > 0) {
+                    LogService.log(`[DatabaseService.installDB] [${tableName}] 更新数据开始`);
+
+                    // 构造 queryWhereIn 所需的过滤条件
+                    const filterKey = Object.keys(updateData[0])[0];
+                    const filterValues = updateData.map(dataItem => dataItem[filterKey]);
+                    const filters = { [filterKey]: filterValues };
+
+                    // 批量查询现有数据
+                    const existingUpdateRows = await baseCRUD.queryWhereIn(tableName, filters);
+
+                    // 并行处理更新和插入
+                    await Promise.all(updateData.map(async (dataItem) => {
+                        const filter = { [filterKey]: dataItem[filterKey] };
+
+                        const existingRow = existingUpdateRows.find((row: any) => row[filterKey] === dataItem[filterKey]);
+                        if (existingRow) {
+                            // 如果数据存在，则更新
+                            await baseCRUD.updateWhere(tableName, dataItem, filter);
+                            LogService.log(`[DatabaseService.installDB] [${tableName}] 更新数据成功:%o`, dataItem);
+                        } else {
+                            // 如果数据不存在，则插入
+                            await baseCRUD.insertRows(tableName, [dataItem]);
+                            LogService.log(`[DatabaseService.installDB] [${tableName}] 插入数据成功:%o`, dataItem);
+                        }
+                    }));
+                    LogService.log(`[DatabaseService.installDB] [${tableName}] 更新数据完成`);
+                }
+
+                // 4. 删除数据
+                let dropData: any[] = tableItem.dropData ?? [];
+                if (dropData.length > 0) {
+                    LogService.log(`[DatabaseService.installDB] [${tableName}] 删除数据开始`);
+                    // 批量删除
+                    const deleteFilters = dropData.map(dataItem => {
+                        const filterKey = Object.keys(dataItem)[0];
+                        return { [filterKey]: dataItem[filterKey] };
+                    });
+                    await baseCRUD.deleteRows(tableName, deleteFilters); // 假设支持批量删除
+                    LogService.log(`[DatabaseService.installDB] [${tableName}] 删除数据完成`);
+                }
+
+                // 5. 更新 db_version
+                let row: t_Map = {
+                    c_key: "db_version",
+                    c_value: data.setDBVersion
+                };
+                await baseCRUD.updateWhere("t_Map", row, { c_key: "db_version" });
+
+                LogService.log(`[DatabaseService.installDB] [${tableName}] 安装完成`);
             } catch (error) {
-                LogServices.error(`[updatePartialData] Failed to update data in table ${tableName}:`, {
-                    data: item,
-                    error: error
-                });
-                return false; // 更新失败
+                LogService.error('[DatabaseService.installDB] 发生错误:', error);
+                throw error;
             }
-        });
+        }));
 
-        // 等待所有更新操作完成
-        const results = await Promise.all(updatePromises);
-
-        // 计算成功更新的条数
-        const successCount = results.filter(result => result).length;
-
-        LogServices.log(`[updatePartialData] Update operation completed for table ${tableName}. Success: ${successCount}, Failed: ${results.length - successCount}`);
-
-        return successCount;
+        LogService.log('[DatabaseService.installDB] 数据库安装完成');
+        return true;
     } catch (error) {
-        LogServices.error(`[updatePartialData] Error occurred while updating data in table ${tableName}:`, error);
-        return 0; // 发生异常时返回0
+        LogService.error('[DatabaseService.installDB] 数据库安装失败:', error);
+        throw error;
     }
 }
-
-/**
- * 删除数据
- * @param tableName 表名
- * @param dropRow 删除的行
- * @returns Promise<number> - 返回删除的行数
- */
-const dropRows = async (tableName: string, dropRow: any[]): Promise<number> => {
-    try {
-        // 使用 Promise.all 并行处理所有删除操作
-        const deletePromises = dropRow.map(async (element) => {
-            try {
-                LogServices.log(`[dropRows] Deleting row from table ${tableName}: ${JSON.stringify(element)}`);
-                const result = await baseCRUD.deleteRow(tableName, element);
-
-                if (result.success) {
-                    LogServices.log(`[dropRows] Successfully deleted row from table ${tableName}: ${JSON.stringify(element)}`);
-                    return result.rowsAffected || 0; // 返回受影响的行数
-                } else {
-                    throw new Error(`删除操作返回失败结果`);
-                }
-            } catch (error) {
-                LogServices.error(`[dropRows] Failed to delete row from table ${tableName}:`, {
-                    element: element,
-                    error: error
-                });
-                return 0; // 删除失败时返回0
-            }
-        });
-
-        // 等待所有删除操作完成
-        const results = await Promise.all(deletePromises);
-
-        // 计算总的影响行数
-        const totalRowsAffected = results.reduce((sum, rowsAffected) => sum + rowsAffected, 0);
-
-        LogServices.log(`[dropRows] Delete operation completed for table ${tableName}. Total rows affected: ${totalRowsAffected}`);
-
-        return totalRowsAffected;
-    } catch (error) {
-        LogServices.error(`[dropRows] Error occurred while deleting rows from table ${tableName}:`, error);
-        return 0; // 发生异常时返回0
-    }
-};

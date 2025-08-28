@@ -1,8 +1,8 @@
 /**
  * 日志服务
  */
-class LogServices {
-    private static instance: LogServices;
+class LogService {
+    private static instance: LogService;
 
     /**
      * 日志级别
@@ -16,11 +16,11 @@ class LogServices {
 
     private constructor() { }
 
-    public static getInstance(): LogServices {
-        if (!LogServices.instance) {
-            LogServices.instance = new LogServices();
+    public static getInstance(): LogService {
+        if (!LogService.instance) {
+            LogService.instance = new LogService();
         }
-        return LogServices.instance;
+        return LogService.instance;
     }
 
     /**
@@ -34,9 +34,9 @@ class LogServices {
     public setLogLevel(level: number): void {
         if (level >= 0 && level <= 3) {
             this.logLevel = level;
-            this.warn(`[LogServices] Set Log Level to :`, this.logLevel);
+            this.warn(`[LogService] Set Log Level to :`, this.logLevel);
         } else {
-            LogServices.getInstance().error("Invalid log level: " + level);
+            LogService.getInstance().error("Invalid log level: " + level);
         }
     }
 
@@ -167,4 +167,4 @@ class LogServices {
     }
 }
 
-export default LogServices.getInstance();
+export default LogService.getInstance();

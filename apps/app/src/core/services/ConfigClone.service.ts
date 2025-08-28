@@ -1,10 +1,10 @@
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
 import { BackupAndRecovery } from "../models";
 import { cp, getCurrentTimestamp, isFileExists, rm, timestampToFolderName } from "../utils";
-import LogServices from "./Log.services";
-import SettingsService from "./Settings.services";
+import LogService from "./Log.service";
+import SettingsService from "./Settings.service";
 import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
-import BackupAndRecoveryService from "./BackupAndRecovery.services";
+import BackupAndRecoveryService from "./BackupAndRecovery.service";
 
 export default class ConfigCloneService {
 
@@ -17,7 +17,7 @@ export default class ConfigCloneService {
         let db = await SettingsService.getSettingByKey("steamInstallPath");
         let res = db?.selected as string | null;
         if (!res) {
-            LogServices.error("[ConfigCloneService.getSteamInstallPath] 未找到 Steam 安装路径");
+            LogService.error("[ConfigCloneService.getSteamInstallPath] 未找到 Steam 安装路径");
             throw new Error("未找到 Steam 安装路径");
         }
         return `${res}/userdata/${FriendId}/730/`;
@@ -71,12 +71,12 @@ export default class ConfigCloneService {
                             // BARStore.setConfirmCreateBackupData();
                             // confirmCreateBackupData.value.nickName = nickName;
                             // confirmCreateBackupData.value.description = `在克隆前的备份: ${fromId} -> ${item}`;
-                            // LogServices.debug(confirmCreateBackupData)
+                            // LogService.debug(confirmCreateBackupData)
                             // await BARStore.createBackup();
                             // BARStore.setConfirmCreateBackupData({ reset: true });
                             // BARStore.fetchData();
                         } catch (backupError) {
-                            LogServices.warn(`[ConfigCloneService.cloneConfig] 为账号 ${item} 创建备份失败:`, backupError);
+                            LogService.warn(`[ConfigCloneService.cloneConfig] 为账号 ${item} 创建备份失败:`, backupError);
                             // 即使备份失败，也继续执行复制操作
                         }
                     }
@@ -87,15 +87,15 @@ export default class ConfigCloneService {
                         await rm(toPath, true);
                     }
                     await cp(fromPath, toPath);
-                    LogServices.debug(`[ConfigCloneService.cloneConfig] 复制 ${fromPath} 到 ${toPath}`);
+                    LogService.debug(`[ConfigCloneService.cloneConfig] 复制 ${fromPath} 到 ${toPath}`);
                     successList.push(item);
                 } catch (itemError) {
-                    LogServices.error(`[ConfigCloneService.cloneConfig] 复制到 ${item} 失败:`, itemError);
+                    LogService.error(`[ConfigCloneService.cloneConfig] 复制到 ${item} 失败:`, itemError);
                     // 不抛出异常，继续处理下一个项目
                 }
             }
         } catch (error) {
-            LogServices.error(`[ConfigCloneService.cloneConfig] 初始化源路径失败:`, error);
+            LogService.error(`[ConfigCloneService.cloneConfig] 初始化源路径失败:`, error);
         }
         return successList;
     }

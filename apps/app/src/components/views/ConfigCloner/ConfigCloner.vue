@@ -9,14 +9,14 @@
                         <el-select clearable v-model="cloneFrom" placeholder="选择复制源" style="flex: 1;"
                             @change="cloneFromSelecterChangeHandler">
                             <el-option v-for="item in selectList" :disabled="!item.asOrigin" :key="item.folderName"
-                                :label="item.userName" :value="item.folderName?.toString()" />
+                                :label="item.userName" :value="item.folderName" />
                         </el-select>
                     </div>
                     <div class="r">
                         <p>目标(可多选)</p>
                         <el-select clearable v-model="cloneTo" multiple placeholder="选择复制目标" style="flex: 1;">
                             <el-option v-for="item in selectList" :disabled="!item.asTarget" :key="item.folderName"
-                                :label="item.userName" :value="item.folderName?.toString()" />
+                                :label="item.userName" :value="item.folderName" />
                         </el-select>
                     </div>
                 </el-space>
@@ -43,8 +43,8 @@ import { onMounted, ref } from 'vue'
 
 
 interface SettingsArrItem {
-    userName: string | undefined,
-    folderName: number | undefined,
+    userName: string,
+    folderName: number,
     asOrigin: boolean,
     asTarget: boolean,
 }
@@ -81,11 +81,11 @@ const cloneFromSelecterChangeHandler = (value: number) => {
 onMounted(() => {
     if (LoginedSteamUsers.value) {
         selectList.value = LoginedSteamUsers.value.map((item) => ({
-            userName: item.PersonaName ?? undefined,
-            folderName: item.FriendId ?? undefined,
+            folderName: item.FriendId ?? 0,
+            userName: item.PersonaName ?? "",
             asOrigin: true,
             asTarget: true
-        }));
+        }))
     }
 })
 

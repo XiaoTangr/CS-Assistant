@@ -1,9 +1,9 @@
 import { BackupAndRecoveryRepository } from "@/core/repositories";
 import { BackupAndRecovery } from "../models";
-import SettingsService from "./Settings.services";
+import SettingsService from "./Settings.service";
 
 import { cp, isFileExists, rm } from "../utils";
-import LogServices from "./Log.services";
+import LogService from "./Log.service";
 
 export default class BackupAndRecoveryService {
 
@@ -49,7 +49,7 @@ export default class BackupAndRecoveryService {
      */
     static async createBackup(payload: BackupAndRecovery): Promise<number> {
         // 还要进行文件系统的备份操作
-        LogServices.error('正在备份文件系统...', payload)
+        LogService.error('正在备份文件系统...', payload)
         let dbSteamInstallPath = await SettingsService.getSettingByKey('steamInstallPath');
 
         let streamInstallPath = dbSteamInstallPath?.selected
@@ -61,7 +61,7 @@ export default class BackupAndRecoveryService {
             await BackupAndRecoveryRepository.bulkCreate([payload])
             return payload.friendId;
         } catch (error: any) {
-            LogServices.error(error);
+            LogService.error(error);
             throw error;
         }
     }
@@ -88,7 +88,7 @@ export default class BackupAndRecoveryService {
         let fromPath = payload.folderPath;
         let toPath = `${streamInstallPath}/userdata/${payload.friendId}/730`;
 
-        LogServices.debug(payload);
+        LogService.debug(payload);
         // 删除UserData下的730文件夹
         if (await isFileExists(toPath)) {
             await rm(toPath, true);
@@ -103,7 +103,7 @@ export default class BackupAndRecoveryService {
             }
             return 0;
         } catch (error: any) {
-            LogServices.error(error);
+            LogService.error(error);
             throw error.message;
         }
     }
@@ -121,7 +121,7 @@ export default class BackupAndRecoveryService {
         }
         let delPath = payload.folderPath.replace(`\\730`, "");
 
-        LogServices.debug(`删除备份数据: ${delPath}`);
+        LogService.debug(`删除备份数据: ${delPath}`);
 
         // 删除文件系统的备份数据
         if (await isFileExists(delPath)) {

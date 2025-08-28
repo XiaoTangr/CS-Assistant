@@ -16,7 +16,7 @@ export default class BackupAndRecoveryRepository {
             this.TABLE_NAME,
             filter,
         );
-        return results.length > 0 ? fromDb(results[0]) : null;
+        return fromDb(results[0]);
     }
 
     /**

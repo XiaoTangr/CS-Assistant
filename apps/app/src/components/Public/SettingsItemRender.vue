@@ -41,21 +41,21 @@
                     {{ props.item.description }}
                 </div>
                 <div class="item-options">
-                    <el-input v-model="props.item.selected" placeholder="..." style="width: 100%" />
+                    <el-input v-model="props.item.selected as string" placeholder="..." style="width: 100%" />
                 </div>
             </div>
         </div>
         <div v-if="props.item.type === 'PathInput'" class="settings-item item-FilePath">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
                 props.item.text
-            }}
+                }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
                     {{ props.item.description }}
                 </div>
                 <div class="item-options">
-                    <el-input class="path-item" v-model="props.item.selected" placeholder="选择路径" />
+                    <el-input class="path-item" v-model="props.item.selected as string" placeholder="选择路径" />
                     <GlassButton class="path-item" @click="openPathChoose" type="primary" :icon="FolderOpened" circle
                         plain />
                 </div>
@@ -70,7 +70,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { Settings } from '@/core/models';
 import { computed, PropType } from 'vue';
 import { useSettingsStore } from '@/store/SettingsStore';
-import { LogServices } from '@/core/services';
+import { LogService } from '@/core/services';
 import GlassButton from '../Common/GlassButton.vue';
 const props = defineProps({
     item: {
@@ -97,10 +97,10 @@ const openPathChoose = async () => {
             props.item.selected = file;
         } else {
             // 用户取消选择或未选择有效路径
-            LogServices.warn('未选择有效的路径');
+            LogService.warn('未选择有效的路径');
         }
     } catch (error: any) {
-        LogServices.error('打开路径选择器时发生错误:', error);
+        LogService.error('打开路径选择器时发生错误:', error);
     }
 };
 </script>

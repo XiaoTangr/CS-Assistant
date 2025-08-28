@@ -6,7 +6,7 @@ export interface BackupAndRecovery {
     // 所属用户好友ID
     friendId: number;
     // 描述
-    description?: string;
+    description: string;
     // 创建日期
     createdAt: number;
     // 文件夹路径

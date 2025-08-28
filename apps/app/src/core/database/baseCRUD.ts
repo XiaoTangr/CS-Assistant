@@ -1,4 +1,4 @@
-import { LogServices } from "../services";
+import { LogService } from "../services";
 import { connecter } from "./";
 
 interface sqlResult {
@@ -100,7 +100,7 @@ class DBBaseCRUD {
      */
     private async _select<T>(sql: string, params: any[] = []): Promise<T[]> {
         const db = await connecter.getConnection();
-        LogServices.log(`[DBBaseCRUD._select]\n\r`,
+        LogService.log(`[DBBaseCRUD._select]\n\r`,
             `Executing query SQL:\n\r`,
             `${sql}\n\r`,
             `params:\n\r`,
@@ -109,7 +109,7 @@ class DBBaseCRUD {
             return await db.select(sql, params);
         } catch (error: any) {
             const errorMessage = `Query failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
-            LogServices.error(errorMessage, {
+            LogService.error(errorMessage, {
                 error,
                 sql,
                 params,
@@ -128,7 +128,7 @@ class DBBaseCRUD {
      */
     private async _execute(sql: string, params: any[] = []): Promise<sqlResult> {
         const db = await connecter.getConnection();
-        LogServices.log(`[DBBaseCRUD._execute]\n\r`,
+        LogService.log(`[DBBaseCRUD._execute]\n\r`,
             `Executing execute SQL:\n\r`,
             `${sql}\n\r`,
             `params:\n\r`,
@@ -143,7 +143,7 @@ class DBBaseCRUD {
             };
         } catch (error: any) {
             const errorMessage = `Execute failed: ${error.message || 'Unknown error'}, SQL: ${sql}`;
-            LogServices.error(errorMessage, {
+            LogService.error(errorMessage, {
                 error,
                 sql,
                 params,
@@ -196,9 +196,11 @@ class DBBaseCRUD {
 
         let rowsAffected = 0;
         const lastInsertIds: number[] = [];
+        let transactionStarted = false; // 标记事务是否已开始
 
         try {
             await this._execute("BEGIN TRANSACTION");
+            transactionStarted = true;
 
             for (const item of data) {
                 const values = columns.map(col => item[col] ?? null);
@@ -210,6 +212,8 @@ class DBBaseCRUD {
             }
 
             await this._execute("COMMIT");
+            transactionStarted = false;
+
             return {
                 rowsAffected,
                 lastInsertId: lastInsertIds.length > 0 ? Math.max(...lastInsertIds) : undefined,
@@ -217,8 +221,10 @@ class DBBaseCRUD {
                 data: { insertedCount: rowsAffected, lastInsertIds }
             };
         } catch (e: any) {
-            await this._execute("ROLLBACK");
-            LogServices.error(`[SQLite insertRows] 失败`, {
+            if (transactionStarted) {
+                await this._execute("ROLLBACK"); // 回滚事务
+            }
+            LogService.error(`[SQLite insertRows] Failed to insert rows into table ${tableName}:`, {
                 error: e.message,
                 sql,
                 lastParams: data[data.length - 1]
@@ -240,7 +246,7 @@ class DBBaseCRUD {
     public async queryWhere<T>(
         tableName: string,
         where: Record<string, any>
-    ): Promise<T[] | null> {
+    ): Promise<T[]> {
         this._validateTableName(tableName);
 
         if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
@@ -250,7 +256,7 @@ class DBBaseCRUD {
         const [whereClause, params] = this._buildSafeWhere(where);
         const sql = `SELECT * FROM "${tableName}" WHERE ${whereClause}`;
         let res = await this._select<T>(sql, params);
-        return res.length > 0 ? res : null;
+        return res;
     }
 
     /**
@@ -315,6 +321,41 @@ class DBBaseCRUD {
         return await this._execute(sql, params);
     }
 
+    /**
+      * 基于批量条件查询数据
+      * @param tableName 表名
+      * @param where 条件对象，支持 IN 查询
+      * @returns 查询结果数组
+      */
+    public async queryWhereIn<T>(
+        tableName: string,
+        where: Record<string, any[]>
+    ): Promise<T[]> {
+        this._validateTableName(tableName);
+
+        if (typeof where !== 'object' || where === null || Object.keys(where).length === 0) {
+            throw new Error(`Invalid WHERE clause provided for query`);
+        }
+
+        const conditions: string[] = [];
+        const params: any[] = [];
+        let paramIndex = 1;
+
+        for (const [key, values] of Object.entries(where)) {
+            this._validateColumnName(key);
+            if (!Array.isArray(values) || values.length === 0) {
+                throw new Error(`Invalid IN values for column: ${key}`);
+            }
+
+            const [placeholders] = this._buildSafeValues(values, paramIndex);
+            conditions.push(`"${key}" IN (${placeholders})`);
+            params.push(...values);
+            paramIndex += values.length;
+        }
+
+        const sql = `SELECT * FROM "${tableName}" WHERE ${conditions.join(' AND ')}`;
+        return await this._select<T>(sql, params);
+    }
 
     /**
      * 更新部分字段
@@ -352,7 +393,7 @@ class DBBaseCRUD {
             const result = await this._execute(sql, values);
             return result;
         } catch (error) {
-            LogServices.error(`[DB updatePartial] Failed to update partial fields in table ${tableName}:`, error);
+            LogService.error(`[DB updatePartial] Failed to update partial fields in table ${tableName}:`, error);
             throw error; // 抛出错误以便调用者处理
         }
     }
@@ -393,6 +434,51 @@ class DBBaseCRUD {
         const sql = `SELECT COUNT(*) as count FROM "${tableName}"`;
         const result = await this._select<{ count: number }>(sql);
         return result[0]?.count || 0;
+    }
+
+    /**
+     * 批量删除记录
+     * @param tableName 表名
+     * @param whereConditions 删除条件数组，每个条件是一个对象
+     * @returns 执行结果
+     */
+    public async deleteRows(
+        tableName: string,
+        whereConditions: Record<string, any>[]
+    ): Promise<sqlResult> {
+        this._validateTableName(tableName);
+
+        if (!Array.isArray(whereConditions) || whereConditions.length === 0) {
+            return {
+                rowsAffected: 0,
+                success: false,
+                data: null
+            };
+        }
+
+        try {
+            // 构建批量删除的SQL语句
+            const deletePromises = whereConditions.map(async (where) => {
+                const [whereClause, params] = this._buildSafeWhere(where);
+                const sql = `DELETE FROM "${tableName}" WHERE ${whereClause}`;
+                return await this._execute(sql, params);
+            });
+
+            // 并行执行所有删除操作
+            const results = await Promise.all(deletePromises);
+
+            // 汇总受影响的行数
+            const rowsAffected = results.reduce((sum, result) => sum + (result.rowsAffected || 0), 0);
+
+            return {
+                rowsAffected,
+                success: true,
+                data: null
+            };
+        } catch (error) {
+            LogService.error(`[DB deleteRows] Failed to delete rows from table ${tableName}:`, error);
+            throw error; // 抛出错误以便调用者处理
+        }
     }
 
     /**

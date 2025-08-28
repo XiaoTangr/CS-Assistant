@@ -1,6 +1,6 @@
 import { BackupAndRecovery } from "@/core/models";
-import { BackupAndRecoveryService, LogServices } from "@/core/services";
-import { deepParseString, getCurrentTimestamp, serializeObject, timestampToFolderName } from "@/core/utils";
+import { BackupAndRecoveryService, LogService } from "@/core/services";
+import { getCurrentTimestamp, json5, timestampToFolderName } from "@/core/utils";
 import { defineStore, storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 import { useLoginedSteamUserStore } from "./LoginedSteamUserStore";
@@ -29,7 +29,7 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
 
     const fetchPageData = async (cP: number = currentPage.value, pS: number = pageSize.value) => {
         dbData.value = await BackupAndRecoveryService.getPageData(cP, pS);
-        viewData.value = deepParseString<BackupAndRecovery[]>(serializeObject(dbData.value)) ?? [];
+        viewData.value = json5.deepParse<BackupAndRecovery[]>(json5.stringify(dbData.value)) ?? [];
     }
 
     const pathGenerator = async (fid: number, timePath: string) => {
@@ -77,7 +77,7 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
         }
         confirmCreateBackupData.value.friendId = fid;
         confirmCreateBackupData.value.folderPath = folderPath;
-        LogServices.debug("新的数据", confirmCreateBackupData.value)
+        LogService.debug("新的数据", confirmCreateBackupData.value)
     }, {
         deep: true
     })
@@ -89,10 +89,10 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
             throw -1;
         }
         try {
-            LogServices.debug("[ConfigCloneService.cloneConfig] 创建备份开始...", confirmCreateBackupData.value)
+            LogService.debug("[ConfigCloneService.cloneConfig] 创建备份开始...", confirmCreateBackupData.value)
             return await BackupAndRecoveryService.createBackup(confirmCreateBackupData.value)
         } catch (error) {
-            LogServices.error(error);
+            LogService.error(error);
             throw error;
         }
     }

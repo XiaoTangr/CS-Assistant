@@ -1,0 +1,218 @@
+{
+    dbtype: "sqlite",
+    needAppVersion: "1.0.4",
+    setDBVersion: "1.0.4",
+    tables: [
+        {
+            name: "t_settings",
+            columns: [
+                {
+                    name: "c_index",
+                    type: "integer",
+                    primarykey: true,
+                    autoincrement: true,
+                    unique: true,
+                },
+                {
+                    name: "c_key",
+                    type: "text",
+                    unique: true,
+                    default: "",
+                },
+                {
+                    name: "c_text",
+                    type: "text",
+                },
+                {
+                    name: "c_description",
+                    type: "text",
+                    notnull: true,
+                },
+                {
+                    name: "c_selected",
+                    type: "text",
+                },
+                {
+                    name: "c_type",
+                    type: "text",
+                },
+                {
+                    name: "c_options",
+                    type: "text",
+                },
+                {
+                    name: "c_groupIndex",
+                    type: "integer",
+                },
+                {
+                    name: "c_groupName",
+                    type: "text",
+                },
+            ],
+            defData: [
+                {
+                    "c_index": 1,
+                    "c_key": "remoteUrlPrefix",
+                    "c_text": "数据请求前缀",
+                    "c_description": "选择云端数据URL前缀用于加速云端数据获取",
+                    "c_selected": "https://cdn.jsdelivr.net/gh/${username}/${reponame}@${branchname}/",
+                    "c_type": "Select",
+                    "c_options": "[{\"text\":\"JsDelivr<推荐>\",\"value\":\"https://cdn.jsdelivr.net/gh/${username}/${reponame}@${branchname}/\"},{\"text\":\"GitHub\",\"value\":\"https://raw.githubusercontent.com/${username}/${reponame}/refs/heads/${branchname}/\"},{\"text\":\"GitMirror\",\"value\":\"https://hub.gitmirror.com/raw.githubusercontent.com/${username}/${reponame}/refs/heads/${branchname}/\"},{\"text\":\"gh-proxy\",\"value\":\"https://gh-proxy.com/raw.githubusercontent.com/${username}/${reponame}/refs/heads/${branchname}/\"}]",
+                    "c_groupIndex": 2,
+                    "c_groupName": "网络"
+                },
+                {
+                    "c_index": 2,
+                    "c_key": "steamInstallPath",
+                    "c_text": "Steam安装位置",
+                    "c_description": "指定Steam在设备上的安装位置",
+                    "c_selected": "",
+                    "c_type": "PathInput",
+                    "c_options": "[]",
+                    "c_groupIndex": 1,
+                    "c_groupName": "路径"
+                },
+                {
+                    "c_index": 3,
+                    "c_key": "cs2InstallPath",
+                    "c_text": "CS2安装位置",
+                    "c_description": "指定CS2安装位置",
+                    "c_selected": "",
+                    "c_type": "PathInput",
+                    "c_options": "[]",
+                    "c_groupIndex": 1,
+                    "c_groupName": "路径"
+                },
+                {
+                    "c_index": 4,
+                    "c_key": "showViewCheck",
+                    "c_text": "检查视图兼容性",
+                    "c_description": "显示视图兼容性检查遮罩层",
+                    "c_selected": "true",
+                    "c_type": "Boolean",
+                    "c_options": "[{\"text\":\"启用\",\"value\":\"true\"},{\"text\":\"禁用\",\"value\":\"false\"}]",
+                    "c_groupIndex": 4,
+                    "c_groupName": "高级"
+                },
+                {
+                    "c_index": 5,
+                    "c_key": "devMode",
+                    "c_text": "开发者模式",
+                    "c_description": "<重启生效> 启用开发者模式。该模式提供破坏性功能，正常使用请勿开启",
+                    "c_selected": "false",
+                    "c_type": "Boolean",
+                    "c_options": "[{\"text\":\"启用\",\"value\":\"true\"},{\"text\":\"禁用\",\"value\":\"false\"}]",
+                    "c_groupIndex": 4,
+                    "c_groupName": "高级"
+                },
+                {
+                    "c_index": 6,
+                    "c_key": "backupFolderPath",
+                    "c_text": "备份保存位置",
+                    "c_description": "选择一个位置来保存备份",
+                    "c_selected": "C:\\cs-Assistant\\BackUp\\",
+                    "c_type": "PathInput",
+                    "c_options": "[]",
+                    "c_groupIndex": 1,
+                    "c_groupName": "路径"
+                },
+                {
+                    "c_index": 7,
+                    "c_key": "defaultLogLevel",
+                    "c_text": "默认日志级别",
+                    "c_description": "<重启生效> 设置控制台日志以及日志文件的记录级别",
+                    "c_selected": "0.0",
+                    "c_type": "Select",
+                    "c_options": "[{\"text\":\"0: 信息，日志，警告，错误和调试\",\"value\":0},{\"text\":\"1: 日志，警告，错误和调试\",\"value\":1},{\"text\":\"2: 警告，错误和调试\",\"value\":2},{\"text\":\"3: 错误和调试\",\"value\":3}]",
+                    "c_groupIndex": 4,
+                    "c_groupName": "高级"
+                },
+                {
+                    "c_index": 8,
+                    "c_key": "showUpdateDialog",
+                    "c_text": "显示更新提示",
+                    "c_description": "当有更新可用时弹出提示",
+                    "c_selected": "true",
+                    "c_type": "Boolean",
+                    "c_options": "[{\"text\":\"启用\",\"value\":\"true\"},{\"text\":\"禁用\",\"value\":\"false\"}]",
+                    "c_groupIndex": 0,
+                    "c_groupName": "基本"
+                },
+                {
+                    "c_index": 9,
+                    "c_key": "getDevVersion",
+                    "c_text": "使用测试版",
+                    "c_description": "接收测试版更新提醒",
+                    "c_selected": "false",
+                    "c_type": "Boolean",
+                    "c_options": "[{\"text\":\"启用\",\"value\":\"true\"},{\"text\":\"禁用\",\"value\":\"false\"}]",
+                    "c_groupIndex": 4,
+                    "c_groupName": "高级"
+                }
+            ],
+            updateData: [],
+            dropData: [],
+        },
+        {
+            name: "t_Map",
+            columns: [
+                {
+                    name: "c_key",
+                    type: "text",
+                    primaryKey: true,
+                    autoIncrement: false,
+                    notNull: false,
+                    unique: true,
+                },
+                {
+                    name: "c_value",
+                    type: "text",
+                },
+            ],
+            defData: [
+                {
+                    c_key: "db_version",
+                    c_value: "1.0.0",
+                },
+                {
+                    "c_key": "App_Github",
+                    "c_value": "https://github.com/XiaoTangr/CS-Assistant"
+                }
+            ],
+            updateData: [],
+            dropData: [],
+        },
+        {
+            name: "t_BackupAndRecovery",
+            columns: [
+                {
+                    name: "c_id",
+                    type: "integer",
+                    primaryKey: true,
+                    autoIncrement: false,
+                    notNull: true,
+                    unique: true,
+                },
+                {
+                    name: "c_nickName",
+                    type: "text",
+                },
+                {
+                    name: "c_friendId",
+                    type: "text",
+                },
+                {
+                    name: "c_description",
+                    type: "text",
+                },
+                {
+                    name: "c_folderPath",
+                    type: "text",
+                },
+            ],
+            defData: [],
+            updateData: [],
+            dropData: [],
+        },
+    ],
+}

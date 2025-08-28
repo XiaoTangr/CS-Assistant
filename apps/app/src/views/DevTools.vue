@@ -44,7 +44,7 @@
                         <el-input v-model="dbsettings.description" />
                     </el-form-item>
                     <el-form-item label="Selected">
-                        <el-input v-model="dbsettings.selected" />
+                        <el-input v-model="dbsettings.selected as string" />
                     </el-form-item>
                     <el-form-item label="Type">
                         <el-select v-model="dbsettings.type" placeholder="Select" size="large">
@@ -103,13 +103,13 @@ import { ref, reactive } from 'vue';
 import { ElNotification, FormInstance } from 'element-plus';
 import { Settings, SettingsRowOptions } from '@/core/models';
 import SettingsRepository from '@/core/repositories/Settings.Repository';
-import SettingsService from '@/core/services/Settings.services';
+import SettingsService from '@/core/services/Settings.service';
 import { baseCRUD } from "@/core/database";
-import LogServices from "@/core/services/Log.services";
+import LogService from "@/core/services/Log.service";
 import GlassCard from '@/components/Common/GlassCard.vue';
 import ComponentTest from '@/components/views/DevTools/ComponentTest.vue';
-import { desVal } from '@/core/utils';
 import GlassButton from '@/components/Common/GlassButton.vue';
+import { json5 } from '@/core/utils';
 const dbformRef = ref<FormInstance>();
 
 const dbsettingsType = ['Input', 'Boolean', 'Select', 'PathInput'];
@@ -129,9 +129,9 @@ const dbsettings = reactive<Settings & { options: SettingsRowOptions[] }>({
 const dbsettingsSQLout = ref('');
 // 错误处理函数
 const handleDBError = (error: any, action: string) => {
-    LogServices.error(`[DevTools] Database operation failed: ${action}`, {
+    LogService.error(`[DevTools] Database operation failed: ${action}`, {
         error,
-        dbsettings: JSON.parse(JSON.stringify(dbsettings)), // 模拟 cloneDeep
+        dbsettings: json5.serializeValues(dbsettings), // 模拟 cloneDeep
         timestamp: new Date().toISOString()
     });
     ElNotification.error(`操作失败：${error}`);
@@ -234,7 +234,7 @@ const insertSettingsRowtodb = async () => {
             resetForm();
         }
     } catch (e) {
-        LogServices.error(e);
+        LogService.error(e);
     }
 };
 
@@ -267,7 +267,7 @@ const querySettingsRowByKey = async () => {
         let res = await SettingsRepository.findOne({ c_key: dbsettings.key });
 
         if (res) {
-            res = desVal(res);
+            res = json5.serializeValues(res);
             Object.assign(dbsettings, res);
             ElNotification.success(`查询成功`);
         } else {
@@ -289,7 +289,7 @@ const querySettingsRowByText = async () => {
         let res = await SettingsRepository.findOne({ c_text: dbsettings.text });
 
         if (res) {
-            res = desVal(res);
+            res = json5.serializeValues(res);
             Object.assign(dbsettings, res);
             ElNotification.success(`查询成功`);
         } else {
@@ -330,7 +330,7 @@ const executeSQL = async () => {
 
     try {
         const res = await baseCRUD.executeRaw(sqlInput.value);
-        LogServices.debug(res)
+        LogService.debug(res)
         sqlOutput.value = JSON.stringify(res, null, 2);
     } catch (e) {
         handleDBError(e, '执行SQL');

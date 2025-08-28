@@ -10,7 +10,8 @@
                 </div>
 
                 <div class="appinfo-item version-container">
-                    <span class="appinfo-inneritem appVersion ">Release Version: {{ appVersion }}</span>
+                    <span class="appinfo-inneritem appVersion ">Release App Version: {{ appVersion }}</span>
+                    <span class="appinfo-inneritem dbVersion ">Local Database Version: {{ currentDBVersion }}</span>
                 </div>
 
                 <div class="appinfo-item">
@@ -66,10 +67,11 @@ const mapStore = useMapStore();
 const appVersion = ref('');
 const appGithub = ref('');
 const show_license = ref(false);
-
+const currentDBVersion = ref('');
 onMounted(async () => {
     appVersion.value = await getVersion();
     appGithub.value = (await mapStore.getOneByKey('App_Github'))?.value ?? '';
+    currentDBVersion.value = (await mapStore.getOneByKey('db_version'))?.value ?? '';
 })
 
 

@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { useSettingsStore } from "./SettingsStore";
 import { Settings, BasicSteamLoginUser } from "@/core/models";
 import { getVdfObjectByFilePath } from "@/core/utils/VdfUtils";
-import LogServices from "@/core/services/Log.services";
+import LogService from "@/core/services/Log.service";
 import { isFileExists, readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";
 import { watch } from "vue";
 export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () => {
@@ -44,7 +44,9 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     }
 
     const _matchAccountIdAndFriendId = async (targetPersonaName: string): Promise<number | null> => {
-        if (!_localVdfsPathArr.value) return null;
+        if (!_localVdfsPathArr.value) {
+            throw new Error(`[LoginedSteamUserStore] _getLocalVdfsPathArr: steamInstallPathStr.value is null`);
+        };
 
         for (const item of _localVdfsPathArr.value) {
             try {
@@ -56,15 +58,16 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
                     const match = item.match(regex);
 
                     if (!match) {
+                        LogService.warn(`[LoginedSteamUserStore._matchAccountIdAndFriendId] `, `match result: ${targetPersonaName} -> null`)
                         return null;
                     }
 
-                    const userId = match[1];
-                    LogServices.info(`[LoginedSteamUserStore._matchAccountIdAndFriendId] `, `match result: ${targetPersonaName} -> ${userId}`)
+                    const userId = match[1] ?? 0;
+                    LogService.info(`[LoginedSteamUserStore._matchAccountIdAndFriendId] `, `match result: ${targetPersonaName} -> ${userId}`)
                     return parseInt(userId);
                 }
             } catch (error) {
-                LogServices.error(`Error processing file ${item}:`, error);
+                LogService.error(`Error processing file ${item}:`, error);
             }
         }
 
@@ -76,24 +79,27 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     const _buildData = async () => {
         let vdfPath = `${steamInstallPathStr.value}\\${_loginedUsersVdfPath}`
         if (!await isFileExists(vdfPath)) {
-            LogServices.warn(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
+            LogService.warn(`[LoginedSteamUserStore] _buildData: ${vdfPath} not exists`)
             return null;
         }
         let preData = (await getVdfObjectByFilePath(vdfPath)).users
-        let resultdata: BasicSteamLoginUser[] = await Promise.all(Object.keys(preData).map(async accountID => {
-            let user = preData[accountID.toString()]
-
-            let res: BasicSteamLoginUser = {
-                AccountName: user.AccountName,
-                PersonaName: user.PersonaName,
-                steamId: parseInt(accountID),
-                FriendId: await _matchAccountIdAndFriendId(user.PersonaName),
-                avatarBase64: (await _getAvatarDataUrl(accountID))
+        let resultdata: BasicSteamLoginUser[] = (await Promise.all(Object.keys(preData).map(async accountID => {
+            let user = preData[accountID]
+            let FriendId = await _matchAccountIdAndFriendId(user.PersonaName);
+            let avatarBase64 = (await _getAvatarDataUrl(accountID))
+            let res: BasicSteamLoginUser | null = null;
+            if (FriendId && avatarBase64) {
+                res = {
+                    AccountName: user.AccountName,
+                    PersonaName: user.PersonaName,
+                    steamId: parseInt(accountID),
+                    FriendId: FriendId,
+                    avatarBase64: avatarBase64
+                }
             }
-
             return res;
-        }))
-        LogServices.info('[LoginedSteamUserStore._buildData]', resultdata)
+        }))).filter((item): item is BasicSteamLoginUser => item !== null); // 过滤掉 null 值并确保类型正确
+        LogService.info('[LoginedSteamUserStore._buildData]', resultdata)
         return resultdata;
     }
 
@@ -132,7 +138,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
     }): Promise<BasicSteamLoginUser | null> => {
         // 确保至少提供一个参数
         if (!personaName && !steamId && !accountName && (friendId === undefined || friendId === null)) {
-            LogServices.warn('[LoginedSteamUserStore.getLogedSteamUser] 至少需要提供一个用户信息参数');
+            LogService.warn('[LoginedSteamUserStore.getLogedSteamUser] 至少需要提供一个用户信息参数');
             return null;
         }
 
@@ -166,7 +172,7 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
             }
             return false;
         });
-        LogServices.debug('[LoginedSteamUserStore.getLogedSteamUser]', user)
+        LogService.debug('[LoginedSteamUserStore.getLogedSteamUser]', user)
         return user || null;
     }
 

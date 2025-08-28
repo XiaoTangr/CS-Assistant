@@ -6,8 +6,8 @@
         </template>
         <template #default>
             <el-timeline>
-                <el-timeline-item class="timeline" v-for="(activity, index) in data" :key="index"
-                    :timestamp="activity.publishDate" placement="top">
+                <el-timeline-item class="timeline" v-for="(activity, index) in data" :key="index" placement="top"
+                    :timestamp="activity.publishDate?.toString()">
                     <CommSpace direction="vertical" :size="4">
                         <el-text line-clamp="2" v-html="htmlGenerater(activity.publishContent as string)" />
                         <el-link type="primary" @click="setIndex(index)">详情</el-link>
@@ -38,10 +38,10 @@ import { computed, onMounted, ref } from 'vue';
 import { Notice } from '@/core/models';
 import CommSpace from '@/components/Common/CommSpace.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
-import { LogServices } from '@/core/services';
+import { LogService } from '@/core/services';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import { ApiService } from '@/core/api';
-const data = ref<Array<Notice>>();
+const data = ref<Notice[] | null>(null);;
 
 
 const showDetail = ref(-1)
@@ -53,7 +53,7 @@ const NoticeDetail = computed(() => {
 })
 
 const setIndex = (index: number) => {
-    LogServices.debug('setIndex', index)
+    LogService.debug('setIndex', index)
     showDetail.value = index
 }
 
@@ -69,7 +69,7 @@ const htmlGenerater = (string: string) => {
 };
 
 onMounted(async () => {
-    data.value = (await ApiService.getNotice()).data ?? [];
+    data.value = (await ApiService.getNotice()).data ?? null;
 })
 
 

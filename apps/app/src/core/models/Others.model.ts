@@ -16,20 +16,20 @@ export interface SteamLoginUser {
  * Steam 用户基础信息
  */
 export interface BasicSteamLoginUser {
-    AccountName: string | null;
-    PersonaName: string | null;
-    steamId: number | null;
-    FriendId: number | null;
-    avatarBase64: string | null;
+    AccountName: string;
+    PersonaName: string;
+    steamId: number;
+    FriendId: number;
+    avatarBase64: string;
 }
 
 /**
  * 公告信息结构
  */
 export interface Notice {
-    publishTitle: string | null,
-    publishDate: string | null;
-    publishContent: string | null;
+    publishTitle: string,
+    publishDate: string;
+    publishContent: string;
 }
 
 /**

@@ -24,11 +24,11 @@ import BackGround from './components/Layouts/BackGround.vue';
 import NavBar from './components/Layouts/NavBar.vue';
 import ViewCheck from './components/Layouts/ViewCheck.vue';
 import GlobalCommand from './components/Public/GlobalCommand.vue';
-import LogServices from '@/core/services/Log.services';
+import LogService from '@/core/services/Log.service';
 
 
 const openMenu = () => {
-    LogServices.info('User try open contextmenu!')
+    LogService.info('User try open contextmenu!')
 }
 
 </script>

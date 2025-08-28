@@ -52,11 +52,13 @@ const LoginedSteamUserStore = useLoginedSteamUserStore();
 const { steamInstallPath, cs2InstallPath, steamInstallPathStr, cs2InstallPathStr } = storeToRefs(LoginedSteamUserStore)
 
 const hasSteam = computed(() => {
-    return steamInstallPath.value?.selected !== null
+    let str = steamInstallPath.value?.selected as string ?? null;
+    return str.length > 0;
 })
 
 const hasCS = computed(() => {
-    return cs2InstallPath.value?.selected !== null
+    let str = cs2InstallPath.value?.selected as string ?? null;
+    return str.length > 0;
 })
 
 
@@ -89,10 +91,10 @@ const autoCheck = async (): Promise<void> => {
         }
     } else {
         if (steamInstallPath.value) {
-            steamInstallPath.value.selected = null;
+            steamInstallPath.value.selected = '';
         }
         if (cs2InstallPath.value) {
-            cs2InstallPath.value.selected = null;
+            cs2InstallPath.value.selected = '';
         }
         // await settingStore.saveChangedViewData()
     }

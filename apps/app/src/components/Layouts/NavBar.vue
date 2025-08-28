@@ -41,14 +41,14 @@ import { mainRouterConfig, footerRouterConfig } from '@/router/RoutesCfg';
 import DynamicIcon from '../Common/DynamicIcon.vue';
 import { useRoute, useRouter } from 'vue-router';
 import GlassCard from '../Common/GlassCard.vue';
-import { LogServices } from '@/core/services';
+import { LogService } from '@/core/services';
 
 const route = useRoute();
 const router = useRouter();
 
 const navHandler = (routeName: string) => {
     router.push({ path: routeName }).catch(err => {
-        LogServices.error('Navigation failed:', err)
+        LogService.error('Navigation failed:', err)
     })
 }
 

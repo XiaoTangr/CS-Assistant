@@ -28,6 +28,7 @@
         "@tauri-apps/plugin-sql": "^2.2.0",
         "@tauri-apps/plugin-updater": "~2.9.0",
         "element-plus": "^2.10.6",
+        "json5": "^2.2.3",
         "sass": "^1.84.0",
         "unplugin-auto-import": "^20.0.0",
         "unplugin-vue-components": "^29.0.0",

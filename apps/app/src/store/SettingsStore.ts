@@ -1,6 +1,6 @@
-import LogServices from "@/core/services/Log.services";
+import LogService from "@/core/services/Log.service";
 import { Settings } from "@/core/models";
-import SettingsService from "@/core/services/Settings.services";
+import SettingsService from "@/core/services/Settings.service";
 import { ElNotification } from "element-plus";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
@@ -19,7 +19,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         const grouped: Record<string, Settings[]> = {};
         for (const item of sortedByIndex) {
             if (!item.groupName) {
-                LogServices.warn(
+                LogService.warn(
                     '[SettingsStore.groupedViewData]',
                     'Encountered setting with undefined groupName:',
                     item);
@@ -58,7 +58,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
         const viewItem = (viewData.value ?? []).find((item: Settings) => item.key === key);
 
         if (!dbItem || !viewItem) {
-            LogServices.error(
+            LogService.error(
                 `[SettingsStore.isDataConsistent] `,
                 `找不到 key 为 ${key} 的设置项`,
                 { dbItem, viewItem });
@@ -121,7 +121,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             await Promise.all(
                 changedItems.map(async (item: Settings) => {
                     await saveOneData(item).then(() => {
-                        LogServices.debug(
+                        LogService.debug(
                             "[SettingsStore.saveChangedViewData]",
                             `已保存配置项：${item.key ?? ''}`,
                             item);
@@ -136,7 +136,7 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             // 所有数据保存完成后刷新视图数据
             await fetchData();
         } catch (error) {
-            LogServices.error(
+            LogService.error(
                 "[SettingsStore.saveChangedViewData]",
                 "保存或刷新过程中发生错误：",
                 error);

@@ -35,7 +35,7 @@ export class ApiService {
                 .replace('${reponame}', reponame)
                 .replace('${branchname}', branchname);
         }
-        return await get<Notice[]>(`${baseUrl}/Notice.json`) ?? [];
+        return (await get<Notice[]>(`${baseUrl}/Notice.json`)) ?? null;
     }
 
 

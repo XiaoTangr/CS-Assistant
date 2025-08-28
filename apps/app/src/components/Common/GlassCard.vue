@@ -24,10 +24,12 @@
 </template>
 
 <script setup lang="ts">
+import { StyleValue } from 'vue'
+
 interface GlassCardProps {
     header?: string
     footer?: string
-    bodyStyle?: Partial<CSSStyleDeclaration>
+    bodyStyle?: StyleValue[]
     headerClass?: string
     bodyClass?: string
     footerClass?: string
@@ -37,7 +39,7 @@ interface GlassCardProps {
 withDefaults(defineProps<GlassCardProps>(), {
     header: undefined,
     footer: undefined,
-    bodyStyle: () => ({}),
+    bodyStyle: undefined,
     headerClass: undefined,
     bodyClass: undefined,
     footerClass: undefined,

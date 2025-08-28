@@ -35,7 +35,7 @@
 import { useAppStore } from '@/store/AppStore';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
-import { LogServices } from '@/core/services';
+import { LogService } from '@/core/services';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useMapStore } from '@/store/MapStore';
 import { useSettingsStore } from '@/store/SettingsStore';
@@ -85,7 +85,7 @@ onMounted(async () => {
 
 
     await appStore.checkUpdate();
-    LogServices.debug('updater_remoteData', updater_remoteData.value);
+    LogService.debug('updater_remoteData', updater_remoteData.value);
     if (hasUpdate.value && updater_showDialog.value) {
         showDialog.value = true;
     }
