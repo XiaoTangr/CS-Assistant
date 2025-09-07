@@ -46,7 +46,6 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
         friendId: -1,
         description: '',
         folderPath: '',
-        createdAt: -1
     })
     /**
      * 设置新建备份操作数据的时间戳
@@ -62,7 +61,6 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
             confirmCreateBackupData.value.folderPath = '';
         }
         confirmCreateBackupData.value.id = timeStamp;
-        confirmCreateBackupData.value.createdAt = timeStamp;
     }
 
     // 更新fid和folderPath
@@ -77,7 +75,6 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
         }
         confirmCreateBackupData.value.friendId = fid;
         confirmCreateBackupData.value.folderPath = folderPath;
-        LogService.debug("新的数据", confirmCreateBackupData.value)
     }, {
         deep: true
     })
@@ -89,7 +86,7 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
             throw -1;
         }
         try {
-            LogService.debug("[ConfigCloneService.cloneConfig] 创建备份开始...", confirmCreateBackupData.value)
+            LogService.info("[ConfigCloneService.cloneConfig] 为以下数据创建备份: ", confirmCreateBackupData.value)
             return await BackupAndRecoveryService.createBackup(confirmCreateBackupData.value)
         } catch (error) {
             LogService.error(error);

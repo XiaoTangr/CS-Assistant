@@ -28,13 +28,12 @@ export class ApiService {
         let baseUrl = (await SettingsService.getSettingByKey("remoteUrlPrefix"))?.selected as string;
         // 构建URL，替换占位符
 
-        if (baseUrl.includes("javat.cn")) {
-            baseUrl += 'remotedata/'
-        } else {
+        if (!baseUrl.includes("javat.cn")) {
             baseUrl = baseUrl.replace('${username}', username)
                 .replace('${reponame}', reponame)
                 .replace('${branchname}', branchname);
         }
+        baseUrl += '/remotedata'
         return (await get<Notice[]>(`${baseUrl}/Notice.json`)) ?? null;
     }
 

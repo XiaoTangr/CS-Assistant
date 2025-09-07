@@ -106,16 +106,25 @@
             </div>
         </div>
         <div>
-            <GlassCard class="container">
-                1
+            <GlassCard shadow="never">
+                <template #header>
+                    CommSpace test
+                </template>
+                without size:
+                <CommSpace style="width: 100%;" direction="vertical" fill :fill-ratio='100'>
+                    <GlassCard v-for=" in 3" shadow='never' style="width: 100%;">
+                        without size
+                    </GlassCard>
+                </CommSpace>
+                with size:24
+                <CommSpace :size="24" style="width: 100%;" direction="vertical" fill :fill-ratio='100'>
+                    <GlassCard v-for=" in 3" shadow='never' style="width: 100%;">
+                        with size 24
+                    </GlassCard>
+                </CommSpace>
             </GlassCard>
 
-            <GlassCard shadow="hover" class="container">
-                1
-            </GlassCard>
-            <GlassCard shadow="never" class="container">
-                1
-            </GlassCard>
+
         </div>
     </div>
 </template>
@@ -136,10 +145,10 @@ import {
 
 <style lang="scss" scoped>
 .container {
-    margin: 2em;
+    margin: 2rem;
 
     .mb-4 {
-        margin-bottom: 1em;
+        margin-bottom: 1rem;
     }
 }
 </style>

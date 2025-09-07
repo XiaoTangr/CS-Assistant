@@ -61,7 +61,7 @@ const linkData = {
             width: 70%;
 
             .group-name {
-                margin: 1em;
+                margin: 1rem;
             }
 
             .items {

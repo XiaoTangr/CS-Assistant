@@ -121,15 +121,16 @@ export const useSettingsStore = defineStore("SettingsStore", () => {
             await Promise.all(
                 changedItems.map(async (item: Settings) => {
                     await saveOneData(item).then(() => {
-                        LogService.debug(
+                        LogService.info(
                             "[SettingsStore.saveChangedViewData]",
                             `已保存配置项：${item.key ?? ''}`,
                             item);
+                        ElNotification.success({
+                            title: "成功",
+                            message: `${item.key} 已保存。`,
+                        });
                     })
-                    ElNotification.success({
-                        title: "成功",
-                        message: `${item.key} 已保存。`,
-                    });
+
                 })
             );
 

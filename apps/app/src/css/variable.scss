@@ -80,21 +80,26 @@ $font-size: 14px;
 $simple-border: rgba(215, 215, 215, 0.7) solid 1px;
 
 $globe-layout-color: rgba(255, 255, 255, 0.75);
-$globe-padding: 1em;
-$globe-border-radius: 4px;
-$globe-margin: 1em;
-$globe-backdrop-filter: blur(1em);
+$globe-padding: .5rem;
+$globe-border-radius: .5rem;
+$globe-margin: .5rem;
+$globe-backdrop-filter: blur(1rem);
 
 
 // blur
-$simpe-blur-value: 1em;
+$simpe-blur-value: 1rem;
 $simpe-blur: blur($simpe-blur-value);
 // shadow
-$simple-box-shadow: rgba(152, 152, 152, 0.6) .25em .25em 2em 2px;
+$simple-box-shadow: rgba(152, 152, 152, 0.6) .25rem .25rem 2rem 2rpx;
 
 //global-command
 $global-command-padding: $globe-margin;
 $global-command-height: calc(40px + 2 * $global-command-padding);
+
+
+// nav-bar
+$nav-bar-width: 16rem;
+$content-width: calc(100vw - $nav-bar-width - $globe-padding * 2);
 
 // content
 $content-fill-hight: calc(100vh - $global-command-height);

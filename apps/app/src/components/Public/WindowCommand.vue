@@ -105,7 +105,7 @@ onMounted(() => {
         display: flex;
         flex-direction: row;
         width: 100%;
-        padding: 1em;
+        padding: 1rem;
         justify-content: start;
         align-items: center;
 
@@ -158,7 +158,7 @@ onMounted(() => {
     }
 
     .window-info {
-        margin: .5em;
+        margin: .5rem;
         flex: 1;
         display: flex;
         flex-direction: column;
@@ -166,15 +166,15 @@ onMounted(() => {
         align-items: center;
 
         .icon {
-            width: 6em;
-            height: 6em;
+            width: 6rem;
+            height: 6rem;
             border-radius: 50%;
             box-shadow: $simple-box-shadow;
             border: $simple-border;
         }
 
         .text {
-            margin-top: .5em;
+            margin-top: .5rem;
         }
     }
 }

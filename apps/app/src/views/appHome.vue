@@ -25,7 +25,7 @@ import CommSpace from '@/components/Common/CommSpace.vue';
 
     .top {
         display: flex;
-        height: 20em;
+        height: 20rem;
         width: 100%;
 
         .game-check {
@@ -38,36 +38,4 @@ import CommSpace from '@/components/Common/CommSpace.vue';
         }
     }
 }
-
-// .container {
-//     width: 100%;
-//     // height: $content-fill-hight;
-
-//     .ot {
-//         display: flex;
-//         width: 100%;
-//         margin-bottom: $globe-margin;
-
-//         .il,
-//         .ir {
-//             height: 20em;
-//         }
-
-//         .il {
-//             width: 70%;
-
-//             margin-right: $globe-margin;
-//         }
-
-//         .ir {
-//             width: 30%;
-
-//         }
-//     }
-
-//     .ob {
-//         width: 100%;
-//     }
-
-
-// }</style>
+</style>

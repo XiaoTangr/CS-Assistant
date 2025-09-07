@@ -1,12 +1,17 @@
 <template>
-    <el-space class="space-container" :size="size" :direction="direction" :spacer="spacer" :alignment="alignment"
+    <el-space class="space-container" :size="setSize" :direction="direction" :spacer="spacer" :alignment="alignment"
         :fill="fill" :fill-ratio="fillRatio" :wrap="wrap">
         <slot />
     </el-space>
 </template>
 
 <script setup lang="ts">
-import { VNode } from 'vue';
+import { onMounted, VNode } from 'vue';
+
+import scssvar from '@/css/variables.module.scss'
+import { ref } from 'vue';
+import { remToPx } from '@/core/utils';
+
 interface SpaceProps {
     size?: number;
     direction?: "horizontal" | "vertical";
@@ -16,8 +21,8 @@ interface SpaceProps {
     fillRatio?: number;
     wrap?: boolean;
 }
-withDefaults(defineProps<SpaceProps>(), {
-    size: 14,
+const props = withDefaults(defineProps<SpaceProps>(), {
+    size: undefined,
     direction: "horizontal",
     spacer: "",
     alignment: "start",
@@ -26,6 +31,15 @@ withDefaults(defineProps<SpaceProps>(), {
     wrap: false
 });
 
+const setSize = ref(0);
+
+onMounted(() => {
+    if (!props.size) {
+        setSize.value = remToPx(scssvar.globePadding) as number;
+    } else {
+        setSize.value = props.size;
+    }
+})
 </script>
 
 <style scoped lang="scss"></style>

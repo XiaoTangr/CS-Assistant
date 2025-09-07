@@ -38,7 +38,6 @@ import { computed, onMounted, ref } from 'vue';
 import { Notice } from '@/core/models';
 import CommSpace from '@/components/Common/CommSpace.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
-import { LogService } from '@/core/services';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import { ApiService } from '@/core/api';
 const data = ref<Notice[] | null>(null);;
@@ -53,7 +52,6 @@ const NoticeDetail = computed(() => {
 })
 
 const setIndex = (index: number) => {
-    LogService.debug('setIndex', index)
     showDetail.value = index
 }
 
@@ -91,11 +89,11 @@ onMounted(async () => {
         align-items: center;
 
         .icon {
-            height: 1em;
+            height: 1rem;
         }
 
         .text {
-            padding-left: .5em;
+            padding-left: .5rem;
         }
     }
 

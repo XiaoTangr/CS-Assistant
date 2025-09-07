@@ -1,11 +1,10 @@
 import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
 import { useMapStore } from "@/store/MapStore";
 import { useSettingsStore } from "@/store/SettingsStore";
-import { runMigrations } from "@/core/database";
+import { baseCRUD, runMigrations } from "@/core/database";
 import LogService from "@/core/services/Log.service";
 import { MainRouter } from "@/router/Router";
 import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
-import { SettingsRepository } from "../repositories";
 import { useAppStore } from "@/store/AppStore";
 import { needMigration } from "../database/migrations";
 export default class StartUpService {
@@ -38,11 +37,22 @@ export default class StartUpService {
      */
     static async initConfig(): Promise<void> {
         // 初始化LogService();
-        let dblogLevel = await SettingsRepository.findOne({ c_key: "defaultLogLevel" })
-        let logLevel = dblogLevel?.selected ?? "0";
-
-        LogService.debug('[StartUp.initConfig(static)]', 'dblogLevel:', logLevel)
-        LogService.setLogLevel(parseInt(logLevel as string));
+        let sqlStr = `select c_selected from t_settings where c_key = 'defaultLogLevel'`;
+        let data: any;
+        let logLevel: number;
+        await baseCRUD.executeRaw(sqlStr).then((res) => {
+            data = res.data[0].c_selected as number
+        }).catch(() => {
+            data = null;
+        });
+        if (!data) {
+            logLevel = 0
+            LogService.error(`[StartUp.initConfig(static)] Error to get data from db, set Log Level to: %n `, logLevel)
+        } else {
+            logLevel = data
+            LogService.debug('[StartUp.initConfig(static)] set Log Level to: ', logLevel)
+        }
+        LogService.setLogLevel(logLevel);
     }
 
     /**
@@ -63,11 +73,10 @@ export default class StartUpService {
      * 启动程序
      */
     static async startUp(): Promise<void> {
-        await this.installDB().then(async () => {
-            await this.fetchDatas();
-            await this.initConfig();
-            await this.initRoutes();
-        });
+        await this.installDB()
+        await this.initConfig();
+        await this.fetchDatas();
+        await this.initRoutes();
     }
 }
 

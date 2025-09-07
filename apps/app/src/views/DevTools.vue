@@ -267,7 +267,7 @@ const querySettingsRowByKey = async () => {
         let res = await SettingsRepository.findOne({ c_key: dbsettings.key });
 
         if (res) {
-            res = json5.serializeValues(res);
+            res = json5.deserializeValues(res);
             Object.assign(dbsettings, res);
             ElNotification.success(`查询成功`);
         } else {
@@ -289,7 +289,7 @@ const querySettingsRowByText = async () => {
         let res = await SettingsRepository.findOne({ c_text: dbsettings.text });
 
         if (res) {
-            res = json5.serializeValues(res);
+            res = json5.deserializeValues(res);
             Object.assign(dbsettings, res);
             ElNotification.success(`查询成功`);
         } else {
@@ -330,7 +330,6 @@ const executeSQL = async () => {
 
     try {
         const res = await baseCRUD.executeRaw(sqlInput.value);
-        LogService.debug(res)
         sqlOutput.value = JSON.stringify(res, null, 2);
     } catch (e) {
         handleDBError(e, '执行SQL');

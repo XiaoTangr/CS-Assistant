@@ -5,9 +5,9 @@
         </template>
         <template #default>
             <el-table class="table" :data="viewData">
-                <el-table-column width="160" property="createdAt" label="创建日期">
+                <el-table-column width="160" property="id" label="创建日期">
                     <template #default="scope">
-                        {{ formatTimestamp(scope.row.createdAt) }}
+                        {{ formatTimestamp(scope.row.id) }}
                     </template>
                 </el-table-column>
                 <el-table-column width="120" label="所属用户FID">
@@ -24,7 +24,7 @@
                         </el-text>
                     </template>
                 </el-table-column>
-                <el-table-column show-overflow-tooltip width="180" label="保存路径">
+                <el-table-column show-overflow-tooltip width="200" label="保存路径">
                     <template #default="scope">
                         <CopyText :value="scope.row.folderPath" />
                     </template>
@@ -92,7 +92,7 @@
                     恢复 {{ confirmRestoreData?.nickName }} 的备份
                 </template>
                 <template #default>
-                    创建于: {{ formatTimestamp(confirmRestoreData?.createdAt ?? 0) }}
+                    创建于: {{ formatTimestamp(confirmRestoreData?.id ?? 0) }}
                     <br>
                     <CopyText prefix="保存于: " :value="confirmRestoreData?.folderPath" />
                     <br>
@@ -113,7 +113,7 @@
                     删除 {{ confirmDeleteData?.nickName }} 的备份
                 </template>
                 <template #default>
-                    创建于: {{ formatTimestamp(confirmDeleteData?.createdAt ?? 0) }}
+                    创建于: {{ formatTimestamp(confirmDeleteData?.id ?? 0) }}
                     <br>
                     <CopyText prefix="保存于: " :value="confirmDeleteData?.folderPath" />
                     <br>
@@ -300,8 +300,8 @@ const cancelDeleteHandler = () => {
 
 
     .table {
-        width: calc(100vw - 21.6em);
-        height: calc(100vh - 18.25em);
+        width: calc($content-width + $globe-padding);
+        height: calc(100vh - 18.25rem);
 
         :deep(.list-action) {
             display: flex;
@@ -310,7 +310,7 @@ const cancelDeleteHandler = () => {
             background: rgba(250, 250, 250, 0.95);
 
             .list-action-item {
-                margin: .8em .25em;
+                margin: .8rem .25rem;
             }
         }
 

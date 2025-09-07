@@ -49,7 +49,7 @@ export default class BackupAndRecoveryService {
      */
     static async createBackup(payload: BackupAndRecovery): Promise<number> {
         // 还要进行文件系统的备份操作
-        LogService.error('正在备份文件系统...', payload)
+        LogService.info('正在备份文件系统...', payload)
         let dbSteamInstallPath = await SettingsService.getSettingByKey('steamInstallPath');
 
         let streamInstallPath = dbSteamInstallPath?.selected
@@ -88,7 +88,6 @@ export default class BackupAndRecoveryService {
         let fromPath = payload.folderPath;
         let toPath = `${streamInstallPath}/userdata/${payload.friendId}/730`;
 
-        LogService.debug(payload);
         // 删除UserData下的730文件夹
         if (await isFileExists(toPath)) {
             await rm(toPath, true);
@@ -120,8 +119,6 @@ export default class BackupAndRecoveryService {
             throw '备份和恢复数据不存在';
         }
         let delPath = payload.folderPath.replace(`\\730`, "");
-
-        LogService.debug(`删除备份数据: ${delPath}`);
 
         // 删除文件系统的备份数据
         if (await isFileExists(delPath)) {

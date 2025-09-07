@@ -51,7 +51,6 @@ export default class ConfigCloneService {
 
                             let bpPayload: BackupAndRecovery = {
                                 id: createdAt,
-                                createdAt: createdAt,
                                 friendId: item,
                                 folderPath: folderPath,
                                 nickName: nickName,
@@ -61,20 +60,6 @@ export default class ConfigCloneService {
                             const BackupAndRecoveryStore = useBackupAndRecoveryStore();
                             BackupAndRecoveryStore.fetchData();
 
-
-
-                            // let loginedSteamUserStore = useLoginedSteamUserStore();
-                            // let nickName = (await loginedSteamUserStore.getLogedSteamUser({ friendId: item }))?.PersonaName || "未知用户";
-
-                            // const BARStore = useBackupAndRecoveryStore();
-                            // const { confirmCreateBackupData } = storeToRefs(BARStore);
-                            // BARStore.setConfirmCreateBackupData();
-                            // confirmCreateBackupData.value.nickName = nickName;
-                            // confirmCreateBackupData.value.description = `在克隆前的备份: ${fromId} -> ${item}`;
-                            // LogService.debug(confirmCreateBackupData)
-                            // await BARStore.createBackup();
-                            // BARStore.setConfirmCreateBackupData({ reset: true });
-                            // BARStore.fetchData();
                         } catch (backupError) {
                             LogService.warn(`[ConfigCloneService.cloneConfig] 为账号 ${item} 创建备份失败:`, backupError);
                             // 即使备份失败，也继续执行复制操作
@@ -87,7 +72,7 @@ export default class ConfigCloneService {
                         await rm(toPath, true);
                     }
                     await cp(fromPath, toPath);
-                    LogService.debug(`[ConfigCloneService.cloneConfig] 复制 ${fromPath} 到 ${toPath}`);
+                    LogService.info(`[ConfigCloneService.cloneConfig] 复制 ${fromPath} 到 ${toPath}`);
                     successList.push(item);
                 } catch (itemError) {
                     LogService.error(`[ConfigCloneService.cloneConfig] 复制到 ${item} 失败:`, itemError);

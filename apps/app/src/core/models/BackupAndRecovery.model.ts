@@ -7,8 +7,6 @@ export interface BackupAndRecovery {
     friendId: number;
     // 描述
     description: string;
-    // 创建日期
-    createdAt: number;
     // 文件夹路径
     folderPath: string;
 }

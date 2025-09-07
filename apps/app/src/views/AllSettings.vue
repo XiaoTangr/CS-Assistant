@@ -43,7 +43,7 @@ const { groupedViewData } = storeToRefs(SettingsStore);
         flex-direction: column;
         align-items: center;
         transition: $simpel-transition;
-        margin-bottom: calc(4em);
+        margin-bottom: calc(4rem);
         width: 768px;
 
         .group {
@@ -100,7 +100,7 @@ const { groupedViewData } = storeToRefs(SettingsStore);
         bottom: calc(24px - 14px);
         right: 0;
         padding-right: 24px;
-        height: 4em;
+        height: 4rem;
         display: flex;
         justify-content: center;
     }

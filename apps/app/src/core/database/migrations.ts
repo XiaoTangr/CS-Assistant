@@ -72,7 +72,8 @@ export const needMigration = async () => {
     let setDBVersion = data.setDBVersion;
     let currentDBVersion = "-1";
     try {
-        let Rows: any[] = await baseCRUD.queryWhere("t_Map", { c_key: "db_version" })
+        let sqlStr = "select c_value from t_Map where c_key='db_version';"
+        let Rows: any[] = (await baseCRUD.executeRaw(sqlStr)).data
         if (Rows && Rows.length > 0) {
             currentDBVersion = Rows[0]?.c_value ?? "0.0.0";
         } else {
@@ -117,7 +118,6 @@ export const runMigrations = async () => {
 
                 // 1. 检查表是否存在
                 let isTableExist = await baseCRUD.executeRaw('SELECT * FROM sqlite_master WHERE type="table" AND name="' + tableName + '"');
-                LogService.debug('[DatabaseService.installDB] 检查表是否存在:', isTableExist);
 
                 if (isTableExist.data.length === 0) {
                     // 创建表
@@ -201,7 +201,7 @@ export const runMigrations = async () => {
                     c_value: data.setDBVersion
                 };
                 await baseCRUD.updateWhere("t_Map", row, { c_key: "db_version" });
-
+                LogService.log(`[DatabaseService.installDB] [${tableName}] 更新 db_version 成功`);
                 LogService.log(`[DatabaseService.installDB] [${tableName}] 安装完成`);
             } catch (error) {
                 LogService.error('[DatabaseService.installDB] 发生错误:', error);

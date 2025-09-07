@@ -4,7 +4,7 @@
     "version": "1.0.5",
     "identifier": "cn.javat.csassistant",
     "build": {
-        "beforeDevCommand": "vite",
+        "beforeDevCommand": "vite dev",
         "devUrl": "http://localhost:1420",
         "beforeBuildCommand": "vue-tsc --noEmit && vite build",
         "frontendDist": "../dist"
@@ -38,9 +38,10 @@
         "security": {
             "capabilities": [
                 "default",
+                "dialog",
                 "fs",
                 "sql",
-                "url",
+                "opener",
                 "http",
                 "updater",
                 "process"
@@ -49,7 +50,7 @@
                 "enable": true,
                 "scope": []
             },
-            "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' asset: http://asset.localhost data:"
+            "csp": "default-src 'self'; img-src 'self' asset: http://asset.localhost data:; connect-src ipc: http://ipc.localhost"
         }
     },
     "bundle": {

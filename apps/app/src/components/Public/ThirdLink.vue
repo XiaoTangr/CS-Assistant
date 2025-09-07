@@ -37,6 +37,7 @@ import GlassButton from '../Common/GlassButton.vue'
 import GlassDialog from '../Common/GlassDialog.vue'
 import { ElNotification } from 'element-plus';
 
+import { openUrl } from '@tauri-apps/plugin-opener';
 const props = withDefaults(
     defineProps<{
         url: string
@@ -59,8 +60,8 @@ const showDialog = () => {
     dialogVisible.value = true
 }
 
-const handleConfirm = () => {
-    window.open(props.url)
+const handleConfirm = async () => {
+    await openUrl(props.url)
     dialogVisible.value = false
 }
 

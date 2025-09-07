@@ -74,7 +74,7 @@ const hasRoute = (routeName: string) => {
     top: 0;
     left: 0;
     width: 100vw;
-    height: 5em;
+    height: 5rem;
     backdrop-filter: blur(100vw);
     -webkit-backdrop-filter: blur(100vw);
     mask: linear-gradient(to bottom,
@@ -85,8 +85,10 @@ const hasRoute = (routeName: string) => {
 
 .container-bg {
     width: 100%;
+    min-width: $nav-bar-width;
+    max-width: $nav-bar-width;
     height: 100%;
-    padding: 1em;
+    padding: $globe-padding;
     background: linear-gradient(to right,
             rgba(250, 250, 250, 0.2),
             rgba(250, 250, 250, 0.6),
@@ -101,8 +103,7 @@ const hasRoute = (routeName: string) => {
 
         flex-direction: column;
         overflow: hidden;
-        border-radius: 1em;
-
+        border-radius: $globe-border-radius;
 
         :deep(.nav-body) {
             padding: 0;
@@ -119,7 +120,7 @@ const hasRoute = (routeName: string) => {
                 flex: 1;
                 overflow-y: auto;
                 padding: calc($globe-padding / 2) $globe-padding;
-                padding-top: 1.5em;
+                padding-top: 1.5rem;
             }
 
             .nav-footer {
@@ -177,8 +178,8 @@ const hasRoute = (routeName: string) => {
             .nav-active::before,
             .nav-item-container::before {
                 content: '';
-                width: .5em;
-                height: 0em;
+                width: .5rem;
+                height: 0rem;
                 border-radius: 100vw;
                 margin: calc(0.5 * $font-size);
                 transition: all 0.3s cubic-bezier(0.075, 0.82, 0.165, 1);

@@ -45,14 +45,13 @@ const openMenu = () => {
 
     .nav-Container {
         height: 100vh;
-        min-width: 20em;
-        max-width: 20em;
         /* 添加定位属性 */
     }
 
     .window-Container-bg {
         flex: 1;
         background: rgba(250, 250, 250, 0.95);
+        width: $content-width;
 
         .window-container {
             overflow-y: auto;

@@ -78,7 +78,7 @@ jobs:
             - name: Upload assets
               env:
                   GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
-              run: node apps/app/scripts/publish.mjs
+              run: node ./scripts/publish.mjs
 
             - name: Post latest.json to gh-pages
               uses: JamesIves/github-pages-deploy-action@v4

@@ -172,7 +172,6 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
             }
             return false;
         });
-        LogService.debug('[LoginedSteamUserStore.getLogedSteamUser]', user)
         return user || null;
     }
 

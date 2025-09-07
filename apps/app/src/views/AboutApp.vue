@@ -32,7 +32,7 @@
             <template #header>
                 感谢以下开源项目
             </template>
-            <CommSpace :size="16" class="openSource" wrap alignment="start">
+            <CommSpace class="openSource" wrap alignment="start">
                 <GlassCard class="item" v-for="item in openSourceData" body-class="item-body" shadow="hover">
                     <el-image class="icon" :src="item.iconUrl" fit="fill" />
                     <CommSpace :size="4" spacer="License by" class="info">
@@ -161,7 +161,7 @@ const openSourceData = ref([
     justify-content: center;
 
     .card-item {
-        margin: 1em;
+        margin: 1rem;
         width: 100%;
         display: flex;
         flex-direction: column;

@@ -35,7 +35,6 @@
 import { useAppStore } from '@/store/AppStore';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
-import { LogService } from '@/core/services';
 import { openUrl } from '@tauri-apps/plugin-opener';
 import { useMapStore } from '@/store/MapStore';
 import { useSettingsStore } from '@/store/SettingsStore';
@@ -85,7 +84,6 @@ onMounted(async () => {
 
 
     await appStore.checkUpdate();
-    LogService.debug('updater_remoteData', updater_remoteData.value);
     if (hasUpdate.value && updater_showDialog.value) {
         showDialog.value = true;
     }
@@ -128,7 +126,7 @@ const showUpdateDialogChangeHandler = async (value: any) => {
     .dialog-content-item {
         margin: 0;
         padding: 0;
-        padding-top: .5em;
+        padding-top: .5rem;
     }
 
     .dialog-content-item:first-child {

@@ -127,25 +127,25 @@ defineEmits<{
 
 .GlassButton.el-button {
     box-shadow:
-        0 .2em .8em rgba(0, 0, 0, 0.08),
+        0 .2rem .8rem rgba(0, 0, 0, 0.08),
         inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button:hover {
     box-shadow:
-        0 .2em .8em rgba(31, 38, 135, 0.1),
+        0 .2rem .8rem rgba(31, 38, 135, 0.1),
         inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-always {
     box-shadow:
-        0 .2em .8em rgba(31, 38, 135, 0.1),
+        0 .2rem .8rem rgba(31, 38, 135, 0.1),
         inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
 .GlassButton.el-button.is-shadow-always:hover {
     box-shadow:
-        0 .2em .8em rgba(31, 38, 135, 0.1),
+        0 .2rem .8rem rgba(31, 38, 135, 0.1),
         inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 
@@ -155,7 +155,7 @@ defineEmits<{
 
 .GlassButton.el-button.is-shadow-hover:hover {
     box-shadow:
-        0 .2em .8em rgba(31, 38, 135, 0.1),
+        0 .2rem .8rem rgba(31, 38, 135, 0.1),
         inset 0 1px 2px rgba(280, 280, 280, 0.6);
 }
 

@@ -16,14 +16,17 @@ export const request = async <T extends Record<string, unknown> | unknown[], B =
 ): Promise<ApiResponse<T>> => {
     try {
         const { method = 'GET', headers, body, timeout = 10000 } = config;
-
+        LogService.info(
+            `[Network Request]
+            Url:${url}
+            Congif:${json5.stringify(config)}
+            `)
         const response = await fetch(url, {
             method,
             headers: { ...defaultHeaders, ...headers },
             body: body && method !== 'GET' ? JSON.stringify(body) : undefined,
             signal: AbortSignal.timeout(timeout)
         });
-
         const responseText = await response.text();
         // 明确类型转换，确保响应数据符合预期类型
         const responseData = json5.deepParse(responseText) as T ?? null;
@@ -39,13 +42,13 @@ export const request = async <T extends Record<string, unknown> | unknown[], B =
         };
 
         if (!response.ok) {
-            LogService.error(`API请求失败: ${result.message}`);
+            LogService.error(`[baseFetch@Network Request]: ${result.message}`);
         }
 
         return result;
-    } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : '发生未知错误';
-        LogService.error(`API请求错误: ${errorMessage}`);
+    } catch (error: any) {
+        const errorMessage = error;
+        LogService.error(`[baseFetch@Network Request]: ${error}`);
 
         return {
             data: null,
