@@ -1,12 +1,10 @@
-import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
-import { useMapStore } from "@/store/MapStore";
-import { useSettingsStore } from "@/store/SettingsStore";
-import { baseCRUD, runMigrations } from "@/core/database";
-import LogService from "@/core/services/Log.service";
+import { useLoginedSteamUserStore, useBackupStore, useAppStore, useAppConfigStore, useKeyValueStore } from "@/store";
+import { needMigration, runMigrations } from "@/core/database";
 import { MainRouter } from "@/router/Router";
-import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
-import { useAppStore } from "@/store/AppStore";
-import { needMigration } from "../database/migrations";
+import { LogService } from ".";
+import { KeyValueRepository } from "../repositories";
+import { KeyValue } from "../models";
+
 export default class StartUpService {
 
     /**
@@ -14,21 +12,27 @@ export default class StartUpService {
      * @returns true if install success
      */
     static async installDB() {
-
         if (await needMigration()) {
-            await runMigrations();
+            LogService.info("[StartUp.installDB(static)]", "installing database...")
+            await runMigrations().then(() => {
+                LogService.info("[StartUp.installDB(static)]", "install database success")
+            }).catch((err) => {
+                LogService.error("[StartUp.installDB(static)]", "install database failed:", err);
+            });
+            return
         }
+        LogService.info("[StartUp.installDB(static)]", "database is installed")
     }
 
     /**
      * 获取数据库数据
      */
     static async fetchDatas(): Promise<void> {
-        await useSettingsStore().fetchData();
-        await useMapStore().fetchData();
         await useLoginedSteamUserStore().fetchData();
-        await useBackupAndRecoveryStore().fetchData();
+        await useBackupStore().fetchData();
         await useAppStore().fetchData();
+        await useAppConfigStore().fetchData();
+        await useKeyValueStore().fetchData();
     }
 
 
@@ -37,19 +41,19 @@ export default class StartUpService {
      */
     static async initConfig(): Promise<void> {
         // 初始化LogService();
-        let sqlStr = `select c_selected from t_settings where c_key = 'defaultLogLevel'`;
         let data: any;
         let logLevel: number;
-        await baseCRUD.executeRaw(sqlStr).then((res) => {
-            data = res.data[0].c_selected as number
+        await KeyValueRepository.getInstance().findOne({ c_key: "defaultLogLevel" }).then(async (res: KeyValue | null) => {
+            data = res ?? null;
         }).catch(() => {
             data = null;
         });
-        if (!data) {
+        LogService.debug('[StartUp.initConfig(static)] get log level from db: ', data)
+        if (data === null || data === undefined) {
             logLevel = 0
-            LogService.error(`[StartUp.initConfig(static)] Error to get data from db, set Log Level to: %n `, logLevel)
+            LogService.error(`[StartUp.initConfig(static)] Error to get data from db, set Log Level to: `, logLevel)
         } else {
-            logLevel = data
+            logLevel = data.value as number;
             LogService.debug('[StartUp.initConfig(static)] set Log Level to: ', logLevel)
         }
         LogService.setLogLevel(logLevel);
@@ -59,7 +63,13 @@ export default class StartUpService {
      * 初始化路由
      */
     static async initRoutes() {
-        let devMode = useSettingsStore().getViewDataItemByKey("devMode")?.selected;
+        let devMode: boolean = false;
+        await KeyValueRepository.getInstance().findOne({ c_key: "defaultLogLevel" }).then(async (res) => {
+            devMode = res?.value as boolean ?? false;
+        }).catch(() => {
+            devMode = false;
+        });
+        LogService.debug('[StartUp.initRoutes(static)]', '开发者模式:', devMode)
         if (devMode === false) {
             // 移除开发者页面
             MainRouter.removeRoute("devTools")

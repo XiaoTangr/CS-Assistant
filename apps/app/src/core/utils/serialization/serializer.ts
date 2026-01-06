@@ -1,14 +1,12 @@
-import JSON5 from 'json5';
-
 /**
- * 序列化对象为JSON5字符串
+ * 序列化对象为JSON字符串
  */
-export const toJSON5 = <T extends Record<string, any> | any[]>(
+export const stringifyToJson = <T extends Record<string, any> | any[]>(
     input: T,
     fallback: string = '{}'
 ): string => {
     try {
-        return JSON5.stringify(input);
+        return JSON.stringify(input);
     } catch {
         return fallback;
     }
@@ -17,7 +15,7 @@ export const toJSON5 = <T extends Record<string, any> | any[]>(
 /**
  * 深度序列化对象值（保持结构，仅序列化值）
  */
-export const serializeDeepValues = <T extends Record<string, any> | any[]>(
+export const deepStringifyValues = <T extends Record<string, any> | any[]>(
     input: T
 ): T => {
     if (input === null || input === undefined) {
@@ -27,9 +25,9 @@ export const serializeDeepValues = <T extends Record<string, any> | any[]>(
     if (Array.isArray(input)) {
         return input.map(item => {
             if (typeof item === 'object' && item !== null) {
-                return serializeDeepValues(item);
+                return deepStringifyValues(item);
             }
-            return typeof item === 'string' ? item : JSON5.stringify(item);
+            return typeof item === 'string' ? item : JSON.stringify(item);
         }) as T;
     }
 
@@ -39,9 +37,9 @@ export const serializeDeepValues = <T extends Record<string, any> | any[]>(
             if (Object.prototype.hasOwnProperty.call(input, key)) {
                 const value = input[key];
                 if (typeof value === 'object' && value !== null) {
-                    result[key] = serializeDeepValues(value);
+                    result[key] = deepStringifyValues(value);
                 } else {
-                    result[key] = typeof value === 'string' ? value : JSON5.stringify(value);
+                    result[key] = typeof value === 'string' ? value : JSON.stringify(value);
                 }
             }
         }
@@ -52,16 +50,16 @@ export const serializeDeepValues = <T extends Record<string, any> | any[]>(
 };
 
 /**
- * 解析JSON5字符串为对象
+ * 解析JSON字符串为对象
  */
-export const fromJSON5 = <T extends Record<string, any> | any[]>(
+export const parseFromJson = <T extends Record<string, any> | any[]>(
     input: string,
     fallback?: T,
     options: { trim?: boolean } = { trim: true }
 ): T | undefined => {
     try {
         const text = options.trim ? input.trim() : input;
-        return JSON5.parse(text);
+        return JSON.parse(text);
     } catch {
         return fallback;
     }
@@ -70,7 +68,7 @@ export const fromJSON5 = <T extends Record<string, any> | any[]>(
 /**
  * 深度解析对象值（保持结构，仅解析值）
  */
-export const deserializeDeepValues = <T extends Record<string, any> | any[]>(
+export const deepParseValues = <T extends Record<string, any> | any[]>(
     input: T
 ): T => {
     if (input === null || input === undefined) {
@@ -79,9 +77,9 @@ export const deserializeDeepValues = <T extends Record<string, any> | any[]>(
 
     if (typeof input === 'string') {
         try {
-            const parsed = JSON5.parse(input);
+            const parsed = JSON.parse(input);
             if (typeof parsed === 'object') {
-                return deserializeDeepValues(parsed);
+                return deepParseValues(parsed);
             }
             return parsed;
         } catch {
@@ -90,14 +88,14 @@ export const deserializeDeepValues = <T extends Record<string, any> | any[]>(
     }
 
     if (Array.isArray(input)) {
-        return input.map(item => deserializeDeepValues(item)) as T;
+        return input.map(item => deepParseValues(item)) as T;
     }
 
     if (typeof input === 'object') {
         const result: Record<string, any> = {};
         for (const key in input) {
             if (Object.prototype.hasOwnProperty.call(input, key)) {
-                result[key] = deserializeDeepValues(input[key] as any);
+                result[key] = deepParseValues(input[key] as any);
             }
         }
         return result as T;
@@ -107,34 +105,26 @@ export const deserializeDeepValues = <T extends Record<string, any> | any[]>(
 };
 
 /**
- * 深度解析JSON5字符串（先解析外层，再递归解析内层）
+ * 深度解析JSON字符串（先解析外层，再递归解析内层）
  */
-export const deepParseJSON5 = <T extends Record<string, any> | any[]>(
+export const deepParseJson = <T extends Record<string, any> | any[]>(
     input: string,
     fallback?: T,
     options: { trim?: boolean } = { trim: true }
 ): T | undefined => {
     try {
         const text = options.trim ? input.trim() : input;
-        const parsed = fromJSON5<T>(text, undefined, { trim: false });
-        return parsed !== undefined ? deserializeDeepValues(parsed) : fallback;
+        const parsed = parseFromJson<T>(text, undefined, { trim: false });
+        return parsed !== undefined ? deepParseValues(parsed) : fallback;
     } catch {
         return fallback;
     }
 };
 
-/**
- * 工具函数别名 - 提供更简洁的调用方式
- */
-export const json5 = {
-    /** 序列化对象为JSON5字符串 */
-    stringify: toJSON5,
-    /** 解析JSON5字符串为对象 */
-    parse: fromJSON5,
-    /** 深度序列化对象值 */
-    serializeValues: serializeDeepValues,
-    /** 深度解析对象值 */
-    deserializeValues: deserializeDeepValues,
-    /** 深度解析JSON5字符串 */
-    deepParse: deepParseJSON5
-};
+export const JsonUtils = {
+    stringifyToJson,
+    parseFromJson,
+    deepStringifyValues,
+    deepParseValues,
+    deepParseJson
+}

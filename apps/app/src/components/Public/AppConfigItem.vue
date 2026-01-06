@@ -2,7 +2,7 @@
     <div class="container ">
         <div v-if="props.item.type === 'Boolean'" class="settings-item item-Boolean">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
-                props.item.text }}
+                props.item.title }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
@@ -10,15 +10,15 @@
                 </div>
 
                 <div class="item-options">
-                    <el-switch v-model="props.item.selected" :active-text="props.item.options?.[0].text"
-                        :inactive-text="props.item.options?.[1].text" />
+                    <el-switch v-model="props.item.value" :active-text="(props.item.options as BooleanOptions).true"
+                        :inactive-text="(props.item.options as BooleanOptions).false" />
                 </div>
             </div>
         </div>
         <div v-if="props.item.type === 'Select'" class="settings-item item-Select">
 
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
-                props.item.text }}
+                props.item.title }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
@@ -26,36 +26,36 @@
                 </div>
 
                 <div class="item-options">
-                    <el-select v-model="props.item.selected" placeholder="Select" style="width: 100%">
-                        <el-option v-for="i in props.item.options" :key="i.value" :label="i.text" :value="i.value" />
+                    <el-select v-model="props.item.value" placeholder="Select" style="width: 100%">
+                        <el-option v-for="(i) in props.item.options as SelectOption[]" :key="i.value" :label="i.label"
+                            :value="i.value" />
                     </el-select>
                 </div>
             </div>
         </div>
         <div v-if="props.item.type === 'Input'" class="settings-item item-Input">
             <p :class="{ modifed: isDataConsistent }" class="item-name">{{
-                props.item.text }}
+                props.item.title }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
                     {{ props.item.description }}
                 </div>
                 <div class="item-options">
-                    <el-input v-model="props.item.selected as string" placeholder="..." style="width: 100%" />
+                    <el-input v-model="props.item.value as string" placeholder="..." style="width: 100%" />
                 </div>
             </div>
         </div>
         <div v-if="props.item.type === 'PathInput'" class="settings-item item-FilePath">
-            <p :class="{ modifed: isDataConsistent }" class="item-name">{{
-                props.item.text
-            }}
+            <p :class="{ modifed: isDataConsistent }" class="item-name">
+                {{ props.item.title }}
             </p>
             <div class="item-container">
                 <div class="item-desc">
                     {{ props.item.description }}
                 </div>
                 <div class="item-options">
-                    <el-input class="path-item" v-model="props.item.selected as string" placeholder="选择路径" />
+                    <el-input class="path-item" v-model="props.item.value as string" placeholder="选择路径" />
                     <GlassButton class="path-item" @click="openPathChoose" type="primary" :icon="FolderOpened" circle
                         plain />
                 </div>
@@ -67,24 +67,31 @@
 <script setup lang="ts">
 import { FolderOpened } from '@element-plus/icons-vue';
 import { open } from '@tauri-apps/plugin-dialog';
-import { Settings } from '@/core/models';
-import { computed, PropType } from 'vue';
-import { useAppConfigStore } from '@/store/appConfigStore';
+import { AppConfig, BooleanOptions, SelectOption } from '@/core/models';
+import { PropType, ref, watch, watchEffect } from 'vue';
+
 import { LogService } from '@/core/services';
 import GlassButton from '../Common/GlassButton.vue';
+import { useAppConfigStore } from '@/store';
 const props = defineProps({
     item: {
-        type: Object as PropType<Settings>,
+        type: Object as PropType<AppConfig>,
         required: true
     }
 })
 
 const appConfigStore = useAppConfigStore();
+const dbItem = ref<AppConfig | null>()
 
-const isDataConsistent = computed(() => {
-    const dbValue = appConfigStore.getDbDataItemByKey(props.item.key as string)?.selected as string;
-    return props.item.selected !== dbValue;
-})
+const isDataConsistent = ref(false);
+watchEffect(async () => {
+    dbItem.value = await appConfigStore.getDbAppConfig(props.item.key);
+});
+watch([() => props.item.value, dbItem], () => {
+    if (dbItem.value) {
+        isDataConsistent.value = (props.item.value !== dbItem.value.value);
+    }
+}, { immediate: true });
 
 const openPathChoose = async () => {
     try {
@@ -94,7 +101,7 @@ const openPathChoose = async () => {
         });
 
         if (file && typeof file === 'string') {
-            props.item.selected = file;
+            props.item.value = file;
         } else {
             // 用户取消选择或未选择有效路径
             LogService.warn('未选择有效的路径');

@@ -17,13 +17,18 @@
                         :title="item.title" />
                 </div>
             </div>
+            <GlassButton @click="test">
+                测试站
+            </GlassButton>
         </template>
     </GlassCard>
 </template>
 
 <script setup lang="ts">
-import GlassCard from '@/components/Common/GlassCard.vue';
 import ThirdLink from '@/components/Public/ThirdLink.vue';
+import GlassCard from '../components/Common/GlassCard.vue';
+import SteamService from '../core/services/Steam.service';
+import { LogService } from '../core/services';
 const linkData = {
     "中文": [
         {
@@ -43,6 +48,12 @@ const linkData = {
             url: 'https://www.cscdb.net/',
         }
     ],
+};
+
+const test = async () => {
+    let s = SteamService.getInstance();
+    let res = await s.getLogedSteamUsers();
+    LogService.debug("UsersLocalConfigVdf", res);
 };
 </script>
 

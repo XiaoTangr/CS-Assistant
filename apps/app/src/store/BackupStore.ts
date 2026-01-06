@@ -1,22 +1,24 @@
-import { BackupAndRecovery } from "@/core/models";
-import { BackupAndRecoveryService, LogService } from "@/core/services";
-import { getCurrentTimestamp, json5, timestampToFolderName } from "@/core/utils";
+import { Backup } from "@/core/models";
+import { BackupService, LogService } from "@/core/services";
+import { deepParseJson, getCurrentTimestamp, stringifyToJson, timestampToFolderName } from "@/core/utils";
 import { defineStore, storeToRefs } from "pinia";
 import { ref, watch } from "vue";
 import { useLoginedSteamUserStore } from "./LoginedSteamUserStore";
 
-export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", () => {
+export const useBackupStore = defineStore("BackupStore", () => {
+
+    const backUpService = BackupService.getInstance();
 
     const LoginedSteamUserStore = useLoginedSteamUserStore();
 
     const { data: loginedSteamUserData } = storeToRefs(LoginedSteamUserStore);
 
 
-    const dbData = ref<BackupAndRecovery[]>([]);
+    const dbData = ref<Backup[] | null>();
 
-    const viewData = ref<BackupAndRecovery[]>([]);
+    const viewData = ref<Backup[]>();
     // 数据总数
-    const dataCount = ref<number>(0);
+    const dataCount = ref<number | null>(0);
     // 分页游标
     const currentPage = ref<number>(0);
     // 分页大小
@@ -24,23 +26,23 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
 
     const fetchData = async () => {
         await fetchPageData();
-        dataCount.value = await BackupAndRecoveryService.getDataCount();
+        dataCount.value = await backUpService.getDataCount();
     }
 
     const fetchPageData = async (cP: number = currentPage.value, pS: number = pageSize.value) => {
-        dbData.value = await BackupAndRecoveryService.getPageData(cP, pS);
-        viewData.value = json5.deepParse<BackupAndRecovery[]>(json5.stringify(dbData.value)) ?? [];
+        dbData.value = await backUpService.getPageData(cP, pS);
+        viewData.value = deepParseJson<Backup[]>(stringifyToJson(dbData.value ?? [])) ?? [];
     }
 
     const pathGenerator = async (fid: number, timePath: string) => {
-        let path = await BackupAndRecoveryService.getBackupFolderPath();
+        let path = await backUpService.getBackupFolderPath();
         return `${path}\\${fid}\\${timePath}\\730`;
     }
 
     // ——————————————— 新建备份 ————————————————————
 
     // 新建备份操作数据
-    const confirmCreateBackupData = ref<BackupAndRecovery>({
+    const confirmCreateBackupData = ref<Backup>({
         id: -1,
         nickName: '',
         friendId: -1,
@@ -68,7 +70,7 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
 
         let newNickName = newValue.nickName;
         let oldId = oldValue.id;
-        let fid: number = (loginedSteamUserData.value ?? []).find(item => item.PersonaName === newNickName)?.FriendId as unknown as number;
+        let fid: number = (loginedSteamUserData.value ?? []).find((item: any) => item.PersonaName === newNickName)?.FriendId as unknown as number;
         let folderPath = '';
         if (newNickName != '') {
             folderPath = await pathGenerator(fid, timestampToFolderName(oldId))
@@ -87,7 +89,7 @@ export const useBackupAndRecoveryStore = defineStore("BackupAndRecoveryStore", (
         }
         try {
             LogService.info("[ConfigCloneService.cloneConfig] 为以下数据创建备份: ", confirmCreateBackupData.value)
-            return await BackupAndRecoveryService.createBackup(confirmCreateBackupData.value)
+            return await backUpService.createBackup(confirmCreateBackupData.value)
         } catch (error) {
             LogService.error(error);
             throw error;

@@ -1,5 +1,2 @@
-export { default as BackupAndRecoveryRepository } from "./BackupAndRecovery.Repository"
-
-export { default as SettingsRepository } from "./Settings.Repository";
-
-export { default as MapRepository } from "./Map.Repository";
+export { default as BackupRepository } from "./Backup.Repository"
+export { default as KeyValueRepository } from "./KeyValue.Repository"

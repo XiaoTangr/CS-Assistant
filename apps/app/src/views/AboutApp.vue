@@ -11,7 +11,6 @@
 
                 <div class="appinfo-item version-container">
                     <span class="appinfo-inneritem appVersion ">Release App Version: {{ appVersion }}</span>
-                    <span class="appinfo-inneritem dbVersion ">Local Database Version: {{ currentDBVersion }}</span>
                 </div>
 
                 <div class="appinfo-item">
@@ -58,20 +57,22 @@ import GlassCard from '@/components/Common/GlassCard.vue';
 import ThirdLink from '@/components/Public/ThirdLink.vue';
 import { onMounted, ref } from 'vue';
 import appIcon from '@/assets/icons/app/app-icon.png';
-import { useMapStore } from '@/store/MapStore';
 import GlassButton from '@/components/Common/GlassButton.vue';
 import GlassDialog from '@/components/Common/GlassDialog.vue';
 import LICENSE from '@/assets/LICENSE.txt?raw';
 import { getVersion } from '@tauri-apps/api/app';
-const mapStore = useMapStore();
+import { useKeyValueStore } from '@/store';
+
+const keyValueStore = useKeyValueStore();
 const appVersion = ref('');
 const appGithub = ref('');
 const show_license = ref(false);
-const currentDBVersion = ref('');
+
+
 onMounted(async () => {
     appVersion.value = await getVersion();
-    appGithub.value = (await mapStore.getOneByKey('App_Github'))?.value ?? '';
-    currentDBVersion.value = (await mapStore.getOneByKey('db_version'))?.value ?? '';
+
+    appGithub.value = await keyValueStore.getDbValue("App_Github");
 })
 
 

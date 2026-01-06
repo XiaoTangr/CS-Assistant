@@ -27,7 +27,6 @@
 </template>
 <script setup lang="ts">
 import { useLoginedSteamUserStore } from '@/store/LoginedSteamUserStore';
-import { useSettingsStore } from '@/store/SettingsStore';
 import { computed, onMounted } from 'vue';
 import { selectFilePath, isFileExists } from '@/core/utils/FsUtils';
 import { getVdfObjectByFilePath } from '@/core/utils/VdfUtils';
@@ -36,6 +35,7 @@ import { storeToRefs } from 'pinia';
 import GlassButton from '@/components/Common/GlassButton.vue';
 import CopyText from '@/components/Common/CopyText.vue';
 import GlassCard from '@/components/Common/GlassCard.vue';
+import { useAppConfigStore } from '@/store';
 const STEAM_EXE_PATH_WINDOWS = "\\steam.exe"
 const STEAM_LIBRARY_GAME_SAVE_PATH = "\\steamapps\\common"
 const STEAM_LIBRARY_VDFNAME = "libraryfolders.vdf"
@@ -46,19 +46,19 @@ const CS_ID = 730
 const CS_EXE_PATH_WINDOWS = `${CS_HOME}\\game\\bin\\win64\\cs2.exe`
 
 
-const settingStore = useSettingsStore();
+const appConfigStore = useAppConfigStore();
 const LoginedSteamUserStore = useLoginedSteamUserStore();
 
 const { steamInstallPath, cs2InstallPath, steamInstallPathStr, cs2InstallPathStr } = storeToRefs(LoginedSteamUserStore)
 
 const hasSteam = computed(() => {
-    let str = steamInstallPath.value?.selected as string ?? null;
-    return str.length > 0;
+    let str = steamInstallPath.value?.value as string ?? null;
+    return str ? true : false;
 })
 
 const hasCS = computed(() => {
-    let str = cs2InstallPath.value?.selected as string ?? null;
-    return str.length > 0;
+    let str = cs2InstallPath.value?.value as string ?? null;
+    return str ? true : false;
 })
 
 
@@ -78,9 +78,9 @@ const autoCheck = async (): Promise<void> => {
             let csExePath = await getCSInstallPathByVdf();
             if (csExePath) {
                 if (cs2InstallPath.value) {
-                    cs2InstallPath.value.selected = csExePath;
+                    cs2InstallPath.value.value = csExePath;
                 }
-                await settingStore.saveChangedViewData();
+                await appConfigStore.saveAppConfig('cs2InstallPath');
             } else {
                 ElNotification.error({
                     title: '错误',
@@ -91,12 +91,13 @@ const autoCheck = async (): Promise<void> => {
         }
     } else {
         if (steamInstallPath.value) {
-            steamInstallPath.value.selected = '';
+            steamInstallPath.value.value = '';
         }
         if (cs2InstallPath.value) {
-            cs2InstallPath.value.selected = '';
+            cs2InstallPath.value.value = '';
         }
-        // await settingStore.saveChangedViewData()
+        await appConfigStore.saveAppConfig('steamInstallPath')
+        await appConfigStore.saveAppConfig('cs2InstallPath')
     }
 }
 
@@ -125,7 +126,7 @@ const setPath = async (): Promise<void> => {
         return;
     }
     if (steamInstallPath.value) {
-        steamInstallPath.value.selected = steamExePath;
+        steamInstallPath.value.value = steamExePath;
     }
     let csExePath = await getCSInstallPathByVdf();
     if (!csExePath) {
@@ -136,9 +137,9 @@ const setPath = async (): Promise<void> => {
         return;
     }
     if (cs2InstallPath.value) {
-        cs2InstallPath.value.selected = csExePath;
+        cs2InstallPath.value.value = csExePath;
     }
-    await settingStore.saveChangedViewData();
+    await appConfigStore.saveAppConfig("steamInstallPath");
 }
 /**
  * 通过vdf获取 CS2 安装路径
@@ -161,8 +162,8 @@ const getCSInstallPathByVdf = async (): Promise<string | null> => {
     return await isFileExists(csPath) ? `${libraryWithCS.path}${CS_HOME}` : null;
 }
 onMounted(async () => {
-    steamInstallPath.value = settingStore.getViewDataItemByKey("steamInstallPath");
-    cs2InstallPath.value = settingStore.getViewDataItemByKey("cs2InstallPath");
+    steamInstallPath.value = await appConfigStore.getViewAppConfig("steamInstallPath");
+    cs2InstallPath.value = await appConfigStore.getViewAppConfig("cs2InstallPath");
     await autoCheck();
 });
 

@@ -60,9 +60,9 @@ export let footerRouterConfig = [
             text: "开发者工具"
         }
     }, {
-        name: 'appSettings',
-        path: "/settings",
-        component: () => import('@/views/AllSettings.vue'),
+        name: 'appConfig',
+        path: "/appConfig",
+        component: () => import('@/views/AppConfig.vue'),
         meta: {
             icon: Setting,
 

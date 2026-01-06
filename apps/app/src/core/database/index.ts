@@ -6,4 +6,4 @@ export { default as connecter } from './connector';
 export { default as baseCRUD } from './baseCRUD';
 
 // 导出数据库迁移功能
-export { runMigrations } from './migrations';
+export * from './migrations';

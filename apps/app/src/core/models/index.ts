@@ -1,5 +1,5 @@
 // src/core/models/index.ts
-export type { BackupAndRecovery } from './BackupAndRecovery.model.ts';
-export type { Map } from './Map.model.ts';
-export type { Settings, SettingsRowOptions, SettingsGroup } from './Settings.model.ts';
+export type { Backup } from './Backup.model.ts';
+export type { KeyValue } from './KeyValue.model.ts';
 export type * from './Others.model.ts';
+export type * from './AppConfig.model.ts';

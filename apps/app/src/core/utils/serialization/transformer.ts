@@ -1,3 +1,5 @@
+import { deepParseValues, deepStringifyValues } from './serializer';
+
 /**
  * 通用数据库结构与应用结构之间的转换工具
  * 用于在数据库结构（以 t_ 前缀命名的接口，字段以 c_ 前缀）和应用结构（普通命名接口和字段）之间进行转换
@@ -7,10 +9,10 @@
  * @param dbObj 数据库结构对象
  * @returns 应用结构对象
  */
-export function fromDb<T extends Record<string, any>>(dbObj: T): any {
+export function fromDb<T extends Record<string, any>>(dbObj: T): any | null {
 
     if (dbObj === null || dbObj === undefined) {
-        return dbObj;
+        return null;
     }
 
     // 如果是数组，递归处理每个元素
@@ -26,7 +28,8 @@ export function fromDb<T extends Record<string, any>>(dbObj: T): any {
                 if (key.startsWith('c_')) {
                     // 移除字段名前缀 'c_'
                     const newKey = key.substring(2);
-                    result[newKey] = dbObj[key];
+                    // 使用 serializer 中的方法深度解析值
+                    result[newKey] = deepParseValues(dbObj[key]);
                 } else {
                     result[key] = dbObj[key];
                 }
@@ -61,7 +64,8 @@ export function toDb<T extends Record<string, any>>(obj: T): any {
             if (Object.prototype.hasOwnProperty.call(obj, key)) {
                 // 为字段名添加前缀 'c_'
                 const newKey = `c_${key}`;
-                result[newKey] = obj[key];
+                // 使用 serializer 中的方法深度序列化值
+                result[newKey] = deepStringifyValues(obj[key]);
             }
         }
         return result;

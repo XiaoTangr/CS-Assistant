@@ -1,28 +1,28 @@
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useSettingsStore } from "./SettingsStore";
-import { Settings, BasicSteamLoginUser } from "@/core/models";
+import { useAppConfigStore } from "./appConfigStore";
+import { AppConfig, BasicSteamLoginUser } from "@/core/models";
 import { getVdfObjectByFilePath } from "@/core/utils/VdfUtils";
 import LogService from "@/core/services/Log.service";
 import { isFileExists, readFileAsBase64, searchFilesByName } from "@/core/utils/FsUtils";
 import { watch } from "vue";
 export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () => {
-    const SettingsStore = useSettingsStore();
+    const appConfigStore = useAppConfigStore();
 
     const data = ref<BasicSteamLoginUser[] | null>(null)
     const _localVdfsPathArr = ref<string[] | null>(null)
     // 来自db的相关数据
     // 修改类型定义，提供更明确的类型
-    const steamInstallPath = ref<Settings | null>(null);
-    const cs2InstallPath = ref<Settings | null>(null);
+    const steamInstallPath = ref<AppConfig | null>(null);
+    const cs2InstallPath = ref<AppConfig | null>(null);
 
     // 修改 computed 属性处理 null 情况
     const steamInstallPathStr = computed(() => {
-        return steamInstallPath.value?.selected;
+        return steamInstallPath.value?.value;
     });
 
     const cs2InstallPathStr = computed(() => {
-        return cs2InstallPath.value?.selected;
+        return cs2InstallPath.value?.value;
     });
     const _loginedUsersVdfPath = `\\config\\loginusers.vdf`
     const _avatarsPath = `\\config\\avatarcache`
@@ -114,8 +114,8 @@ export const useLoginedSteamUserStore = defineStore("LoginedSteamUserStore", () 
 
 
     const _getViewData = async () => {
-        let steamInstallPathData = SettingsStore.getViewDataItemByKey("steamInstallPath");
-        let cs2InstallPathData = SettingsStore.getViewDataItemByKey("cs2InstallPath");
+        let steamInstallPathData = await appConfigStore.getViewAppConfig("steamInstallPath");
+        let cs2InstallPathData = await appConfigStore.getViewAppConfig("cs2InstallPath");
         return { steamInstallPath: steamInstallPathData, cs2InstallPath: cs2InstallPathData };
     }
 

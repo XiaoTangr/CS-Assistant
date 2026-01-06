@@ -21,17 +21,16 @@
 </template>
 
 <script setup lang="ts">
-import { Settings } from "@/core/models";
-import { useSettingsStore } from "@/store/SettingsStore";
 import { WarningFilled } from "@element-plus/icons-vue"
-import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
+import { AppConfig, computed, onBeforeUnmount, onMounted, ref, watch } from 'vue';
 import CommSpace from "../Common/CommSpace.vue";
 import GlassButton from "../Common/GlassButton.vue";
+import { useAppConfigStore } from "@/store";
 
-const SettingsStore = useSettingsStore();
+const appConfigStore = useAppConfigStore();
 const viewportHeight = ref(0);
 const viewportWidth = ref(0);
-const dataFromDB = ref<Settings | any>();
+const dataFromDB = ref<AppConfig | any>();
 // 遮罩层状态
 const isMaskNeedShow = computed(() => {
     return dataFromDB.value?.selected && (viewportHeight.value < 600 || viewportWidth.value < 800)
@@ -42,9 +41,9 @@ const closeMask = async () => {
     dataFromDB.value.selected = false;
 
     if (isChecked.value) {
-        await SettingsStore.saveOneData(dataFromDB.value).then(
+        await appConfigStore.saveAppConfig(dataFromDB.value).then(
             async () => {
-                await SettingsStore.fetchData()
+                await appConfigStore.fetchData()
             }
         );
     }
@@ -53,13 +52,13 @@ const getWindowSize = () => {
     viewportHeight.value = document.body.clientHeight;
     viewportWidth.value = document.body.clientWidth;
 }
-watch(SettingsStore, () => {
-    dataFromDB.value = SettingsStore.getDbDataItemByKey("showViewCheck");
+watch(appConfigStore, () => {
+    dataFromDB.value = appConfigStore.getDbAppConfig("showViewCheck");
 })
 onMounted(async () => {
     getWindowSize();
     window.addEventListener('resize', getWindowSize);
-    dataFromDB.value = SettingsStore.getDbDataItemByKey("showViewCheck")
+    dataFromDB.value = appConfigStore.getDbAppConfig("showViewCheck")
 });
 onBeforeUnmount(() => {
     window.removeEventListener('resize', getWindowSize);

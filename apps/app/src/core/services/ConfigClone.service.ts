@@ -1,21 +1,35 @@
-import { useBackupAndRecoveryStore } from "@/store/BackupAndRecoveryStore";
-import { BackupAndRecovery } from "../models";
 import { cp, getCurrentTimestamp, isFileExists, rm, timestampToFolderName } from "../utils";
 import LogService from "./Log.service";
-import SettingsService from "./Settings.service";
-import { useLoginedSteamUserStore } from "@/store/LoginedSteamUserStore";
-import BackupAndRecoveryService from "./BackupAndRecovery.service";
-
+import AppConfigService from "./AppConfig.service";
+import { Backup, KeyValue } from "../models";
+import BackupService from "./Backup.service";
+import { useLoginedSteamUserStore } from "../../store";
 export default class ConfigCloneService {
+    private static instance: ConfigCloneService;
+
+    private backupService = BackupService.getInstance();
+    private appConfigService = AppConfigService.getInstance();
+    private constructor() {
+        // 私有构造函数，防止外部实例化
+    }
+    static getInstance(): ConfigCloneService {
+        if (!ConfigCloneService.instance) {
+            ConfigCloneService.instance = new ConfigCloneService();
+        }
+        return ConfigCloneService.instance;
+    }
+
+
 
     /**
      *  获取 userData\<FriendId>\730 路径
      * @param FriendId - Steam 账号 ID
      * @returns 返回对应账号的完整 730 路径
      */
-    static async get730Path(FriendId: number) {
-        let db = await SettingsService.getSettingByKey("steamInstallPath");
-        let res = db?.selected as string | null;
+    async get730Path(FriendId: number) {
+        let db: KeyValue = await this.appConfigService.getSettingByKey("steamInstallPath");
+        LogService.debug("[ConfigCloneService.getSteamInstallPath] Steam 安装路径:", db);
+        let res = db?.value as string | null;
         if (!res) {
             LogService.error("[ConfigCloneService.getSteamInstallPath] 未找到 Steam 安装路径");
             throw new Error("未找到 Steam 安装路径");
@@ -31,39 +45,25 @@ export default class ConfigCloneService {
      * @param backUp - 是否在复制前进行备份，默认为 true
      * @returns Promise<number[]> - 返回成功复制的目标账号 ID 数组
      */
-    static async cloneConfig(fromId: number, toId: number[], config?: { backUp?: boolean }): Promise<number[]> {
+    async cloneConfig(fromId: number, toId: number[], config?: { backUp?: boolean }): Promise<number[]> {
         let successList: number[] = [];
         try {
             let fromPath = await this.get730Path(fromId);
             for (const item of toId) {
                 try {
                     let toPath = await this.get730Path(item);
-
+                    let timeStamp = getCurrentTimestamp();
                     // 如果需要备份，先备份目标路径
                     if (config?.backUp) {
-                        try {
-                            let createdAt = getCurrentTimestamp();
-                            let p = await BackupAndRecoveryService.getBackupFolderPath();
-                            let folderPath = `${p}\\${item}\\${timestampToFolderName(createdAt)}\\730`;
-
-                            let loginedSteamUserStore = useLoginedSteamUserStore();
-                            let nickName = (await loginedSteamUserStore.getLogedSteamUser({ friendId: item }))?.PersonaName || "未知用户";
-
-                            let bpPayload: BackupAndRecovery = {
-                                id: createdAt,
-                                friendId: item,
-                                folderPath: folderPath,
-                                nickName: nickName,
-                                description: `在克隆前的备份: ${fromId} -> ${item}`,
-                            };
-                            await BackupAndRecoveryService.createBackup(bpPayload);
-                            const BackupAndRecoveryStore = useBackupAndRecoveryStore();
-                            BackupAndRecoveryStore.fetchData();
-
-                        } catch (backupError) {
-                            LogService.warn(`[ConfigCloneService.cloneConfig] 为账号 ${item} 创建备份失败:`, backupError);
-                            // 即使备份失败，也继续执行复制操作
+                        // TODO: 进行备份
+                        let payload: Backup = {
+                            friendId: item,
+                            id: timeStamp,
+                            description: `自动备份`,
+                            folderPath: `${item}\\${timeStamp}\\730`,
+                            nickName: useLoginedSteamUserStore().getUserByFriendId(item)?.nickName ?? "未知"
                         }
+                        await this.backupService.createBackup(payload);
                     }
 
                     // 判断目标路径是否存在
@@ -71,9 +71,13 @@ export default class ConfigCloneService {
                         // 删除目标路径
                         await rm(toPath, true);
                     }
-                    await cp(fromPath, toPath);
-                    LogService.info(`[ConfigCloneService.cloneConfig] 复制 ${fromPath} 到 ${toPath}`);
-                    successList.push(item);
+                    // 复制源路径到目标路径
+                    await cp(fromPath, toPath).then(() => {
+                        LogService.info(`[ConfigCloneService.cloneConfig] 复制完成: ${fromPath} 到 ${toPath}`);
+                        successList.push(item);
+                    }).catch((error) => {
+                        LogService.error(`[ConfigCloneService.cloneConfig] 复制失败: ${fromPath} 到 ${toPath}:`, error);
+                    });
                 } catch (itemError) {
                     LogService.error(`[ConfigCloneService.cloneConfig] 复制到 ${item} 失败:`, itemError);
                     // 不抛出异常，继续处理下一个项目

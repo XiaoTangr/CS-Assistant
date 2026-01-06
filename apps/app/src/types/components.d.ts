@@ -8,6 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AppConfigItem: typeof import('./../components/Public/AppConfigItem.vue')['default']
     AppUpdater: typeof import('./../components/Public/GlobalCommand/AppUpdater.vue')['default']
     BackGround: typeof import('./../components/Layouts/BackGround.vue')['default']
     CommSpace: typeof import('./../components/Common/CommSpace.vue')['default']

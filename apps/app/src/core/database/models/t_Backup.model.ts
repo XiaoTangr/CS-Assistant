@@ -1,4 +1,4 @@
-export interface t_BackupAndRecovery {
+export interface t_Backup {
     // 主键
     c_id: number;
     // 所属用户昵称

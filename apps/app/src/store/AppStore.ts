@@ -1,12 +1,12 @@
 import { ApiService } from "@/core/api";
 import { defineStore } from "pinia";
 import { computed, ref } from "vue";
-import { useSettingsStore } from "./SettingsStore";
 import { LogService } from "@/core/services";
+import { useAppConfigStore } from ".";
 
 export const useAppStore = defineStore("AppStore", () => {
 
-    const settingsStore = useSettingsStore();
+    const appConfigStore = useAppConfigStore();
 
 
     // 更新器远程数据
@@ -30,7 +30,7 @@ export const useAppStore = defineStore("AppStore", () => {
 
 
     const fetchData = async () => {
-        updater_showDialog.value = settingsStore.getViewDataItemByKey('showUpdateDialog')?.selected as boolean;
+        updater_showDialog.value = (await appConfigStore.getViewAppConfig('showUpdateDialog'))?.value as boolean;
     }
     const checkUpdate = async () => {
         if (updater_isChecked.value) {
@@ -44,5 +44,5 @@ export const useAppStore = defineStore("AppStore", () => {
         });
     }
 
-    return { updater_remoteData, updater_isChecked, updater_showDialog, updater_remoteData_fullVersion, fetchData, checkUpdate, settingsStore };
+    return { updater_remoteData, updater_isChecked, updater_showDialog, updater_remoteData_fullVersion, fetchData, checkUpdate, appConfigStore };
 })

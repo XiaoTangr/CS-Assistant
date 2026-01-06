@@ -166,5 +166,4 @@ class LogService {
         }
     }
 }
-
 export default LogService.getInstance();

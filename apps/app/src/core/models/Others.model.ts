@@ -16,11 +16,11 @@ export interface SteamLoginUser {
  * Steam 用户基础信息
  */
 export interface BasicSteamLoginUser {
-    AccountName: string;
-    PersonaName: string;
-    steamId: number;
-    FriendId: number;
-    avatarBase64: string;
+    AccountName: string; // 账号名称
+    PersonaName: string; // 昵称
+    steamId: string; // 账号ID
+    FriendId: number; // 好友ID
+    avatarBase64: string; // 头像的Base64字符串
 }
 
 /**

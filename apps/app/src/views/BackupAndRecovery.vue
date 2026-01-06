@@ -142,7 +142,7 @@ import GlassDialog from '@/components/Common/GlassDialog.vue';
 import { BackupAndRecovery } from '@/core/models';
 import { BackupAndRecoveryService } from '@/core/services';
 import { formatTimestamp } from '@/core/utils';
-import { useBackupAndRecoveryStore } from '@/store/BackupAndRecoveryStore';
+import { useBackupAndRecoveryStore } from '@/store/BackupStore';
 import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { computed, ref } from 'vue';

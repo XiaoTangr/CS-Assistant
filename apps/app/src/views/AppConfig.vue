@@ -1,31 +1,45 @@
 <template>
     <div class="container">
         <div class="groups">
-            <template v-for="(g, i) in groupedViewData" :key="i">
+            <template v-for="(g) in groupedViewAppConfig">
                 <div class="group">
                     <div class="item">
-                        <el-divider border-style="dashed" class="group-title" content-position="left">{{ i
-                            }}</el-divider>
-                        <SettingsItemRender class="item-render" v-for="(item) in g" :item="item" :key="g.length - 1" />
+                        <el-divider border-style="dashed" class="group-title" content-position="left">
+                            {{ g.name }}
+                        </el-divider>
+                        <AppConfigItem class="item-render" v-for="(item, index) in g.configs" :item="item"
+                            :key="index" />
                     </div>
                 </div>
             </template>
         </div>
+
+
         <el-space class="operate">
-            <GlassButton size="large" @click="SettingsStore.saveChangedViewData" type="primary" round> 保存更改
+            <GlassButton size="large" @click="saveModifiedAppConfigHandler" type="primary" round> 保存更改
             </GlassButton>
-            <GlassButton size="large" @click="SettingsStore.discardChanges" round> 放弃更改 </GlassButton>
+            <GlassButton size="large" @click="cancelModifiedAppConfigHandler" round> 放弃更改 </GlassButton>
         </el-space>
     </div>
 </template>
 <script setup lang="ts">
 import GlassButton from '@/components/Common/GlassButton.vue';
-import SettingsItemRender from '@/components/Public/SettingsItemRender.vue';
-import { useSettingsStore } from '@/store/SettingsStore';
+import AppConfigItem from '@/components/Public/AppConfigItem.vue';
+import { useAppConfigStore } from '@/store/appConfigStore';
 import { storeToRefs } from 'pinia';
 
-const SettingsStore = useSettingsStore();
-const { groupedViewData } = storeToRefs(SettingsStore);
+const appConfigStore = useAppConfigStore();
+
+const { groupedViewAppConfig } = storeToRefs(appConfigStore)
+
+
+
+const saveModifiedAppConfigHandler = () => {
+    appConfigStore.saveModifiedAppConfig();
+}
+const cancelModifiedAppConfigHandler = () => {
+
+}
 
 </script>
 

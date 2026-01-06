@@ -1,5 +1,5 @@
 import { get } from './request';
-import { SettingsService } from '../services';
+import { AppConfigService } from '../services';
 import { Notice } from '../models';
 import { check } from '@tauri-apps/plugin-updater';
 
@@ -12,7 +12,7 @@ export class ApiService {
     static GITHUB_USERNAME = "XiaoTangr";
     static GITHUB_REPONAME = "CS-Assistant";
 
-
+    static appConfigService = AppConfigService.getInstance();
     /**
      * 获取公告列表
      * @param username GitHub用户名
@@ -24,8 +24,7 @@ export class ApiService {
         reponame: string = this.GITHUB_REPONAME,
         branchname: string = "gh-pages"
     ) {
-
-        let baseUrl = (await SettingsService.getSettingByKey("remoteUrlPrefix"))?.selected as string;
+        let baseUrl = (await this.appConfigService.getValue("remoteUrlPrefix")) as string;
         // 构建URL，替换占位符
 
         if (!baseUrl.includes("javat.cn")) {
@@ -42,7 +41,4 @@ export class ApiService {
         return await check();
     }
 }
-
-// 默认导出API实例
 export default ApiService;
-

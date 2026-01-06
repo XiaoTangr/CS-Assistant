@@ -36,25 +36,26 @@ import { useAppStore } from '@/store/AppStore';
 import { storeToRefs } from 'pinia';
 import { computed, onMounted, ref } from 'vue';
 import { openUrl } from '@tauri-apps/plugin-opener';
-import { useMapStore } from '@/store/MapStore';
-import { useSettingsStore } from '@/store/SettingsStore';
-import { Settings } from '@/core/models';
+import { useAppConfigStore } from '@/store/appConfigStore';
+import { AppConfig } from '@/core/models';
+import { KeyValueService } from '@/core/services';
+import { ElNotification } from 'element-plus';
 const appStore = useAppStore();
-const settingsStore = useSettingsStore();
+const appConfigStore = useAppConfigStore();
 const { updater_remoteData, updater_showDialog, updater_remoteData_fullVersion } = storeToRefs(appStore);
 
 const showDialog = ref(false)
 
 
-const fromDbShowUpdateDialog = ref<Settings | any>();
+const fromDbShowUpdateDialog = ref<AppConfig | null>();
 const showUpdateDialog = ref(false)
 
-const fromDbUseDevVersion = ref<Settings | any>();
+const fromDbUseDevVersion = ref<AppConfig | null>();
 
 
 const hasUpdate = computed(() => {
     if (updater_remoteData.value) {
-        if (fromDbUseDevVersion.value.selected && updater_remoteData_fullVersion.value.startsWith('dev')) {
+        if (fromDbUseDevVersion.value?.value && updater_remoteData_fullVersion.value.startsWith('dev')) {
             // 显示dev更新
             return true
         } else {
@@ -77,10 +78,10 @@ const showByHandler = () => {
 onMounted(async () => {
 
     // 设置->使用测试版
-    fromDbUseDevVersion.value = settingsStore.getDbDataItemByKey('getDevVersion')
+    fromDbUseDevVersion.value = await appConfigStore.getViewAppConfig('getDevVersion')
     // 设置->显示更新提示
-    fromDbShowUpdateDialog.value = settingsStore.getDbDataItemByKey('showUpdateDialog');
-    showUpdateDialog.value = fromDbShowUpdateDialog.value.selected;
+    fromDbShowUpdateDialog.value = await appConfigStore.getViewAppConfig('showUpdateDialog');
+    showUpdateDialog.value = fromDbShowUpdateDialog.value?.value;
 
 
     await appStore.checkUpdate();
@@ -90,7 +91,14 @@ onMounted(async () => {
 });
 
 const readUpdateNoteHandler = async () => {
-    let gitUrl = await useMapStore().getValueByKey("App_Github")
+    let kvSer = KeyValueService.getInstance()
+    let gitUrl = await kvSer.getValue("App_Github")
+    if (!gitUrl) {
+        ElNotification.error({
+            title: "错误",
+            message: "请先配置Github地址",
+        });
+    }
     gitUrl = `${gitUrl}/releases`
     await openUrl(gitUrl);
 }
@@ -103,11 +111,7 @@ const closeDialogHandler = async () => {
 }
 
 const showUpdateDialogChangeHandler = async (value: any) => {
-
-    fromDbShowUpdateDialog.value.selected = value;
-    settingsStore.saveOneData(fromDbShowUpdateDialog.value).then(async () => {
-        await settingsStore.fetchData()
-    })
+    // TODO: 待完善
 }
 
 </script>

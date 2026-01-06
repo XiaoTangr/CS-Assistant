@@ -1,7 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
 import { LogService } from "../services";
-import { json5 } from "../utils";
 import { ApiResponse, RequestConfig } from "../models";
+import { deepParseJson, JsonUtils } from "../utils";
 
 // 默认请求头
 const defaultHeaders: Record<string, string> = {
@@ -19,7 +19,7 @@ export const request = async <T extends Record<string, unknown> | unknown[], B =
         LogService.info(
             `[Network Request]
             Url:${url}
-            Congif:${json5.stringify(config)}
+            Congif:${JsonUtils.stringifyToJson(config)}
             `)
         const response = await fetch(url, {
             method,
@@ -29,7 +29,7 @@ export const request = async <T extends Record<string, unknown> | unknown[], B =
         });
         const responseText = await response.text();
         // 明确类型转换，确保响应数据符合预期类型
-        const responseData = json5.deepParse(responseText) as T ?? null;
+        const responseData = deepParseJson(responseText) as T ?? null;
 
         const result: ApiResponse<T> = {
             data: responseData,

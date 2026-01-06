@@ -1,4 +1,4 @@
-export interface BackupAndRecovery {
+export interface Backup {
     // 主键
     id: number;
     // 所属用户昵称

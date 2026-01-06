@@ -63,6 +63,7 @@ const cloneFrom = ref<number>();
 // 目标列表
 const cloneTo = ref<number[]>([]);
 
+const configCloneService = ConfigCloneService.getInstance();
 
 const cloneFromSelecterChangeHandler = (value: number) => {
     cloneTo.value = cloneTo.value.filter((item: number) => item !== value);
@@ -80,7 +81,7 @@ const cloneFromSelecterChangeHandler = (value: number) => {
 
 onMounted(() => {
     if (LoginedSteamUsers.value) {
-        selectList.value = LoginedSteamUsers.value.map((item) => ({
+        selectList.value = LoginedSteamUsers.value.map((item: any) => ({
             folderName: item.FriendId ?? 0,
             userName: item.PersonaName ?? "",
             asOrigin: true,
@@ -90,6 +91,7 @@ onMounted(() => {
 })
 
 const confirmCloneHandler = async () => {
+
     if (!cloneFrom.value || cloneTo.value.length === 0) {
         ElNotification.error({
             title: '错误',
@@ -108,7 +110,7 @@ const confirmCloneHandler = async () => {
         });
         return;
     }
-    await ConfigCloneService.cloneConfig(cloneFrom.value, cloneTo.value, { backUp: backupUserSettings.value }).then(() => {
+    await configCloneService.cloneConfig(cloneFrom.value, cloneTo.value, { backUp: backupUserSettings.value }).then(() => {
         ElNotification.success({
             title: '成功',
             message: '配置克隆成功',
