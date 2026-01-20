@@ -16,7 +16,7 @@ export default class StartUpService {
             LogService.info("[StartUp.installDB(static)]", "installing database...")
             await runMigrations().then(() => {
                 LogService.info("[StartUp.installDB(static)]", "install database success")
-            }).catch((err) => {
+            }).catch((err: any) => {
                 LogService.error("[StartUp.installDB(static)]", "install database failed:", err);
             });
             return

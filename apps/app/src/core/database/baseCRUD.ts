@@ -435,6 +435,28 @@ class DBBaseCRUD {
         const sql = `PRAGMA table_info("${tableName}")`;
         return await this._select(sql);
     }
+
+
+    /**
+     * 执行原始executeSQL
+     * @param sql SQL语句
+     * @param params 参数列表
+     * @returns 返回执行结果
+     */
+    public async executeRaw(sql: string, params: any[] = []): Promise<SqlResult> {
+        return await this._execute(sql, params);
+    }
+
+
+    /**
+     * 执行原始querySQL
+     * @param sql SQL语句
+     * @param params 参数列表
+     * @returns 返回查询结果
+     */
+    public async selectRaw<T>(sql: string, params: any[] = []): Promise<T[]> {
+        return await this._select<T>(sql, params);
+    }
 }
 
 export default DBBaseCRUD.getInstance();

@@ -2,7 +2,7 @@ import { LogService } from "../services";
 import { baseCRUD } from "../database";
 import { t_KeyValue } from "./models";
 
-import { appConfigs } from "@/core/static/appConfig";
+import { appConfigs } from "../static/appConfig";
 import { AppConfig } from "../models";
 import { dbData } from "../static";
 import { KeyValueRepository } from "../repositories";
@@ -68,15 +68,16 @@ const getMigrationData = async () => {
  * @returns true if need migration
  */
 export const needMigration = async () => {
-    let isDBinstalled = false;
+    let need = true
     await KeyValueRepository.getInstance().findOne({ c_key: 'db_installed' }).then(res => {
         if (res) {
-            isDBinstalled = res.value as boolean;
+            need = false
         }
     }).catch(error => {
         LogService.error(error);
+        need = true;
     });
-    return !isDBinstalled;
+    return need;
 }
 
 /**
@@ -93,11 +94,15 @@ export const runMigrations = async () => {
         let tableName = tableItem.name;
         let columns = tableItem.columns;
 
-        // 1. 检查表是否存在
-        let isTableExist = await baseCRUD.executeRaw('SELECT * FROM sqlite_master WHERE type="table" AND name="' + tableName + '"');
 
-        if (isTableExist.data.length === 0) {
+        let isTableExist = (await baseCRUD.selectRaw('SELECT * FROM sqlite_master WHERE type="table" AND name="' + tableName + '"'));
+
+
+        LogService.debug(isTableExist)
+
+        if (isTableExist.length === 0) {
             // 创建表
+
             let createSqlstr = buildCreateTableSql(tableName, columns);
             await baseCRUD.executeRaw(createSqlstr);
             LogService.log(`[DatabaseService.installDB] [${tableName}] 创建表成功`);
