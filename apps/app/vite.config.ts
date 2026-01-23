@@ -1,29 +1,29 @@
-
-import { defineConfig } from "vite";
+import { type PluginOption, defineConfig } from "vite";
 import vue from "@vitejs/plugin-vue";
 import { resolve } from 'path'
 import VueDevTools from 'vite-plugin-vue-devtools';
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import autoprefixer from 'autoprefixer';
 import cssnano from 'cssnano'
-import AutoImport from 'unplugin-auto-import/vite'
-import Components from 'unplugin-vue-components/vite'
+import AutoImport from 'unplugin-auto-import/vite';
+import Components from 'unplugin-vue-components/vite';
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+
 const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig({
     plugins: [
-        vue(),
-        VueDevTools(),
-        vueJsx(),
+        VueDevTools() as PluginOption,
+        vue() as PluginOption,
+        vueJsx() as PluginOption,
         AutoImport({
             resolvers: [ElementPlusResolver()],
             dts: 'src/types/auto-imports.d.ts',
-        }),
+        }) as PluginOption,
         Components({
             resolvers: [ElementPlusResolver()],
             dts: 'src/types/components.d.ts',
-        }),
+        }) as PluginOption,
     ],
     build: {
         chunkSizeWarningLimit: 1500,
