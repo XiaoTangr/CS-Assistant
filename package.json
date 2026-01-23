@@ -1,0 +1,33 @@
+{
+    "name": "cs-assisatnt",
+    "private": true,
+    "workspaces": [
+        "apps/*"
+    ],
+    "scripts": {
+        "build": "turbo run build",
+        "dev": "turbo run dev",
+        "lint": "turbo run lint",
+        "check-types": "turbo run check-types",
+        "test": "turbo run test"
+    },
+    "devDependencies": {
+        "@actions/github": "^6.0.0",
+        "@types/node": "^20.0.0",
+        "eslint": "^8.0.0",
+        "turbo": "^2.5.4",
+        "typescript": "5.8.3"
+    },
+    "packageManager": "pnpm@10.28.1",
+    "pnpm": {
+        "onlyBuiltDependencies": [
+            "@parcel/watcher",
+            "electron",
+            "esbuild",
+            "vue-demi"
+        ]
+    },
+    "engines": {
+        "node": ">=18"
+    }
+}
