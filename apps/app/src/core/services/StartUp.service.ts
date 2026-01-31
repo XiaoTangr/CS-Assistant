@@ -63,14 +63,14 @@ export default class StartUpService {
      * 初始化路由
      */
     static async initRoutes() {
-        let devMode: boolean = false;
-        await KeyValueRepository.getInstance().findOne({ c_key: "defaultLogLevel" }).then(async (res) => {
-            devMode = res?.value as boolean ?? false;
+        let devMode: number = 0;
+        await KeyValueRepository.getInstance().findOne({ c_key: "defaultDevMode" }).then(async (res) => {
+            devMode = res?.value as number ?? 0;
         }).catch(() => {
-            devMode = false;
+            devMode = 0;
         });
         LogService.debug('[StartUp.initRoutes(static)]', '开发者模式:', devMode)
-        if (devMode === false) {
+        if (devMode === 0) {
             // 移除开发者页面
             MainRouter.removeRoute("devTools")
         }

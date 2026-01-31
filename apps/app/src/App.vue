@@ -6,7 +6,7 @@
                     <TitleBar />
                 </div>
                 <div class="sideBar-container">
-                    side bar
+                    <SideBar />
                 </div>
                 <div class="main-container">
                     <RouterView />
@@ -20,7 +20,6 @@
 import { zhCn } from 'element-plus/es/locales.mjs';
 import BackGround from './components/Layouts/BackGround.vue';
 import LogService from '@/core/services/Log.service';
-
 
 const openMenu = () => {
     LogService.info('User try open contextmenu!')
@@ -50,11 +49,15 @@ const openMenu = () => {
 
     .sideBar-container {
         margin-left: .5rem;
+        margin-bottom: .5rem;
         grid-area: 2 / 2 / 4 / 1;
     }
 
     .main-container {
         margin-right: .5rem;
+        margin-bottom: .5rem;
+        overflow: hidden;
+        overflow-y: auto;
         grid-area: 2 / 2 / 4 / 4;
     }
 }

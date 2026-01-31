@@ -6,5 +6,4 @@ import { footerRouterConfig, mainRouterConfig } from './RoutesCfg'
 export const MainRouter = createRouter({
     history: createWebHistory(),
     routes: [...mainRouterConfig, ...footerRouterConfig],
-
 })

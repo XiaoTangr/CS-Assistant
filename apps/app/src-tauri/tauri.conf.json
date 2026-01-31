@@ -31,10 +31,10 @@
                 "title": "CS Assistant",
                 "center": true,
                 "resizable": true,
-                "width": 1280,
-                "height": 720,
-                "minWidth": 640,
-                "minHeight": 200
+                "width": 970,
+                "height": 600,
+                "minWidth": 650,
+                "minHeight": 400
             }
         ],
         "security": {

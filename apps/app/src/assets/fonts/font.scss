@@ -1,7 +1,7 @@
 @font-face {
     font-family: 'DefaultFont';
-    src: url('../assets/fonts/JetBrainsMono.woff2') format('woff2'),
-        url('../assets/fonts/JetBrainsMono.woff2') format('truetype');
+    src: url('./JetBrainsMono.woff2') format('woff2'),
+        url('./JetBrainsMono.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
     font-display: swap;

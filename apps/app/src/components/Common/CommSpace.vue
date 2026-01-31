@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, VNode } from 'vue';
+import { VNode } from 'vue';
 
 import scssvar from '@/css/variables.module.scss'
 import { ref } from 'vue';
@@ -31,15 +31,7 @@ const props = withDefaults(defineProps<SpaceProps>(), {
     wrap: false
 });
 
-const setSize = ref(0);
-
-onMounted(() => {
-    if (!props.size) {
-        setSize.value = remToPx(scssvar.globePadding) as number;
-    } else {
-        setSize.value = props.size;
-    }
-})
+const setSize = ref(props.size || remToPx(scssvar.globePadding) as number);
 </script>
 
 <style scoped lang="scss"></style>
