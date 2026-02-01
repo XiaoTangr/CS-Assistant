@@ -79,4 +79,4 @@
     pnpm run turbo build
     ```
 
-构建产物参阅对应应用的`Readme.mc`
+构建产物参阅对应应用的`Readme.md`
