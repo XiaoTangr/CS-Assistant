@@ -18,7 +18,7 @@
                 </div>
             </div>
             <GlassButton @click="test">
-                测试站
+                测试
             </GlassButton>
         </template>
     </GlassCard>
@@ -27,11 +27,10 @@
 <script setup lang="ts">
 import ThirdLink from '@/components/Public/ThirdLink.vue';
 import GlassCard from '../components/Common/GlassCard.vue';
-import SteamService from '../core/services/Steam.service';
 import { LogService } from '../core/services';
+import { RustFs } from '@/core/fs/fs';
+import { R } from 'vue-router/dist/router-CWoNjPRp.mjs';
 
-import { appCacheDir, appConfigDir, appDataDir } from '@tauri-apps/api/path';
-import { ElNotification } from 'element-plus';
 const linkData = {
     "中文": [
         {
@@ -54,16 +53,20 @@ const linkData = {
 };
 
 const test = async () => {
-    const ac = await appConfigDir();
-    const ad = await appDataDir();
-    const appCatch = await appCacheDir();
+    const pathArr = ['E:', 'test', 'old.txt'];
+    const newPathArr = ['E:', 'test', 'old1.txt']
+    const pathStr = await RustFs.joinPath(...pathArr);
+    const newPathStr = await RustFs.joinPath(...newPathArr);
+
+    // await RustFs.create(pathStr, { fsType: 'file' })
+    // LogService.debug(await RustFs.rename(pathStr, newPathStr))
+
+    LogService.debug(await RustFs.isType(pathStr, { fsType: 'file' }))
+    LogService.debug(await RustFs.isType(pathStr, { fsType: 'dir' }))
 
 
-    LogService.warn({ ac, ad, appCatch });
 
-    let s = SteamService.getInstance();
-    let res = await s.getLogedSteamUsers();
-    LogService.debug("UsersLocalConfigVdf", res);
+
 };
 </script>
 

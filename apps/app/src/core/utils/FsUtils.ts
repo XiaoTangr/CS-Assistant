@@ -107,8 +107,8 @@ export const searchFilesByName = async (
     const { depth = -1, caseSensitive = false } = options;
 
     // 获取目录结构数据
-    const data = await invoke<FileOrDir>("list_files_and_directories", {
-        dirPath: dirPath,
+    const data = await invoke<FileOrDir>("list_dir", {
+        dirPath: dirPath, recursive: true
     });
 
     // 递归查找匹配的文件

@@ -28,7 +28,7 @@ export default class StartUpService {
      * 获取数据库数据
      */
     static async fetchDatas(): Promise<void> {
-        await useLoginedSteamUserStore().fetchData();
+        // await useLoginedSteamUserStore().fetchData();
         await useBackupStore().fetchData();
         await useAppStore().fetchData();
         await useAppConfigStore().fetchData();
