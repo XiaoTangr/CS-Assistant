@@ -105,7 +105,7 @@ $content-width: calc(100vw - $nav-bar-width - $globe-padding * 2);
 $content-fill-hight: calc(100vh - $global-command-height);
 
 // scrollbar
-$scrollbar-width: 8px;
+$scrollbar-width: 10px;
 $scrollbar-width-thiner: calc($scrollbar-width / 1.5);
 $scrollbar-baseColor: $color-text-placeholder;
 $scrollbar-track-background: rgba(100, 100, 100, 0.1);

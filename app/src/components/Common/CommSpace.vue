@@ -10,7 +10,7 @@ import { VNode } from 'vue';
 
 import scssvar from '@/css/variables.module.scss'
 import { ref } from 'vue';
-import { remToPx } from '@/core/utils';
+import { remToPx } from '@/core/util';
 
 interface SpaceProps {
     size?: number;

@@ -1,9 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { footerRouterConfig, mainRouterConfig } from './RoutesCfg'
-
-
+import { mainRouterConfig } from '../core/config/Routes'
 
 export const MainRouter = createRouter({
     history: createWebHistory(),
-    routes: [...mainRouterConfig, ...footerRouterConfig],
+    routes: [...mainRouterConfig],
 })

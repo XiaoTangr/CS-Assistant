@@ -9,7 +9,9 @@
                     <SideBar />
                 </div>
                 <div class="main-container">
-                    <RouterView />
+                    <el-scrollbar  class="main-scrollbar">
+                        <RouterView />
+                    </el-scrollbar>
                 </div>
             </div>
             <BackGround />
@@ -19,7 +21,7 @@
 <script setup lang="ts">
 import { zhCn } from 'element-plus/es/locales.mjs';
 import BackGround from './components/Layouts/BackGround.vue';
-import LogService from '@/core/services/Log.service';
+import LogService from '@/core/service/logService';
 
 const openMenu = () => {
     LogService.info('User try open contextmenu!')

@@ -20,7 +20,7 @@ tauri-build = { version = "2.4.1", features = [] }
 
 [dependencies]
 
-tauri = { version = "2.8.5", features = ["protocol-asset"] }
+tauri = { version = "2.10.1", features = ["protocol-asset"] }
 
 base64 = "0.22"  # 使用最新稳定版
 serde = { version = "1", features = ["derive"] }

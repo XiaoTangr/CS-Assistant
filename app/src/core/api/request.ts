@@ -1,7 +1,7 @@
 import { fetch } from "@tauri-apps/plugin-http";
-import { LogService } from "../services";
+import { LogService } from "../service";
 import { ApiResponse, RequestConfig } from "../models";
-import { deepParseJson, JsonUtils } from "../utils";
+import { deepParseJson, JsonUtils } from "../util";
 
 // 默认请求头
 const defaultHeaders: Record<string, string> = {

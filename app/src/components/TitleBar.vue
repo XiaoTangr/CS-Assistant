@@ -21,7 +21,7 @@
 
         <!-- 标题栏标题 -->
         <div class="titlebar-title" style="-webkit-app-region: drag">
-            {{ $route.meta.text }}
+            {{ $route.meta.title }}
         </div>
         <!-- 标题栏按钮组 -->
         <div class="titlebar-btn-group cmd">
