@@ -40,11 +40,6 @@ pnpm-debug.log
 src-tauri/target/
 target/
 
-# Turborepo
-.turbo
-.node/
-.out/
-
 # pnpm 相关
 pnpm-lock.yaml
 *.pnpm-debug.log
@@ -53,6 +48,7 @@ pnpm-lock.yaml
 *.local
 /.local/**
 config/
+/.design/**
 
 # Database
 *.db

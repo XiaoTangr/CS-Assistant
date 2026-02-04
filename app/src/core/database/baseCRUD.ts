@@ -1,5 +1,5 @@
 import LogService from "../services/Log.service";
-import { connecter } from "./";
+import { connecter } from ".";
 
 interface SqlResult {
     rowsAffected: number;

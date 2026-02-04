@@ -1,5 +1,5 @@
 import { LogService } from "../services";
-import { baseCRUD } from "../database";
+import { baseCRUD } from ".";
 import { t_KeyValue } from "./models";
 
 import { appConfigs } from "../static/appConfig";
