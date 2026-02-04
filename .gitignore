@@ -48,7 +48,7 @@ pnpm-lock.yaml
 *.local
 /.local/**
 config/
-/.design/**
+/design/**
 
 # Database
 *.db
