@@ -5,7 +5,7 @@
  */
 import { path } from "@tauri-apps/api";
 import { invoke } from "@tauri-apps/api/core";
-import { CopyFsConfig, CreateFsConfig, DeleteFsConfig, DirEntity, IsTypeFsConfig } from "../types/Fs";
+import { CopyFsConfig, CreateFsConfig, DeleteFsConfig, DirEntity, IsTypeFsConfig } from "../types/fs";
 
 
 

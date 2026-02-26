@@ -1,6 +1,6 @@
 
 import { invoke } from '@tauri-apps/api/core';
-import LogService from '@/core/service/logService';
+import LogService from '@/core/service/log-service';
 import * as VDF from 'vdf-parser';
 import { VDFParseOptions, VDFStringifyOptions } from 'vdf-parser';
 /**

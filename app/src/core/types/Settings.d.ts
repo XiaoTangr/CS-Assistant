@@ -5,21 +5,8 @@
  */
 
 
-/**
- * 设置项类型枚举
- * 用于区分不同交互类型的设置项
- */
-export enum SettingType {
-    /** 文本输入类型 */
-    TEXT = 'text',
-    /** 下拉选择类型 */
-    SELECT = 'select',
-    /** 开关切换类型 */
-    SWITCH = 'switch',
-    /** 文件/目录路径选择类型 */
-    PATH = 'path'
-}
 
+// ————————————————————  设置分组类型 ————————————————————————————
 /**
  * 设置分组元信息
  * 用于定义分组的基础属性（排序、名称）
@@ -30,12 +17,29 @@ export interface SettingGroupMeta {
     /** 分组排序权重（数值越小越靠前） */
     order: number;
 }
+/**
+ *  设置分组元信息
+ */
+export type RecordSettingGroupMeta = Record<string, SettingGroupItem>;
+
+// ————————————————————  设置项目相关 ————————————————————————————
+
+/**
+ * 所有设置项配置的元信息
+ */
+export type RecordUnionSettingsMeta = Record<string, UnionSettingsMeta>;
+
+/**
+ * 所有设置项配置的联合类型
+ * 涵盖所有交互类型的设置项
+ */
+export type UnionSettingsMeta = TextSettingsMeta | SelectSettingsMeta | SwitchSettingsMeta | PathSettingsMeta;
 
 /**
  * 基础设置项配置
  * 所有设置项的通用核心属性
  */
-export interface SettingConfig {
+interface BaseSettingsMeta {
     /** 排序权重（数值越小越靠前，可选） */
     order: number;
     /** 设置项唯一标识（只读） */
@@ -47,31 +51,15 @@ export interface SettingConfig {
     /** 设置项交互类型 */
     type: SettingType;
     /** 所属分组元信息 */
-    group: SettingGroupMeta;
+    group: SettingGroupMetaItem;
 }
-
-/**
- * 下拉选项配置
- * 用于 SELECT 类型设置项的选项定义
- */
-export interface SelectItem {
-    /** 选项值 */
-    value: string;
-    /** 选项显示文本 */
-    label: string;
-    /** 是否禁用选项（可选） */
-    disabled?: boolean;
-}
-
 /**
  * 文本输入配置项
  * 字符串输入类设置项的专属属性
  */
-export interface TextConfig extends SettingConfig {
+interface TextSettingsMeta extends BaseSettingsMeta {
     /** 固定为文本输入类型 */
     type: SettingType.TEXT;
-    /** 当前值 */
-    value: string;
     /** 默认值 */
     defaultValue: string;
     /** 输入框占位符（可选） */
@@ -80,30 +68,14 @@ export interface TextConfig extends SettingConfig {
     maxLength?: number;
 }
 
-/**
- * 下拉选择配置项
- * 下拉选择类设置项的专属属性
- */
-export interface SelectConfig extends SettingConfig {
-    /** 固定为下拉选择类型 */
-    type: SettingType.SELECT;
-    /** 当前值 */
-    value: string;
-    /** 默认值 */
-    defaultValue: string;
-    /** 可选列表 */
-    options: SelectItem[];
-}
 
 /**
  * 开关配置项
  * 布尔值切换类设置项的专属属性
  */
-export interface SwitchConfig extends SettingConfig {
+interface SwitchSettingsMeta extends BaseSettingsMeta {
     /** 固定为开关类型 */
     type: SettingType.SWITCH;
-    /** 当前值 */
-    value: boolean;
     /** 默认值 */
     defaultValue: boolean;
 }
@@ -112,11 +84,9 @@ export interface SwitchConfig extends SettingConfig {
  * 路径选择配置项
  * 文件/目录路径选择类设置项的专属属性
  */
-export interface PathConfig extends SettingConfig {
+interface PathSettingsMeta extends BaseSettingsMeta {
     /** 固定为路径选择类型 */
     type: SettingType.PATH;
-    /** 当前值 */
-    value: string;
     /** 默认值 */
     defaultValue: string;
     /** 是否仅允许选择目录（可选） */
@@ -124,24 +94,27 @@ export interface PathConfig extends SettingConfig {
     /** 允许的文件扩展名列表（可选，如 ['json', 'txt']） */
     fileExtensions?: string[];
 }
-
 /**
- * 所有设置项配置的联合类型
- * 涵盖所有交互类型的设置项
+ * 下拉选择配置项
+ * 下拉选择类设置项的专属属性
  */
-export type SettingItem = TextConfig | SelectConfig | SwitchConfig | PathConfig;
-
+interface SelectSettingsMeta extends BaseSettingsMeta {
+    /** 固定为下拉选择类型 */
+    type: SettingType.SELECT;
+    /** 默认值 */
+    defaultValue: string;
+    /** 可选列表 */
+    options: SelectItem[];
+}
 /**
- * 设置分组配置
- * 用于组织设置项的分组整体配置（含标识、图标等）
+ * 下拉选项配置
+ * 用于 SELECT 类型设置项的选项定义
  */
-export interface SettingGroupConfig {
-    /** 分组唯一标识 */
-    id: string;
-    /** 分组显示名称 */
+interface SelectItem {
+    /** 选项值 */
+    value: string;
+    /** 选项显示文本 */
     label: string;
-    /** 分组图标（可选，如图标组件名称/路径） */
-    icon?: string;
-    /** 分组描述说明（可选） */
-    description?: string;
+    /** 是否禁用选项（可选） */
+    disabled?: boolean;
 }

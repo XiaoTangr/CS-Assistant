@@ -143,10 +143,6 @@ class LogService {
      * @param args 可选参数
      */
     debug = (msg: any, ...args: any[]) => {
-
-
-
-
         const colors = {
             reset: '\x1b[0m',
             fontYellow: '\x1b[33m',

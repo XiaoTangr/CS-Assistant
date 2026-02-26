@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { zhCn } from 'element-plus/es/locales.mjs';
 import BackGround from './components/Layouts/BackGround.vue';
-import LogService from '@/core/service/logService';
+import LogService from '@/core/service/log-service';
 
 const openMenu = () => {
     LogService.info('User try open contextmenu!')

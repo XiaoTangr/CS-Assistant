@@ -1,6 +1,6 @@
 <template>
     <div class="container" id="side-bar-container">
-        <el-tooltip effect="light" v-for="value in mainRouterConfig" :key="value.name" :content="value.meta?.title"
+        <el-tooltip effect="light" v-for="value in routesConfig" :key="value.name" :content="value.meta?.title"
             placement="right">
             <GlassButton :id="value.name" plain v-if="isInDevMode || value.name !== 'devTools'"
                 :shadow="activeRouterName === value.name ? 'always' : 'hover'"
@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { mainRouterConfig } from '@/core/config/Routes';
+import { routesConfig } from '@/core/config/routes-config';
 import { onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 

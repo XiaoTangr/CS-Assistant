@@ -1,20 +1,21 @@
 import Database from "@tauri-apps/plugin-sql";
-import LogService from "@/core/service/logService";
+import LogService from "@/core/service/log-service";
 import { path } from "@tauri-apps/api";
+import { DBResult } from "../types/database";
 
 
-class Connecter {
-    private static instance: Connecter;
+class dbConnect {
+    private static instance: dbConnect;
     private db: Database | null = null;
     private isInitialized: boolean = false;
 
     private constructor() { }
 
-    public static getInstance(): Connecter {
-        if (!Connecter.instance) {
-            Connecter.instance = new Connecter();
+    public static getInstance(): dbConnect {
+        if (!dbConnect.instance) {
+            dbConnect.instance = new dbConnect();
         }
-        return Connecter.instance;
+        return dbConnect.instance;
     }
 
     /**
@@ -76,4 +77,50 @@ class Connecter {
     }
 }
 
-export default Connecter.getInstance() as Connecter;
+/**
+ *  Query the database
+ * @param sql  sql statement
+ * @param params  parameters
+ * @returns  Promise<T[]>
+ */
+const query = async <T>(sql: string, params?: any[]): Promise<T[]> => {
+    const db = await dbConnect.getInstance().getConnection();
+    return db.select<T[]>(sql, params);
+};
+
+/**
+ * Execute a SQL statement
+ * @param sql  sql statement
+ * @param params  parameters
+ * @returns  Promise<DBResult>
+ */
+const execute = async (sql: string, params?: any[]): Promise<DBResult> => {
+    const db = await dbConnect.getInstance().getConnection();
+    return (await db.execute(sql, params));
+};
+
+/**
+ * Execute a SQL statement in a transaction
+ * @param sql  sql statement
+ * @param params  parameters
+ * @returns  Promise<DBResult>
+ * @deprecated 暂不支持
+ */
+const transaction = async (sql: string[], params?: any[][]): Promise<DBResult> => {
+
+    const db = await dbConnect.getInstance().getConnection();
+    // 手动实现事务
+    await db.execute("BEGIN TRANSACTION;");
+    for (let i = 0; i < sql.length; i++) {
+        await db.execute(sql[i], params?.[i]);
+    }
+    const res = await db.execute("COMMIT;");
+    return {
+        rowsAffected: res.rowsAffected,
+        lastInsertId: res.lastInsertId
+    };
+};
+
+export const dbExecutor = { query, execute, transaction };
+
+export default dbConnect.getInstance() as dbConnect;

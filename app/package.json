@@ -29,6 +29,7 @@
         "@tauri-apps/plugin-updater": "^2.10.0",
         "element-plus": "^2.13.0",
         "json5": "^2.2.3",
+        "loglevel": "^1.9.2",
         "sass": "^1.84.0",
         "unplugin-auto-import": "^21.0.0",
         "unplugin-vue-components": "^31.0.0",
