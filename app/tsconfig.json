@@ -10,6 +10,7 @@
         "types": [
             "node"
         ],
+        "strictNullChecks": true,
         "esModuleInterop": true,
         "target": "ES2020",
         "useDefineForClassFields": true,
@@ -28,6 +29,7 @@
         "noEmitOnError": false,
         "jsx": "preserve",
         "strict": true,
+        "noImplicitAny": true, // 禁止隐式any类型
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true

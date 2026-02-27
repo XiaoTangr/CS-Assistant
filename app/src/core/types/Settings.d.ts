@@ -1,65 +1,30 @@
-/**
- * 应用程序设置类型定义
- * 包含所有设置项的类型定义和相关接口
- * @packageDocumentation
- */
+import { SETTINGS_TYPE } from "../config/settings-config";
 
-
-
-// ————————————————————  设置分组类型 ————————————————————————————
-/**
- * 设置分组元信息
- * 用于定义分组的基础属性（排序、名称）
- */
-export interface SettingGroupMeta {
-    /** 分组显示名称 */
-    label: string;
-    /** 分组排序权重（数值越小越靠前） */
-    order: number;
-}
-/**
- *  设置分组元信息
- */
-export type RecordSettingGroupMeta = Record<string, SettingGroupItem>;
-
-// ————————————————————  设置项目相关 ————————————————————————————
+// ---------------- 类型声明 ---------------------
+export type ConfigItem = TextConfig | SelectConfig | SwitchConfig | PathConfig;
 
 /**
- * 所有设置项配置的元信息
+ * 设置项基本字段
  */
-export type RecordUnionSettingsMeta = Record<string, UnionSettingsMeta>;
-
-/**
- * 所有设置项配置的联合类型
- * 涵盖所有交互类型的设置项
- */
-export type UnionSettingsMeta = TextSettingsMeta | SelectSettingsMeta | SwitchSettingsMeta | PathSettingsMeta;
-
-/**
- * 基础设置项配置
- * 所有设置项的通用核心属性
- */
-interface BaseSettingsMeta {
-    /** 排序权重（数值越小越靠前，可选） */
+export interface BaseConfig {
+    /** 排序权重（数值越小越靠前） */
     order: number;
     /** 设置项唯一标识（只读） */
     readonly key: string;
-    /** 设置项显示名称 */
+    /** 设置项显示标签 */
     label: string;
     /** 设置项描述说明（可选） */
     description?: string;
-    /** 设置项交互类型 */
-    type: SettingType;
-    /** 所属分组元信息 */
-    group: SettingGroupMetaItem;
 }
+
+
 /**
  * 文本输入配置项
  * 字符串输入类设置项的专属属性
  */
-interface TextSettingsMeta extends BaseSettingsMeta {
+interface TextConfig extends BaseConfig {
     /** 固定为文本输入类型 */
-    type: SettingType.TEXT;
+    kind: SETTINGS_TYPE.TEXT;
     /** 默认值 */
     defaultValue: string;
     /** 输入框占位符（可选） */
@@ -68,14 +33,13 @@ interface TextSettingsMeta extends BaseSettingsMeta {
     maxLength?: number;
 }
 
-
 /**
  * 开关配置项
  * 布尔值切换类设置项的专属属性
  */
-interface SwitchSettingsMeta extends BaseSettingsMeta {
+interface SwitchConfig extends BaseConfig {
     /** 固定为开关类型 */
-    type: SettingType.SWITCH;
+    kind: SETTINGS_TYPE.SWITCH;
     /** 默认值 */
     defaultValue: boolean;
 }
@@ -84,9 +48,9 @@ interface SwitchSettingsMeta extends BaseSettingsMeta {
  * 路径选择配置项
  * 文件/目录路径选择类设置项的专属属性
  */
-interface PathSettingsMeta extends BaseSettingsMeta {
+interface PathConfig extends BaseConfig {
     /** 固定为路径选择类型 */
-    type: SettingType.PATH;
+    kind: SETTINGS_TYPE.PATH;
     /** 默认值 */
     defaultValue: string;
     /** 是否仅允许选择目录（可选） */
@@ -94,23 +58,25 @@ interface PathSettingsMeta extends BaseSettingsMeta {
     /** 允许的文件扩展名列表（可选，如 ['json', 'txt']） */
     fileExtensions?: string[];
 }
+
 /**
  * 下拉选择配置项
  * 下拉选择类设置项的专属属性
  */
-interface SelectSettingsMeta extends BaseSettingsMeta {
+interface SelectConfig extends BaseConfig {
     /** 固定为下拉选择类型 */
-    type: SettingType.SELECT;
+    kind: SETTINGS_TYPE.SELECT;
     /** 默认值 */
     defaultValue: string;
     /** 可选列表 */
-    options: SelectItem[];
+    options: OptionItem[];
 }
+
 /**
  * 下拉选项配置
  * 用于 SELECT 类型设置项的选项定义
  */
-interface SelectItem {
+interface OptionItem {
     /** 选项值 */
     value: string;
     /** 选项显示文本 */
@@ -118,3 +84,7 @@ interface SelectItem {
     /** 是否禁用选项（可选） */
     disabled?: boolean;
 }
+
+// 设置数据
+// export type configData = Record<Partial<keyof typeof groups>, SettingConfig[]>
+export type configData = Partial<Record<keyof typeof groups, ConfigItem[]>>

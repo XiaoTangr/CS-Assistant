@@ -2,9 +2,8 @@ import { isEmpty } from "element-plus/es/utils/types.mjs";
 import logService from "../service/log-service";
 import { TABLE_NAME } from "../config/database-config";
 import { keyValue } from "../types/database";
-import { settingsMeta } from "../config/settings-config";
 import { dbExecutor } from "./db-connect";
-
+import { getSettingsItemsAsArray, SETTINGS_DATA } from "../config/settings-config";
 /**
  * 此代码用于实现对软件设置的持久化
  */
@@ -46,7 +45,7 @@ class KeyValueData {
                 await dbExecutor.execute(createTableSql);
                 logService.info(`[DB] 数据表 ${this.USE_TABLE_NAME} 创建成功。`);
                 // 插入默认数据，只在安装数据表时执行。
-                for (const item of settingsMeta) {
+                for (const item of getSettingsItemsAsArray()) {
                     const hasKey = await this.getValue(item.key);
                     if (!hasKey) {
                         logService.info(`[DB] 数据库缺少 ${item.key}，正在插入...`);
