@@ -1,10 +1,11 @@
 <template>
     <div class="container" id="side-bar-container">
-        <el-tooltip effect="light" v-for="value in routesConfig" :key="value.name" :content="value.meta?.title"
+        <el-tooltip effect="light" v-for="value in routesConfig" :key="value.name" :content="(value.meta as any)?.title"
             placement="right">
             <GlassButton :id="value.name" plain v-if="isInDevMode || value.name !== 'devTools'"
                 :shadow="activeRouterName === value.name ? 'always' : 'hover'"
-                :type="activeRouterName === value.name ? 'primary' : 'default'" @click="switchRouteHandler(value.name)"
+                :type="activeRouterName === value.name ? 'primary' : 'default'" 
+                @click="switchRouteHandler(value.name as string)"
                 size="large" circle :icon="value.meta?.icon" class="router-btn" />
         </el-tooltip>
     </div>
