@@ -1,0 +1,15 @@
+{
+    "identifier": "dialog",
+    "platforms": [
+        "macOS",
+        "windows",
+        "linux"
+    ],
+    "windows": [
+        "main"
+    ],
+    "permissions": [
+        "dialog:default",
+        "dialog:allow-open"
+    ]
+}
