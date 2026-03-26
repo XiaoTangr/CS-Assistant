@@ -1,10 +1,10 @@
-package cn.javat.cscms;
+package cn.javat.csa.cms;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class CscmsApplicationTests {
+class CmsApplicationTests {
 
     @Test
     void contextLoads() {

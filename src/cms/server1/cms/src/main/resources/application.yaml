@@ -1,0 +1,60 @@
+spring:
+  application:
+    name: cms
+  # 数据库基础配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 数据库连接信息（替换为你的实际配置）
+      url: jdbc:mysql://localhost:3306/csa_cms?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+      # Druid 连接池核心配置
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+
+      # Druid 监控配置（可选，保留监控功能）
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: 123456
+        reset-enable: false
+
+# MyBatis Plus 配置
+mybatis-plus:
+  # Mapper.xml 文件位置（按需配置，若用注解可省略）
+  mapper-locations: classpath:mapper/*.xml
+  # 实体类别名包路径
+  type-aliases-package: cn.javat.csa.cms.entity
+  # 全局配置
+  global-config:
+    db-config:
+      # 主键生成策略（雪花算法）
+      id-type: ASSIGN_ID
+      # 表名前缀（按需配置，如 tbl_）
+      # table-prefix: tbl_
+  # 配置 MyBatis 日志（开发环境用，生产关闭）
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 开启驼峰命名自动转换
+    map-underscore-to-camel-case: true
+
+# JWT 配置
+jwt:
+  # JWT 密钥（生产环境应使用更复杂的密钥）
+  secret: cs-assistant-jwt-secret-key-2026
+  # Token 过期时间（秒），默认 3600 秒（1 小时）
+  expiration: 3600
