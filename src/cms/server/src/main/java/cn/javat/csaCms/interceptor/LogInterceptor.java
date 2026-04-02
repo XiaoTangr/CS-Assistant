@@ -21,17 +21,17 @@ public class LogInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         long startTime = System.currentTimeMillis();
         request.setAttribute("startTime", startTime);
-        
+
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
         String remoteAddr = request.getRemoteAddr();
-        
+
         logger.info("====== 请求开始 ======");
         logger.info("请求 URI: {}", requestURI);
         logger.info("请求方法：{}", method);
         logger.info("IP 地址：{}", remoteAddr);
         logger.info("请求参数：{}", request.getQueryString());
-        
+
         return true;
     }
 
@@ -40,7 +40,7 @@ public class LogInterceptor implements HandlerInterceptor {
         long startTime = (Long) request.getAttribute("startTime");
         long endTime = System.currentTimeMillis();
         long costTime = endTime - startTime;
-        
+
         logger.info("====== 请求结束 ======");
         logger.info("处理时间：{} ms", costTime);
         logger.info("响应状态：{}", response.getStatus());

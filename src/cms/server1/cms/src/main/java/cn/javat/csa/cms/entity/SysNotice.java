@@ -1,8 +1,7 @@
 package cn.javat.csa.cms.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -15,6 +14,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_notice")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SysNotice implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -44,7 +46,7 @@ public class SysNotice implements Serializable {
     /**
      * 是否删除 0 FALSE 1 TRUE
      */
-    @TableLogic
+    @TableLogic(value = "0", delval = "1")
     @TableField("is_delete")
     private Boolean isDelete;
 }

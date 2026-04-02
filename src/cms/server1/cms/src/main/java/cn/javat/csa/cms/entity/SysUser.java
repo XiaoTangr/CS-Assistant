@@ -1,8 +1,8 @@
 package cn.javat.csa.cms.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("sys_user")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class SysUser implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -31,8 +34,10 @@ public class SysUser implements Serializable {
     private String username;
 
     /**
-     * BCrypt 加密密码
+     * BCrypt 加密密码（数据库查询和 JSON 序列化时都忽略）
      */
+    @JsonIgnore
+    @TableField("password")
     private String password;
 
     /**

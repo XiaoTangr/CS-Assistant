@@ -1,8 +1,8 @@
 package cn.javat.csa.cms.entity;
 
+import cn.javat.csa.cms.common.enums.BizPostType;
 import com.baomidou.mybatisplus.annotation.*;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
@@ -15,6 +15,9 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("biz_post")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class BizPost implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,7 +42,8 @@ public class BizPost implements Serializable {
     /**
      * 类型 int 由代码确定对应关系
      */
-    private Integer type;
+    @EnumValue
+    private BizPostType type;
 
     /**
      * 内容（支持 HTML/MD）
@@ -54,10 +58,16 @@ public class BizPost implements Serializable {
     /**
      * 是否删除 0 False 1 True
      */
-    @TableLogic
+    @TableLogic(value = "0", delval = "1")
     @TableField("is_delete")
     private Boolean isDelete;
 
+
+    /**
+     * 置顶权重 越大越重
+     */
+    @TableField("top_order")
+    private Integer topOrder;
     /**
      * 创建时间
      */

@@ -44,13 +44,17 @@ mybatis-plus:
     db-config:
       # 主键生成策略（雪花算法）
       id-type: ASSIGN_ID
-      # 表名前缀（按需配置，如 tbl_）
-      # table-prefix: tbl_
-  # 配置 MyBatis 日志（开发环境用，生产关闭）
+
+    # 禁用 Banner
+    banner: false
+  # MyBatis 原生配置
   configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     # 开启驼峰命名自动转换
     map-underscore-to-camel-case: true
+    # 开启日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 配置默认枚举类型处理器
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
 
 # JWT 配置
 jwt:
