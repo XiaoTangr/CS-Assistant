@@ -1,57 +1,16 @@
-# 忽略环境配置文件
-.env
-.env.local
-.env.development
-.env.production
-.env.development.local
-.env.test.local
-.env.production.local
-
-# 忽略 node_modules 目录
-node_modules/
-
-# 忽略构建产物
-dist/
-build/
-*.bundle.js
-*.map
-.next/
-out/
-
-# 忽略 IDE 文件
+# 忽略IDE文件夹
 .vscode/
 .idea/
 *.swp
 *.swo
+#忽略任何位置的node_modules文件夹
+node_modules/
+# 忽略任何位置的.git文件夹
+.git/
 
 # 忽略操作系统文件
 .DS_Store
-Thumbs.db
 
-# 忽略日志文件
-*.log
-logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log
+# 自定义忽略内容
+.local/
 
-# Tauri 特有文件
-src-tauri/target/
-target/
-
-# pnpm 相关
-pnpm-lock.yaml
-*.pnpm-debug.log
-
-# 本地配置文件
-*.local
-/.local/**
-/design/**
-
-# Database
-*.db
-*.db-journal
-
-# Output of `npm pack`
-*.tgz
