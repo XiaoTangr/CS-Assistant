@@ -47,7 +47,6 @@ pnpm-lock.yaml
 # 本地配置文件
 *.local
 /.local/**
-config/
 /design/**
 
 # Database
