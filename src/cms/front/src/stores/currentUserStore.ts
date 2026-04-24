@@ -1,18 +1,25 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 
-import { get, post } from '@/core/util/http/request'
-import type { SysUser } from '@/core/types/entity/SysUser'
-import type { HttpBody } from '@/types'
-import { HttpStatusCode } from 'axios'
+import http from '@/util/http/request'
+import type { SysUserDTO, UserRegisterDTO } from '@/types/SysUserDTO'
+import type { ApiResponse } from '@/types/apiResponse'
 
 
 export const useCurrentUserStore = defineStore('currentUserStore', () => {
 
-  const currentSysUser = ref<SysUser>()
+  const currentSysUser = ref<SysUserDTO>()
   const isLogined = ref(false)
 
   const userRole = computed(() => {
+    if (currentSysUser.value) {
+      return currentSysUser.value.role
+    }
+    return 0
+  })
+
+
+  const userRoleStr = computed(() => {
     if (currentSysUser.value) {
       if (currentSysUser.value.role === 0) {
         return '普通用户'
@@ -43,8 +50,8 @@ export const useCurrentUserStore = defineStore('currentUserStore', () => {
    * @returns  0 成功获取用户信息，-1 获取失败（例如 token 无效或过期）
    */
   const fetchData = async () => {
-    return await get<SysUser>('/api/v1/auth/current').then((res) => {
-      if (res.code === HttpStatusCode.Ok) {
+    return await http.get<SysUserDTO>('/api/v1/auth/current').then((res) => {
+      if (res.code === 200) {
         currentSysUser.value = res.data;
         isLogined.value = true;
         return 0;
@@ -69,8 +76,8 @@ export const useCurrentUserStore = defineStore('currentUserStore', () => {
   }
 
 
-  const login = async (email: string, password: string): Promise<HttpBody> => {
-    return await post<SysUser>('/api/v1/auth/login',
+  const login = async (email: string, password: string): Promise<ApiResponse> => {
+    return await http.post<SysUserDTO>('/api/v1/auth/login',
       { username: email, password: password },
       { withToken: false })
       .then((res) => {
@@ -89,9 +96,9 @@ export const useCurrentUserStore = defineStore('currentUserStore', () => {
       })
   }
 
-  const register = async (userName: string, password: string, passwordConfirm: string): Promise<number | string> => {
-    return await post<SysUser>('/api/v1/auth/register',
-      { username: userName, confirmPassword: passwordConfirm, password: password },
+  const register = async (regData: UserRegisterDTO): Promise<number | string> => {
+    return await http.post<SysUserDTO>('/api/v1/auth/register',
+      regData,
       { withToken: false })
       .then((res) => {
         if (res.code === 200) {
@@ -105,5 +112,5 @@ export const useCurrentUserStore = defineStore('currentUserStore', () => {
   }
 
 
-  return { currentSysUser, isLogined, userRole, userStatus, fetchData, logout, login, register }
+  return { currentSysUser, isLogined, userRole, userRoleStr, userStatus, fetchData, logout, login, register }
 })

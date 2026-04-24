@@ -81,12 +81,14 @@
 </template>
 
 <script setup lang="ts">
-import { put } from '@/core/util';
+import { put } from '@/util';
 import { useCurrentUserStore } from '@/stores/currentUserStore';
 import { ElNotification } from 'element-plus';
 import { storeToRefs } from 'pinia';
 import { reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import type { ApiResponse } from '@/types/apiResponse';
+import type { SysUserDTO } from '@/types/SysUserDTO';
 
 
 const currentUserStore = useCurrentUserStore();
@@ -151,7 +153,7 @@ const saveProfileHandler = () => {
         avatar: editForm.avatar,
         email: editForm.email,
         steamId: editForm.steamId,
-    }).then(async (res) => {
+    }).then(async (res: ApiResponse<SysUserDTO>) => {
         if (res.code === 200) {
             ElNotification.success({ title: '成功', message: '资料更新成功' })
             // 更新当前用户信息
