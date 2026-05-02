@@ -1,7 +1,6 @@
 package cn.javat.csa.cms;
 
-import cn.javat.csa.cms.util.JwtUtil;
-import cn.javat.csa.cms.util.PasswordUtil;
+import cn.javat.csa.cms.common.util.PasswordUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 

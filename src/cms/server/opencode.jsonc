@@ -1,0 +1,10 @@
+// opencode 配置文件
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "Alibaba (China)/Qwen3 Coder Plus",
+  "permission": {
+    "*": "ask",
+    "bash": "allow",
+    "edit": "allow"
+  }
+}

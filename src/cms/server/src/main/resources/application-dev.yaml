@@ -1,0 +1,110 @@
+spring:
+
+  application:
+    name: cms
+  # 数据库基础配置
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      # 数据库连接信息（替换为你的实际配置）
+      url: jdbc:mysql://localhost:3306/csa_cms?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+      username: root
+      password: 123456
+      driver-class-name: com.mysql.cj.jdbc.Driver
+
+      # Druid 连接池核心配置
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      max-wait: 60000
+      time-between-eviction-runs-millis: 60000
+      min-evictable-idle-time-millis: 300000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: false
+      test-on-return: false
+      pool-prepared-statements: true
+      max-pool-prepared-statement-per-connection-size: 20
+
+      # Druid 监控配置（可选，保留监控功能）
+      stat-view-servlet:
+        enabled: true
+        url-pattern: /druid/*
+        login-username: admin
+        login-password: 123456
+        reset-enable: false
+  devtools:
+    restart:
+      enabled: true               # 开启自动重启（默认true）
+      poll-interval: 1000         # 轮询间隔（ms）
+      quiet-period: 400           # 等待稳定时间（ms）
+      # 排除不需要重启的目录（静态资源默认已排除）
+      exclude: static/**,public/**,templates/**
+      # 额外监控目录（可选）
+      additional-paths: src/main/java,src/main/resources
+
+    livereload:
+      enabled: true               # 开启LiveReload（浏览器自动刷新）
+
+  # 关闭模板缓存（开发必备）
+  thymeleaf:
+    cache: false
+  freemarker:
+    cache: false
+  servlet:
+    multipart:
+      resolve-lazily: true
+# MyBatis Plus 配置
+mybatis-plus:
+  # Mapper.xml 文件位置（按需配置，若用注解可省略）
+  mapper-locations: classpath:mapper/*.xml
+  # 实体类别名包路径
+  type-aliases-package: cn.javat.csa.cms.entity
+  # 全局配置
+  global-config:
+    db-config:
+      # 主键生成策略（雪花算法）
+      id-type: ASSIGN_ID
+
+    # 禁用 Banner
+    banner: false
+  # MyBatis 原生配置
+  configuration:
+    # 开启驼峰命名自动转换
+    map-underscore-to-camel-case: true
+    # 开启日志（使用 SLF4J 集成到项目日志系统）
+    log-impl: org.apache.ibatis.logging.slf4j.Slf4jImpl
+    # 配置默认枚举类型处理器
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+    # 开启二级缓存（需要在 Mapper 接口上添加 @CacheNamespace 注解）
+    cache-enabled: true
+
+# JWT 配置
+jwt:
+  # JWT 密钥（生产环境应使用更复杂的密钥）
+  secret: cs-assistant-jwt-secret-key-2026
+  # Token 过期时间（秒），默认 3600 秒（1 小时）
+  expiration: 3600
+
+
+springdoc:
+  default-flat-param-object: true
+  swagger-ui:
+    path: /swagger-ui.html
+    tagsSorter: alpha
+    operationsSorter: alpha
+
+filter:
+  enableAuth: false   # 关闭认证（测试用）
+  allow:
+    - "/api/v1/auth/login"
+  allowPublic:
+    - "/api/v1/auth/**"
+    - "/swagger-ui/**"
+    - "/swagger-ui.html"
+    - "/v3/api-docs/**"
+    - "/webjars/**"
+    - "/druid/**"
+  allowWithMethod:
+    '[/api/v1/post]': 'GET'
+    '[/api/v1/post/{id}]': 'GET'
