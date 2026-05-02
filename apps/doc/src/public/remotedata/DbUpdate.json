@@ -1,0 +1,42 @@
+{
+    "needAppVersion": "1.1.0",
+    "setDBVersion": "1.1.0",
+    "data": {
+        "t_settings": [
+            {
+                "filter": {
+                    "c_key": "auto_update"
+                },
+                "data": {
+                    "c_selected": true
+                }
+            },
+            {
+                "filter": {
+                    "c_key": "ef"
+                },
+                "data": {
+                    "c_selected": true
+                }
+            }
+        ],
+        "t_map": [
+            {
+                "filter": {
+                    "c_key": "auto_update"
+                },
+                "data": {
+                    "c_value": true
+                }
+            },
+            {
+                "filter": {
+                    "c_key": "ef"
+                },
+                "data": {
+                    "c_value": true
+                }
+            }
+        ]
+    }
+}
